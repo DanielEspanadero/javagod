@@ -179,6 +179,8 @@ public class Cuenta {
         this.titular = titular;
         this.saldoEnCentimos = saldoInicial;
     }
+
+    public String titular() { return titular; }
 }
 ```
 
