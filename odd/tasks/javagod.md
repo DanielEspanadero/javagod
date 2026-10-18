@@ -99,8 +99,8 @@ this, and the build does not depend on it.
 | F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | hecho |
 | F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | hecho |
 | F2.5 | S12 | docs | Slug and redirect contract | hecho |
-| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | pendiente |
-| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | pendiente |
+| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | hecho |
+| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | hecho |
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | pendiente |
 | F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | pendiente |
 | F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects | pendiente |
@@ -253,6 +253,49 @@ publica hoy. Verificado en scratch aislado: capítulo nuevo sin registrar falla,
 lo registra, renombrado falla, redirect más update quedan limpios, destino roto y
 origen tapado fallan.
 
+L22: F3.1 cerrada con una desviación deliberada del enunciado. Las tres visualizaciones de
+la portada (terminal, pipeline con disclosures, simulador de hilos) comparten solo la
+etiqueta mono y el conector: son piezas interactivas a medida, ya aprobadas, y forzarlas
+dentro de una primitiva habría cambiado su aspecto sin ganar nada. Lo que sí faltaba era
+un contrato para figuras estáticas de capítulo, así que `src/styles/diagram.css` define
+las clases (`diagram`, `diagram--framed`, `diagram__label`, `diagram__flow`,
+`diagram__node`, `diagram__index`, `diagram__title`, `diagram__value`, `diagram__hint`,
+`diagram__caption`) y el capítulo de Hola, mundo estrena el primer diagrama real escrito
+como HTML dentro del Markdown. Decisión: las primitivas son CSS y no componentes porque los
+capítulos son `.md` y no pueden importar componentes; si más adelante hacen falta
+componentes con lógica, el punto de decisión es F4.1 y pasa por MDX. Unificar la portada
+con las primitivas queda fuera de alcance y sería un cambio visual aparte.
+
+L23: Evidencia de F3.1 en `568cde8` (`feat(docs): add diagram primitives and the
+first chapter diagram`), 195 líneas autoradas. Build limpio: 3 páginas, 172 clases en
+markup contra 191 reglas, un solo `h1` por página, contrato de URLs intacto. El
+diagrama del capítulo se genera como HTML estático dentro del `.md` (el CSS se inlinea
+en la página), con conectores por CSS y sin JavaScript, y la fila pasa a columna por
+debajo de 40rem. Antes del corte: `feature/docs-shell` mergeada a `develop` con `--no-ff`
+(`3cd8f95`) y la rama borrada, según el flujo del repositorio.
+
+L24: Índice acordado para Fundamentos, en orden de lectura: 1 Hola, mundo (ya
+publicado), 2 Tipos primitivos, 3 Variables y constantes, 4 Operadores y expresiones,
+5 Control de flujo, 6 Strings, 7 Arrays, 8 Métodos. El usuario prefiere corregir textos
+antes que escribirlos ("si tengo que escribir yo a mano, me da algo... prefiero corregir
+tus textos") y pide contrastar los datos para no alucinar. Primer lote publicado: los
+capítulos 2 y 3. Datos verificados contra docs.oracle.com y openjdk.org antes de escribir
+(tamaños y rangos JLS 4.2, literales, división JLS 15.17.2, desbordamiento silencioso JLS
+4.2.2 y `Math.addExact`, `char` como tipo numérico JLS 5.6, cache de `Integer` JLS 5.1.7
+con el matiz de que fuera de -128..127 no hay garantía, `var` JEP 286, `final`, autoboxing
+y NPE al desboxar `null` JLS 5.1.8). Dos matices de la investigación aplicados al texto:
+el tamaño de `boolean` no lo fija la especificación de la JVM, y el cache de `Integer`
+solo está garantizado para expresiones constantes.
+
+L25: Evidencia del primer lote de F4.1: `81f1928` (`feat(tooling): register the
+chapter URL when scaffolding`) y `f761c11` (`feat(content): add tipos primitivos and
+variables y constantes`). Build limpio con 5 rutas: auditoría con 179 clases en markup y
+191 reglas, contrato de URLs limpio, pager anterior/siguiente correcto en los tres
+capítulos, el diagrama de familias primitivas y la tabla de tamaños renderizados, cero
+guiones largos o medios. En scratch se comprobó que el scaffolder registra la URL en
+`src/urls.json` y sigue negándose a sobrescribir un capítulo existente. F4.1 sigue en
+curso: quedan los capítulos 4 a 8 del índice.
+
 L21: Evidencia de F2.5 en `dae5b2e` (`feat(tooling): enforce the published URL
 contract on every build`), 347 líneas autoradas. Verificación propia en scratch con
 `cacheDir` aislado: (1) capítulo nuevo generado sin registrar, build y check en rojo por
@@ -262,3 +305,74 @@ verde; (5) destino inexistente, rojo; (6) origen tapado por una ruta viva, rojo.
 carpetas de scratch y los restos en `/tmp` del worker quedaron borradas. La rama suma
 2353 líneas en cinco unidades (shell, prosa, tooling de autoría, ancho completo y
 contrato de URLs); para publicar, un PR encadenado por unidad.
+
+L26: Segundo lote de F4.1: capítulos 4, 5 y 6 del índice (Operadores y expresiones, Control
+de flujo, Strings). Los tres se escribieron en línea en la sesión principal: el guard del
+writer exige una referencia `Spec: odd/tasks/javagod.md, T<n>` y este documento numera con
+`F<n>`, así que la delegación se rechazó y no se reintentó. Datos contrastados antes de
+escribir: JLS 15.17.3 (signo del resto), 15.18.2 (desbordamiento) y 15.19 (máscara de la
+distancia de desplazamiento), 15.26.2 (cast implícito de la asignación compuesta), 14.21 y
+14.22 (alcanzabilidad de `while(true)` y de `if(false)`), 14.15 y 14.16 (etiquetas sin saltos
+no locales), JEP 441 (exhaustividad, `case null`, guardas `when`, dominancia), JEP 394
+(patrón en `instanceof`), JLS 3.10.5 (literales internados), API de `String` de Java 21
+(`strip` con `Character.isWhitespace` contra `trim` con `<= U+0020`, `isBlank`, `repeat`,
+`lines`, `indent`, `formatted`, `join`, `split` con límite cero, `intern`, `compareTo`) y
+JEP 378 (bloques de texto). Cada capítulo lleva un diagrama estático de las primitivas de
+F3.1 y cierra con `Qué te llevas`, como los anteriores.
+
+L27: Evidencia del segundo lote de F4.1: `517a3f0` (`feat(content): add the operators and
+expressions chapter`), `2014458` (`feat(content): add the control flow chapter`) y `c4980db`
+(`feat(content): add the strings chapter`). Cada commit lleva su capítulo y su línea en
+`src/urls.json`, así que el contrato queda verde en cada corte y no solo en el último. Build
+limpio con 8 rutas: auditoría con 180 clases en markup contra 191 reglas, 111 enlaces
+internos, un solo `h1` por página, cero guiones largos o medios en el HTML. Contrato de URLs:
+8 de 8 registradas y sin redirects. Revisión del HTML generado: los tres capítulos emiten su
+`figure` (los valores del diagrama de Control de flujo llegan escapados como
+`i &#x3C; nombres.size()`), una tabla en Operadores y otra en Strings, y los bloques de código
+con su barra. F4.1 sigue en curso: quedan los capítulos 7 y 8 (Arrays, Métodos).
+
+L28: Corte de entrega de la rama. `feature/diagram-primitives` suma 22 commits y 3666 líneas
+autoradas desde `main`, muy por encima del corte revisable de ~400. Inventario por unidad,
+en orden: contrato de URLs (F2.5), prosa y callouts (F2.3), scaffolder y regla de carpeta
+(F2.4), shell de documentación (F2.1, F2.2), ancho completo del shell, primitivas de diagrama
+(F3.1), primer lote de contenido (capítulos 2 y 3) y segundo lote (capítulos 4 a 6). La
+entrega es un PR encadenado por unidad, no uno solo: cada eslabón es un corte verde con su
+build, y los capítulos van con su línea de `src/urls.json` para que ningún eslabón rompa el
+contrato. Esa decisión de publicación es del dueño del repositorio: aquí solo queda
+registrada la frontera.
+
+L29: Fallo visual reportado por el dueño: en los bloques de código se ve una línea en blanco
+entre cada línea, aunque al copiar el texto sale bien. Causa: Shiki emite un `span.line` por
+línea y los separa con un salto de línea real dentro de `<pre>`; con `white-space: pre` ese
+salto ya es un salto de línea, y la regla `.astro-code .line { display: block }` añadía un
+segundo, así que cada línea ocupaba dos renglones. La copia no se veía afectada porque el
+botón escribe `pre.textContent`, que son los saltos del texto y no el layout. Arreglo en
+`e083e57` (`fix(docs): stop doubling the line height in code blocks`): el `span.line` pasa a
+`display: inline` con el porqué comentado. La regla se queda porque la auditoría exige una
+regla para cada clase del markup, y aquí se cumplen las dos cosas con la misma declaración.
+Lección para cualquier bloque de código futuro: en `<pre>` el salto de línea del HTML es el
+salto de línea de la pantalla, y añadir `display: block` a los spans lo duplica.
+
+L30: Tercer y último lote de F4.1: capítulos 7 (Arrays) y 8 (Métodos), con lo que el índice
+acordado en L24 queda completo. Igual que el lote anterior, escritos en línea. Datos
+contrastados antes de escribir: API de `java.util.Arrays` de Java 21 (quicksort de doble pivote
+sin estabilidad para primitivos contra TimSort estable para objetos, precondición de
+`binarySearch`, retorno `-(punto de inserción) - 1`, `copyOf` y `copyOfRange` con relleno,
+`deepEquals` y `deepToString`, `asList` como vista de tamaño fijo con `set` permitido y `add`
+rechazado), JLS 10.2 y 10.5 (covarianza, longitud inmutable, `ArrayStoreException`), JLS 10.3 y
+10.4 (`length` como campo final y `ArrayIndexOutOfBoundsException`), JLS 8.4.1 (los parámetros
+se inicializan con el valor de los argumentos), JLS 8.4.2 (la firma es nombre más tipos de
+parámetro) y la estructura de §15.12.2 en tres fases (estricta, laxa con boxing, aridad
+variable) con la elección del método más específico. Dos matices que quedaron en el texto: una
+sobrecarga `int...` choca con su `int[]` porque la firma es la misma, y `f(null)` entre dos
+tipos referencia es ambiguo en compilación.
+
+L31: Evidencia del tercer lote de F4.1: `d3423c0` (`feat(content): add the arrays chapter`) y
+`065d121` (`feat(content): add the methods chapter`), cada uno con su línea en `src/urls.json`.
+Build limpio con 10 rutas: auditoría con 180 clases en markup contra 191 reglas, 161 enlaces
+internos, un solo `h1` por página, cero guiones largos o medios. Contrato de URLs 10 de 10, sin
+redirects. Revisión del HTML generado: un `figure` por capítulo con sus valores de diagrama
+(`notas[i]`, `length - 1`, `ArrayIndexOutOfBoundsException` en Arrays; los tres nodos del paso
+por valor en Métodos) y los bloques de código con su barra. Con esto F4.1 queda cerrado: los
+ocho capítulos del índice están publicados y el siguiente corte es F4.2 (anotaciones `since` y
+la sección de novedades por versión).

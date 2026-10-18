@@ -132,8 +132,9 @@ Una URL publicada no cambia nunca en silencio (S12). `src/urls.json` es el manif
 lo que está publicado y se commitea junto con el contenido: es el contrato, no una
 lista informativa.
 
-- Página nueva: `pnpm urls:update` añade las rutas que se generan y todavía no están en
-  el manifiesto, en orden. Es lo único que hay que hacer aparte de escribir el capítulo.
+- Página nueva con `pnpm new:doc`: el scaffolder registra la URL en el manifiesto, así que
+  no hay que hacer nada más. Si creas el archivo a mano, `pnpm urls:update` añade las rutas
+  que se generan y todavía no están en el manifiesto, en orden.
 - Página renombrada o movida: añade la línea del redirect en `public/_redirects`
   (`/ruta-vieja/ /ruta-nueva/ 301`) y registra el slug nuevo con `pnpm urls:update`. El
   slug sale del path, así que mover el archivo cambia la URL: sin el redirect el build
@@ -146,6 +147,32 @@ generada que no está registrada.
 
 Una entrada del manifiesto no se borra a mano salvo que el redirect ya cubra esa URL:
 la lista es el registro de lo que alguna vez se publicó.
+
+## Diagramas en un capítulo
+
+Un diagrama se escribe como HTML dentro del Markdown, sin componentes ni imports (S4). La
+figura tiene que entenderse sin JavaScript y sin animación:
+
+```html
+<figure class="diagram diagram--framed">
+  <p class="diagram__label">El viaje de un programa</p>
+  <ol class="diagram__flow">
+    <li class="diagram__node">
+      <span class="diagram__index">01</span>
+      <span class="diagram__title">Fuente</span>
+      <code class="diagram__value">HolaMundo.java</code>
+      <span class="diagram__hint">Lo que escribes.</span>
+    </li>
+  </ol>
+  <figcaption class="diagram__caption">Qué muestra la figura.</figcaption>
+</figure>
+```
+
+Las clases viven en `src/styles/diagram.css`. El marco es opcional (`diagram--framed`), la
+fila se apila en pantallas pequeñas y los conectores los dibuja el CSS. La auditoría del
+build rechaza cualquier clase de diagrama que no tenga regla. Las tres visualizaciones de
+la portada mantienen sus piezas interactivas propias: estas primitivas son para figuras
+estáticas de capítulo.
 
 ## Callouts y bloques de código
 
