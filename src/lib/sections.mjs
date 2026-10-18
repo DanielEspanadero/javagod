@@ -45,6 +45,11 @@ export const sections = [
     title: 'Concurrencia',
     summary: 'Hilos, estados, locks y memoria compartida, sin humo.',
   },
+  {
+    id: 'novedades',
+    title: 'Novedades por versión',
+    summary: 'Qué trajo cada LTS, qué se quedó por el camino y qué cambió sin avisar.',
+  },
 ];
 
 /** Section ids in registry order, for the content schema and ordering. */
