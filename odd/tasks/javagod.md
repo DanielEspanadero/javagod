@@ -110,6 +110,9 @@ this, and the build does not depend on it.
 | F5.1 | S3 | search | Búsqueda estática (Pagefind) con interfaz propia | hecho |
 | F5.2 | S7 | docs | Página 404 propia | hecho |
 | F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | pendiente |
+| F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | hecho |
+| F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | hecho |
+| F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | hecho |
 
 ## Releases
 
@@ -540,3 +543,126 @@ guardado, `java-17` leído como 11 avisa con las dos versiones y leído como 17 
 árbol está completo con las 13 entradas y sin control. Build, auditoría y contrato de URLs
 limpios. El caso (b) de L37 usaba `control-de-flujo` como ejemplo de capítulo oculto y ya no
 aplica: ahora se ocultan solo las páginas de `novedades` posteriores a la versión elegida.
+
+L42: "si, mergea a develop, borra landing-stance y continuamos". `feature/release-and-search`
+mergeada a `develop` con `--no-ff` (`b457aab`) y borrada en local y en remoto; `feature/landing-stance`
+borrada en local y en remoto. `develop` queda publicado (`b457aab`) y el remoto ya solo tiene
+`main` y `develop`. Rama nueva para contenido: `feature/oop-chapters` desde `develop`. Índice
+propuesto para Orientación a Objetos (pendiente de revisión del dueño, como en L24): 1 Clases y
+objetos; 2 Encapsulamiento y modificadores de acceso; 3 Herencia y polimorfismo; 4 Interfaces y
+abstracción; 5 Object y sus contratos; 6 Records y clases de datos. Primer lote: capítulos 1 y 2.
+
+L43: F6.1 cerrada en dos unidades, `3968dac` (`feat(content): add the clases y objetos chapter`)
+y `d19d389` (`feat(content): add the encapsulamiento chapter`). Los dos capítulos se escribieron
+en paralelo con dos `gentle-ai-worker` de superficie disjunta, con el encargo de leer
+`arrays.md` como plantilla y `diagram.css` como único catálogo de clases; ninguno tocó el build
+ni `src/urls.json`, y el manifiesto lo registré yo con `pnpm urls:update` después. Revisión del
+padre antes de commitear, cuatro correcciones en el capítulo 1 y dos en el 2. En `clases-y-objetos`:
+una línea que explica por qué la primera `Cuenta` no lleva modificadores y remite a
+encapsulamiento; el mensaje de `NullPointerException` que nombra el acceso es de Java 14 (JEP
+358), no de "JVM modernas"; `finalize` es obsoleto desde Java 9, con su versión; y una clase cuyo
+inicializador estático falla queda errónea, así que los usos siguientes dan
+`NoClassDefFoundError`, no solo "inservible". En `encapsulamiento`: el ejemplo de `protected`
+recibía `Producto` sin calificar, que no compila por un motivo distinto del que enseña la sección
+(ahora es `tienda.Producto`), y `vender` daba el mensaje de "no hay stock" también para unidades
+no positivas (ahora son dos comprobaciones con su mensaje). Datos verificados: `Math.addExact` es
+de Java 8, `List.copyOf` de Java 10 (contrastado con el `@since` del JDK), la regla de `protected`
+es la de JLS 6.6.2, y el recolector se explicó por alcanzabilidad, sin afirmar cuándo recoge.
+Verificado con Playwright sobre `dist`: (1) `clases-y-objetos` con un `h1`, chip "Desde Java 8",
+migas "Orientación a Objetos", nueve apartados, diagrama de tres nodos, TOC de nueve entradas,
+pager anterior Métodos y siguiente Encapsulamiento; (2) `encapsulamiento` con nueve apartados,
+diagrama de cuatro nodos, enlace a variables y constantes resuelto y pager que llega a Java 8;
+(3) el índice lista Objetos con sus dos capítulos y sin marca de pendiente, y el árbol enlaza
+los dos; (4) con `?v=8` los dos aplican sin aviso y la búsqueda devuelve encapsulamiento al
+buscar "invariante"; (5) a 390 px los cuatro nodos del diagrama entran apilados y la tabla de
+accesos vive en su contenedor con scroll, sin desborde del documento. Dos expectativas de la
+prueba estaban mal y se corrigieron: el árbol no existe en el índice (hay que mirarlo en un
+capítulo) y la tabla ancha se mide por su contenedor, no por la tabla. Build completo: 18
+páginas, 15 indexadas, auditoría limpia con 209 clases en markup contra 356 reglas y 17 de 17
+URL en el contrato. El índice propuesto en L42 sigue pendiente de revisión del dueño: los
+capítulos 3 a 6 (herencia y polimorfismo, interfaces, Object, records) son F6.2 y F6.3.
+
+L44: Renombrada la sección a "Programación Orientada a Objetos" a propuesta del dueño ("Me
+gustaría cambiar el título por Programación Orientada a Objetos (POO) que yo creo que es más
+estandard, no crees?"). Decisión: el título lleva el nombre completo y las siglas quedan fuera
+del rótulo, porque se repite en cuatro superficies (árbol, migas, índice y pager) y alargaría una
+etiqueta que hoy es corta como sus vecinas; el acrónimo vive en el resumen de la sección y en el
+primer párrafo del capítulo 1, que es lo que además indexa Pagefind. El id sigue siendo `objetos`
+y las URLs no cambian (S12). De paso, la portada dejó de duplicar los cuatro títulos de sección:
+`src/pages/index.astro` los lee del registro con `findSection` (S9), y eso corrigió un
+"Collections & Streams" que no coincidía con el registro. Verificado en navegador a 1440 y 390:
+el título completo entra en el rail partido en dos líneas sin desbordar, migas y eyebrow lo
+llevan, el índice y la portada muestran el nombre del registro, y buscar "POO" llega al capítulo
+de clases y objetos. Build y auditoría limpios.
+
+L45: Dos arreglos pedidos por el dueño en la misma tanda ("Justo te iba a decir eso, lo veía
+incompleto. Que se entienda que las propiedades de la POO son esas", y después "Me gusta tu
+planteamiento, adelante"). Primero, la portada dejó de mentir: cada paso del recorrido saca su
+chip del contenido con `groupDocs(await getDocs())`, así que una sección con capítulos enlaza a
+su ancla del índice (`/docs/#objetos`) y dice cuántos son, y una sin capítulos mantiene "En
+preparación". Los dos estados además intercambiaron el énfasis: el disponible lleva el acento
+relleno y el pendiente queda con borde discontinuo y texto apagado, porque antes destacaba más lo
+que falta que lo que se puede leer. Segundo, los cuatro pilares quedaron explícitos: el resumen
+de la sección en el registro dice "Clases y objetos, y los cuatro pilares: encapsulamiento,
+herencia, polimorfismo y abstracción", y el capítulo 1 cierra con un apartado "Los cuatro
+pilares" con un diagrama de cuatro nodos que da a cada propiedad su palabra clave (`private`,
+`extends`, `@Override`, `interface`) y el capítulo donde se cubre, más la aclaración de que los
+records no son un quinto pilar. Verificado con Playwright en 1440 y 390: la portada muestra "8
+capítulos" y "2 capítulos" como enlaces y deja "En preparación" en Collections y Concurrencia, el
+chip lleva a `/docs/#objetos` y deja a la vista las dos tarjetas, el capítulo 1 tiene el apartado
+en el TOC, el diagrama con las cuatro propiedades y el resumen del índice nombra los pilares, sin
+desbordes en ninguno de los dos anchos. Build y auditoría limpios (18 páginas, 408 enlaces
+internos, 210 clases en markup contra 357 reglas).
+
+L46: F6.2 cerrada en dos unidades, `ab022e5` (`feat(content): add the inheritance and polymorphism
+chapter`) y `75b5942` (`feat(content): add the interfaces and abstraction chapter`). Otra vez dos
+`gentle-ai-worker` en paralelo con superficies disjuntas y el mismo encargo de plantilla; el de
+interfaces leyó el de herencia en cuanto apareció para no solapar el `instanceof` ni el despacho
+polimórfico, y así quedó. Revisión del padre: el capítulo 3 no necesitó correcciones de datos (el
+`super()` implícito, la ocultación de campos frente a la sobrescritura de métodos, los `static`
+que se eligen por el tipo declarado, el orden de inicialización cuando el constructor del padre
+llama a un método sobrescrito y la regla covariante del retorno están bien); en el 4 corregí dos
+cosas: `@FunctionalInterface` admite los métodos públicos de `Object` además de ignorar `default`
+y `static`, y el ejemplo llamaba `cuenta.titular()`, un accesor que el capítulo 1 no exponía, así
+que lo agregué a la `Cuenta` final del capítulo 1 (viaja en el commit del capítulo 4 por ser su
+motivo). Datos contrastados de la tanda: `default`, `static` en interfaces y las lambdas son Java
+8; los métodos `private` de interfaz son Java 9; el patrón de `instanceof` es Java 16; las reglas
+de conflicto de `default` son las tres de JLS 9.4.1.3 (gana la clase, después la interfaz más
+específica, y sin ganador hay que sobrescribir) y `Interfaz.super.metodo()` solo vale con una
+superinterfaz directa. Verificado con Playwright sobre `dist`: los cuatro capítulos de la sección
+renderizan con un `h1`, chip "Desde Java 8", sus diagramas (2 figuras y 3 nodos en el primero,
+una de 4 y una de 3 en los demás) y TOC de 9 a 10 entradas; el pager encadena Métodos, clases,
+encapsulamiento, herencia, interfaces y Java 8; a 390 px ningún capítulo desborda, todos los nodos
+de diagrama entran y las tablas quedan dentro de su contenedor con scroll; árbol, índice y portada
+coinciden en los cuatro capítulos (el chip de la portada ya dice "4 capítulos"); con `?v=8` no se
+oculta ninguno y la búsqueda encuentra herencia al buscar "polimorfismo". Build completo: 20
+páginas, 17 indexadas, 19 de 19 URL en el contrato, auditoría limpia con 210 clases en markup
+contra 357 reglas. La sección queda a falta de F6.3 (Object y records).
+
+L47: F6.3 cerrada en dos unidades, `bcb181c` (`feat(content): add the Object contracts chapter`) y
+`2bab9f9` (`feat(content): add the records chapter`), con la sección Programación Orientada a
+Objetos completa en seis capítulos. Tercer lote de dos `gentle-ai-worker` en paralelo: el de records
+leyó el de Object en cuanto apareció y aplicó sus reglas en vez de repetirlas. Revisión del padre:
+en el capítulo 5 solo cayeron dos retoques de redacción (la celda de `hashCode` decía "un entero que
+decide la implementación", que se lee al revés, y "de ella dependen `instanceof` y los `cast`"
+insinuaba una llamada que no existe); el resto verificado: plegado de literales de `String`, la
+asimetría `teclado.equals(rebajado)` / `rebajado.equals(teclado)` por el `instanceof` de cada clase,
+las tres reglas de `hashCode`, el `HashMap` que guarda la clave y devuelve `null` con `size 1`, el
+`equals` paso a paso y el intercambio `getClass()` / `instanceof` sin veredicto. En el capítulo 6
+corregí la costura de apertura: la excepción del capítulo 2 es el campo público, así que el texto
+ahora dice que la alternativa sin trampa pide cinco piezas. Decisión de datos de este lote, la
+primera vez que la restricción de LTS muerde: records son estándar desde Java 16, pero `since` solo
+admite LTS, así que la página declara `since: 17` y el cuerpo lo explica (vista previa en 14 y 15,
+estándar en 16, esta página desde 17). Es exactamente lo que pide la regla corregida en F4.4: el
+valor describe el tema y la lectura va por LTS. El worker comprobó los ejemplos con `javac 21.0.10`
+en `/tmp`: imprimen lo que dicen sus comentarios, y los rechazos (`private int z` en un record,
+`extends` en la cabecera, `this.x = x` en el constructor compacto) dan los errores esperados.
+Verificado con Playwright sobre `dist`: (1) los seis capítulos renderizan con un `h1`, chip correcto
+(Java 8 en los cinco primeros, Java 17 en records), sus diagramas y TOC de 9 a 11 entradas, y el
+pager encadena Métodos, clases, encapsulamiento, herencia, interfaces, Object, records y Java 8;
+(2) el modo de lectura esconde records con `?v=8` y `?v=11`, lo muestra desde 17, y deja Object
+visible en las cinco versiones; (3) `/docs/objetos/records/?v=8` avisa con las dos versiones y
+ofrece el salto a 17; (4) a 390 px los dos capítulos nuevos no desbordan, con diagramas y tablas
+contenidos; (5) árbol, índice (6 tarjetas), chip de la portada ("6 capítulos") y búsqueda coinciden,
+y "constructor compacto" encuentra records. Build: 22 páginas, 19 indexadas, 21 de 21 URL en el
+contrato, auditoría limpia con 210 clases en markup contra 357 reglas.

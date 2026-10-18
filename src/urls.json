@@ -14,6 +14,12 @@
     "/docs/novedades/java-17/",
     "/docs/novedades/java-21/",
     "/docs/novedades/java-25/",
-    "/docs/novedades/java-8/"
+    "/docs/novedades/java-8/",
+    "/docs/objetos/clases-y-objetos/",
+    "/docs/objetos/encapsulamiento/",
+    "/docs/objetos/herencia-y-polimorfismo/",
+    "/docs/objetos/interfaces-y-abstraccion/",
+    "/docs/objetos/object-y-contratos/",
+    "/docs/objetos/records/"
   ]
 }

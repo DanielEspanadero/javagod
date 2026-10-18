@@ -32,8 +32,9 @@ export const sections = [
   },
   {
     id: 'objetos',
-    title: 'Orientación a Objetos',
-    summary: 'Clases, encapsulamiento, herencia e interfaces, con la memoria a la vista.',
+    title: 'Programación Orientada a Objetos',
+    summary:
+      'Clases y objetos, y los cuatro pilares: encapsulamiento, herencia, polimorfismo y abstracción, con la memoria a la vista.',
   },
   {
     id: 'colecciones',
