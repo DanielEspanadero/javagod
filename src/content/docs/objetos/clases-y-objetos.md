@@ -233,6 +233,47 @@ ignoran, así que un programa que depende de ella está mal diseñado.
 > `finalize` está obsoleto desde Java 9 y no es un lugar donde cerrar ficheros ni conexiones. Para
 > recursos hay `close()` y `try` con recursos; no existe un "cuando muera el objeto" fiable.
 
+## Los cuatro pilares
+
+La programación orientada a objetos se apoya en cuatro propiedades, y esta sección las recorre en
+este orden. Cada una tiene su palabra clave, que es lo que vas a escribir en el código:
+
+<figure class="diagram diagram--framed">
+  <p class="diagram__label">Las cuatro propiedades y su palabra clave</p>
+  <ol class="diagram__flow">
+    <li class="diagram__node">
+      <span class="diagram__index">02</span>
+      <span class="diagram__title">Encapsulamiento</span>
+      <code class="diagram__value">private</code>
+      <span class="diagram__hint">Capítulo 2: el estado se protege dentro de la clase.</span>
+    </li>
+    <li class="diagram__node">
+      <span class="diagram__index">03</span>
+      <span class="diagram__title">Herencia</span>
+      <code class="diagram__value">extends</code>
+      <span class="diagram__hint">Capítulo 3: una clase parte de lo que ya hace otra.</span>
+    </li>
+    <li class="diagram__node">
+      <span class="diagram__index">03</span>
+      <span class="diagram__title">Polimorfismo</span>
+      <code class="diagram__value">@Override</code>
+      <span class="diagram__hint">Capítulo 3: la misma llamada ejecuta el comportamiento del objeto real.</span>
+    </li>
+    <li class="diagram__node">
+      <span class="diagram__index">04</span>
+      <span class="diagram__title">Abstracción</span>
+      <code class="diagram__value">interface</code>
+      <span class="diagram__hint">Capítulo 4: programas contra el contrato, no contra la implementación.</span>
+    </li>
+  </ol>
+  <figcaption class="diagram__caption">Cuatro propiedades, cuatro palabras clave. Todo lo demás de la POO en Java son herramientas para servirlas.</figcaption>
+</figure>
+
+Las cuatro van juntas y se explican mal por separado: sin encapsulamiento la herencia expone
+estado que nadie debería tocar, y sin abstracción el polimorfismo se queda en un `if` disfrazado.
+Los records del capítulo 6 no añaden una quinta: son una forma compacta de escribir el contenedor
+de valores, y heredan `equals`, `hashCode` y `toString` del lenguaje.
+
 ## Qué te llevas
 
 - La clase es la plantilla; el objeto es la instancia, con su propio estado.
