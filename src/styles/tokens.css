@@ -7,18 +7,18 @@
 :root {
   color-scheme: light dark;
 
-  /* Brand — coffee orange */
+  /* Brand: coffee orange */
   --brand: light-dark(#b0521d, #ff9f63);
   --brand-accent: light-dark(#8e3c12, #ffc79a);
   --brand-soft: light-dark(#fbeadb, #2a1a11);
   --on-brand: light-dark(#fffaf6, #1d1209);
 
-  /* Surfaces — three levels */
+  /* Surfaces: three levels */
   --surface: light-dark(#fdfbf9, #0f0d0c);
   --surface-raised: light-dark(#ffffff, #171413);
   --surface-sunken: light-dark(#f5efea, #0a0807);
 
-  /* Text — three levels */
+  /* Text: three levels */
   --text: light-dark(#1b1512, #f6f0ea);
   --text-muted: light-dark(#584a42, #c2b5aa);
   --text-faint: light-dark(#7b6b61, #948779);
@@ -92,7 +92,7 @@
   --z-header: 100;
   --z-overlay: 200;
 
-  /* Motion — interface feedback */
+  /* Motion: interface feedback */
   --ease-out: cubic-bezier(0.16, 0.84, 0.44, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --duration-fast: 120ms;
@@ -100,7 +100,7 @@
   --duration-slow: 420ms;
   --duration-loop: 9s;
 
-  /* Motion — narrative entrance and scroll reveals (S14) */
+  /* Motion: narrative entrance and scroll reveals (S14) */
   --ease-enter: cubic-bezier(0.22, 0.75, 0.24, 1);
   --duration-enter: 380ms;
   --duration-reveal: 520ms;
@@ -111,13 +111,13 @@
   --stagger-enter: 55ms;
   --stagger-reveal: 90ms;
 
-  /* Interactive layers — hero pointer spotlight (fine pointers only) */
+  /* Interactive layers: hero pointer spotlight (fine pointers only) */
   --pointer-x: 50%;
   --pointer-y: 30%;
   --pointer-spot: 30rem;
   --pointer-strength: 20%;
 
-  /* Terminal REPL — bounded transcript */
+  /* Terminal REPL: bounded transcript */
   --terminal-body-min: 12rem;
   --terminal-transcript-max: 16rem;
 

@@ -3,8 +3,8 @@
 //
 // The markup ships the boot transcript as real text, so without JavaScript the
 // card is still a complete illustration of the three beats (compile, run,
-// print). With JavaScript the same transcript — read back from the DOM, never
-// duplicated — is typed line by line and the card becomes a whitelisted REPL:
+// print). With JavaScript the same transcript, read back from the DOM and never
+// duplicated, is typed line by line and the card becomes a whitelisted REPL:
 // it answers a fixed set of commands and never runs real code.
 type BootLine = {
   kind: 'command' | 'output';
@@ -57,7 +57,7 @@ const hints = ['help', 'javac', 'java', 'javap -c'];
         type="text"
         name="comando"
         aria-label="Comando"
-        placeholder="Escribe un comando y presiona Enter"
+        placeholder="Escribe un comando y pulsa Enter"
         autocomplete="off"
         autocapitalize="off"
         autocorrect="off"

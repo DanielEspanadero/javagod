@@ -31,7 +31,8 @@ its own ("una vista inicial muy pulida y que la gente alucine al verla").
 S7: No dead links, ever. Nothing in the UI may point to a route that does not
 exist. Placeholders are labeled as such, not rendered as broken links.
 
-S8: Content language is neutral Spanish (no voseo, no regionalisms). Code,
+S8: Content language is Spain Spanish (español de España), addressed as `tú`.
+No voseo, no Latin American regionalisms, no neutral-Spanish hedging. Code,
 identifiers, and repository artifacts are English. Java baseline: 21 LTS, with
 notes where 17 or 25 LTS differ.
 
@@ -63,6 +64,10 @@ attention; loops that only add noise are rejected. No animation library: CSS
 transitions plus one IntersectionObserver controller. Everything must be
 disabled under `prefers-reduced-motion: reduce` and the page must remain
 complete and readable with animation off.
+
+S15: No em dashes (`\u2014`) or en dashes (`\u2013`) anywhere: not in published
+copy, not in source comments. The build fails if one appears in any generated
+page, naming the page and the surrounding text.
 
 ## Tasks
 
@@ -120,3 +125,6 @@ L7: Hmmm, me gusta el concepto, pero no me gusta como queda para la página
 inicial. También quiero que está página esté en Español neutro. Me gustaría que
 la página tuviera más animación cuando un usuario entra en ella y cuando haga
 scroll. No se si entiendes el concepto de lo que quiero?
+
+L8: Ahora sí, me va gustando más. Adapta los textos al español de españa y evita
+el uso de guiones. No quiero ver ni uno en toda la web: —

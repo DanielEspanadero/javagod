@@ -194,6 +194,29 @@ async function main() {
     fail(`Clase sin regla CSS: .${className} (usada en ${[...where].join(', ')})`);
   }
 
+  /* ---- Check 4: forbidden punctuation in published pages ---- */
+  const FORBIDDEN = [
+    { char: '\u2014', name: 'guion largo (em dash)' },
+    { char: '\u2013', name: 'guion medio (en dash)' },
+  ];
+
+  let forbiddenOk = true;
+
+  for (const page of pages) {
+    for (const { char, name } of FORBIDDEN) {
+      const at = page.markup.indexOf(char);
+      if (at === -1) continue;
+
+      forbiddenOk = false;
+      const context = page.markup.slice(Math.max(0, at - 40), at + 40).replace(/\s+/g, ' ');
+      fail(`Carácter no permitido en ${page.name}: ${name} en "…${context}…"`);
+    }
+  }
+
+  if (forbiddenOk) {
+    note('Puntuación: sin guiones largos ni medios en el HTML publicado');
+  }
+
   note(`Páginas generadas: ${pages.length}`);
   note(`Hojas de estilo: ${cssFiles.length} archivo(s) + bloques <style> inline`);
   note(`Links internos verificados: ${checkedLinks}`);

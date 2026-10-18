@@ -79,7 +79,7 @@ body {
   color: inherit;
 }
 
-/* Theme toggle — icon visibility is pure CSS, keyed off [data-theme]. */
+/* Theme toggle: icon visibility is pure CSS, keyed off [data-theme]. */
 .theme-toggle {
   display: inline-flex;
   align-items: center;
