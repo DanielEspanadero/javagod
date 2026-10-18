@@ -100,7 +100,7 @@ this, and the build does not depend on it.
 | F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | hecho |
 | F2.5 | S12 | docs | Slug and redirect contract | hecho |
 | F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | hecho |
-| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | en curso |
+| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | hecho |
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | pendiente |
 | F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | pendiente |
 | F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects | pendiente |
@@ -352,3 +352,27 @@ botón escribe `pre.textContent`, que son los saltos del texto y no el layout. A
 regla para cada clase del markup, y aquí se cumplen las dos cosas con la misma declaración.
 Lección para cualquier bloque de código futuro: en `<pre>` el salto de línea del HTML es el
 salto de línea de la pantalla, y añadir `display: block` a los spans lo duplica.
+
+L30: Tercer y último lote de F4.1: capítulos 7 (Arrays) y 8 (Métodos), con lo que el índice
+acordado en L24 queda completo. Igual que el lote anterior, escritos en línea. Datos
+contrastados antes de escribir: API de `java.util.Arrays` de Java 21 (quicksort de doble pivote
+sin estabilidad para primitivos contra TimSort estable para objetos, precondición de
+`binarySearch`, retorno `-(punto de inserción) - 1`, `copyOf` y `copyOfRange` con relleno,
+`deepEquals` y `deepToString`, `asList` como vista de tamaño fijo con `set` permitido y `add`
+rechazado), JLS 10.2 y 10.5 (covarianza, longitud inmutable, `ArrayStoreException`), JLS 10.3 y
+10.4 (`length` como campo final y `ArrayIndexOutOfBoundsException`), JLS 8.4.1 (los parámetros
+se inicializan con el valor de los argumentos), JLS 8.4.2 (la firma es nombre más tipos de
+parámetro) y la estructura de §15.12.2 en tres fases (estricta, laxa con boxing, aridad
+variable) con la elección del método más específico. Dos matices que quedaron en el texto: una
+sobrecarga `int...` choca con su `int[]` porque la firma es la misma, y `f(null)` entre dos
+tipos referencia es ambiguo en compilación.
+
+L31: Evidencia del tercer lote de F4.1: `d3423c0` (`feat(content): add the arrays chapter`) y
+`065d121` (`feat(content): add the methods chapter`), cada uno con su línea en `src/urls.json`.
+Build limpio con 10 rutas: auditoría con 180 clases en markup contra 191 reglas, 161 enlaces
+internos, un solo `h1` por página, cero guiones largos o medios. Contrato de URLs 10 de 10, sin
+redirects. Revisión del HTML generado: un `figure` por capítulo con sus valores de diagrama
+(`notas[i]`, `length - 1`, `ArrayIndexOutOfBoundsException` en Arrays; los tres nodos del paso
+por valor en Métodos) y los bloques de código con su barra. Con esto F4.1 queda cerrado: los
+ocho capítulos del índice están publicados y el siguiente corte es F4.2 (anotaciones `since` y
+la sección de novedades por versión).
