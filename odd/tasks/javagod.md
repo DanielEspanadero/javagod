@@ -110,7 +110,7 @@ this, and the build does not depend on it.
 | F5.1 | S3 | search | Búsqueda estática (Pagefind) con interfaz propia | hecho |
 | F5.2 | S7 | docs | Página 404 propia | hecho |
 | F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | pendiente |
-| F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | en curso |
+| F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | hecho |
 | F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | pendiente |
 | F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | pendiente |
 
@@ -551,3 +551,33 @@ borrada en local y en remoto. `develop` queda publicado (`b457aab`) y el remoto 
 propuesto para Orientación a Objetos (pendiente de revisión del dueño, como en L24): 1 Clases y
 objetos; 2 Encapsulamiento y modificadores de acceso; 3 Herencia y polimorfismo; 4 Interfaces y
 abstracción; 5 Object y sus contratos; 6 Records y clases de datos. Primer lote: capítulos 1 y 2.
+
+L43: F6.1 cerrada en dos unidades, `3968dac` (`feat(content): add the clases y objetos chapter`)
+y `d19d389` (`feat(content): add the encapsulamiento chapter`). Los dos capítulos se escribieron
+en paralelo con dos `gentle-ai-worker` de superficie disjunta, con el encargo de leer
+`arrays.md` como plantilla y `diagram.css` como único catálogo de clases; ninguno tocó el build
+ni `src/urls.json`, y el manifiesto lo registré yo con `pnpm urls:update` después. Revisión del
+padre antes de commitear, cuatro correcciones en el capítulo 1 y dos en el 2. En `clases-y-objetos`:
+una línea que explica por qué la primera `Cuenta` no lleva modificadores y remite a
+encapsulamiento; el mensaje de `NullPointerException` que nombra el acceso es de Java 14 (JEP
+358), no de "JVM modernas"; `finalize` es obsoleto desde Java 9, con su versión; y una clase cuyo
+inicializador estático falla queda errónea, así que los usos siguientes dan
+`NoClassDefFoundError`, no solo "inservible". En `encapsulamiento`: el ejemplo de `protected`
+recibía `Producto` sin calificar, que no compila por un motivo distinto del que enseña la sección
+(ahora es `tienda.Producto`), y `vender` daba el mensaje de "no hay stock" también para unidades
+no positivas (ahora son dos comprobaciones con su mensaje). Datos verificados: `Math.addExact` es
+de Java 8, `List.copyOf` de Java 10 (contrastado con el `@since` del JDK), la regla de `protected`
+es la de JLS 6.6.2, y el recolector se explicó por alcanzabilidad, sin afirmar cuándo recoge.
+Verificado con Playwright sobre `dist`: (1) `clases-y-objetos` con un `h1`, chip "Desde Java 8",
+migas "Orientación a Objetos", nueve apartados, diagrama de tres nodos, TOC de nueve entradas,
+pager anterior Métodos y siguiente Encapsulamiento; (2) `encapsulamiento` con nueve apartados,
+diagrama de cuatro nodos, enlace a variables y constantes resuelto y pager que llega a Java 8;
+(3) el índice lista Objetos con sus dos capítulos y sin marca de pendiente, y el árbol enlaza
+los dos; (4) con `?v=8` los dos aplican sin aviso y la búsqueda devuelve encapsulamiento al
+buscar "invariante"; (5) a 390 px los cuatro nodos del diagrama entran apilados y la tabla de
+accesos vive en su contenedor con scroll, sin desborde del documento. Dos expectativas de la
+prueba estaban mal y se corrigieron: el árbol no existe en el índice (hay que mirarlo en un
+capítulo) y la tabla ancha se mide por su contenedor, no por la tabla. Build completo: 18
+páginas, 15 indexadas, auditoría limpia con 209 clases en markup contra 356 reglas y 17 de 17
+URL en el contrato. El índice propuesto en L42 sigue pendiente de revisión del dueño: los
+capítulos 3 a 6 (herencia y polimorfismo, interfaces, Object, records) son F6.2 y F6.3.
