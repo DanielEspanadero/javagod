@@ -194,6 +194,36 @@ Cualquier superficie nueva que dependa de la versión necesita dos cosas y nada 
 `data-version-item` en el elemento que se oculta. El script recorre esos atributos. El
 artículo de la página lleva `data-version-page` con su rango, que es lo que lee el aviso.
 
+## Búsqueda
+
+La búsqueda es estática y la sirve Pagefind: el build indexa `dist/` y el navegador solo
+descarga el índice cuando alguien abre el diálogo. El control vive en
+`src/components/SiteSearch.astro`, en la cabecera, y se abre con el botón o con `Cmd`/`Ctrl`
++ `K`. La barra `/` no está tomada porque el terminal de la portada la usa para escribir.
+
+- `pnpm build` corre `astro build`, después `pagefind --site dist --force-language es` y
+después la auditoría y el contrato de URLs, en ese orden. Para reindexar sin recompilar:
+`pnpm search:index`.
+- Solo se indexa lo que lleve `data-pagefind-body`, y hoy eso es el artículo de un capítulo.
+  La portada, el índice de documentación y el 404 quedan fuera: la búsqueda responde con
+  capítulos, no con el escaparate del sitio.
+- El chrome del capítulo se marca con `data-pagefind-ignore` (migas, aviso de versión y
+  pager) para que el índice no mezcle navegación con prosa. El `h1` lleva
+  `data-pagefind-meta="title"`, así el resultado se llama como el capítulo y no como el
+  `<title>` completo.
+- En `pnpm dev` no hay índice, porque Pagefind trabaja sobre `dist/`. El diálogo lo dice
+  ("La búsqueda no está disponible en este build") en vez de fallar en silencio; para
+  probarla de verdad, `pnpm build && pnpm preview`.
+- Sin JavaScript el control no se ve, igual que el selector de versión: la página sigue
+  navegable por el árbol, el índice y el pager.
+
+## Página 404
+
+`src/pages/404.astro` genera `dist/404.html`, que es lo que Cloudflare Pages sirve para
+cualquier ruta que no exista. Es una página normal del sitio: misma cabecera, mismo pie, un
+solo `h1` y solo enlaces que resuelven (S7). Si algún día el sitio pasa a tener rutas
+retiradas, el aviso de esa página es lo que ve quien llega por un enlace viejo.
+
 ## Diagramas en un capítulo
 
 Un diagrama se escribe como HTML dentro del Markdown, sin componentes ni imports (S4). La
@@ -262,7 +292,9 @@ Configuración en Cloudflare Pages:
 pnpm build
 ```
 
-El build corre `astro build`, después `scripts/audit.mjs` y por último
+El build corre `astro build`, después `pagefind`, después `scripts/audit.mjs` y por último
 `scripts/check-urls.mjs`. La auditoría falla si hay enlaces internos rotos, más de un
 `h1` por página, clases sin regla CSS o guiones largos. La comprobación de URLs falla si
 el contrato de `src/urls.json` y `public/_redirects` no cuadra con lo que se generó.
+Si el paso de Pagefind falla, el build se detiene ahí: una búsqueda sin índice sería un
+control que promete lo que no hace.
