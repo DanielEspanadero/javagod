@@ -163,6 +163,37 @@ generada que no está registrada.
 Una entrada del manifiesto no se borra a mano salvo que el redirect ya cubra esa URL:
 la lista es el registro de lo que alguna vez se publicó.
 
+## Modo de lectura por versión
+
+El selector que vive encima del árbol del rail (y encima de las tarjetas del índice) fija la
+versión LTS con la que se lee el sitio. No crea un árbol de URLs paralelo: es un modo, y la
+página canónica sigue siendo una sola (S16).
+
+- Los valores son `all`, `8`, `11`, `17`, `21` y `25`, y salen de `src/lib/versions.mjs`.
+  El servidor y el navegador leen el mismo registro, así que una LTS nueva se declara una vez
+  y aparece sola en el selector.
+- El estado vive en `javagod:version` de `localStorage`. Un `?v=` en la URL gana al valor
+  guardado, y al cambiar el selector la URL se actualiza con `history.replaceState` para que
+  el enlace compartido lleve el modo. Un valor desconocido o mal formado (`?v=99`, `?v=abc`)
+  cae en `all`, y un `localStorage` bloqueado no rompe nada.
+- La regla de filtrado está en un solo sitio: `appliesTo` de
+  `src/components/VersionSwitcher.astro`. Un capítulo aplica cuando su `since` es menor o
+  igual que la versión elegida y no tiene `hasta`, o cuando su `hasta` es mayor o igual.
+  `all` aplica a todo.
+- Lo que no aplica se oculta con el atributo `hidden`, nunca borrando nodos: sin JavaScript
+  la página está completa y todos los enlaces existen. Se ocultan las entradas del árbol, las
+  tarjetas del índice y los enlaces anterior y siguiente, y el pager entero si se quedan los
+  dos ocultos.
+- Si el capítulo abierto no aplica, se sigue viendo y aparece un aviso sobre la prosa con su
+  versión, la que estás leyendo y un botón para cambiar a la del capítulo.
+- El selector solo se ve cuando hay JavaScript: sin él no puede filtrar, así que prometería
+  algo que no hace.
+
+Cualquier superficie nueva que dependa de la versión necesita dos cosas y nada más:
+`data-since` (y `data-hasta` cuando el capítulo lo declare) tomados del frontmatter, y
+`data-version-item` en el elemento que se oculta. El script recorre esos atributos. El
+artículo de la página lleva `data-version-page` con su rango, que es lo que lee el aviso.
+
 ## Diagramas en un capítulo
 
 Un diagrama se escribe como HTML dentro del Markdown, sin componentes ni imports (S4). La
