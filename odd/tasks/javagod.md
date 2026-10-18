@@ -376,3 +376,30 @@ redirects. Revisión del HTML generado: un `figure` por capítulo con sus valore
 por valor en Métodos) y los bloques de código con su barra. Con esto F4.1 queda cerrado: los
 ocho capítulos del índice están publicados y el siguiente corte es F4.2 (anotaciones `since` y
 la sección de novedades por versión).
+
+L32: El dueño pidió mirar el sitio con Playwright en vez de suponer. Monté un runner en
+`/tmp/javagod-visual` (playwright 1.64.1 con el Chromium que ya estaba en la caché de
+`ms-playwright`) con tres scripts: capturas de las 10 rutas en claro y oscuro y a 1440, 1024 y
+390, un auditor que mide `scrollWidth` contra `clientWidth`, rectángulos que pasan el borde
+teniendo en cuenta el contenedor con scroll, líneas por bloque de código y desbordes de los
+nodos de diagrama, y un localizador del culpable que nombra el contenedor de cada hoja que se
+sale. Resultado de la primera pasada: confirmado que el arreglo de L29 deja un renglón por
+línea (relación 1.0 en las 10 rutas y los tres tamaños), y aparecieron dos bugs reales que
+nadie había reportado. (1) Las tablas de Markdown no pueden encogerse por debajo de su
+contenido y no tenían contenedor con scroll: en móvil `tipos-primitivos` medía 525 de ancho
+contra 390, `strings` 508 y `hola-mundo` 398, o sea scroll horizontal de página entera. (2)
+`.diagram__value` era un chip que se ajustaba al contenido, así que `ArrayIndexOutOfBoundsException`
+medía 302 dentro de un nodo de 220 y en `arrays` a 1024 la página entera medía 1059.
+
+L33: Arreglo en `caf253c` (`fix(docs): keep wide tables and long diagram values inside the
+viewport`). Tablas: `src/lib/rehype-table-wrap.ts` envuelve cada `<table>` en `div.table-wrap`
+en el build, registrado como último plugin de rehype, con `overflow-x: auto` y anillo de foco
+porque el contenedor lleva `tabindex="0"` (un contenedor con scroll tiene que poder moverse sin
+ratón); en pantallas estrechas la tabla usa `inline-size: max(100%, 40rem)` para que las
+columnas no se aplasten y las filas no queden medio vacías, que era el primer intento y se veía
+peor. Diagramas: `.diagram__value` gana `max-inline-size: 100%` y `overflow-wrap: anywhere`, así
+que el chip conserva su marco y parte el identificador. Verificado con el auditor tras build en
+frío: cero desbordes de página en las 10 rutas por 1440, 1024 y 390, y las dos líneas que
+quedaban eran falsos positivos del propio auditor (los nodos non-últimos sumaban exactamente 16
+píxeles por la flecha decorativa posicionada fuera de la caja, y las tablas ya estaban dentro de
+su contenedor). El auditor quedó corregido para medir desborde horizontal real: cero problemas.
