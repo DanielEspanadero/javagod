@@ -594,3 +594,22 @@ y las URLs no cambian (S12). De paso, la portada dejó de duplicar los cuatro t�
 el título completo entra en el rail partido en dos líneas sin desbordar, migas y eyebrow lo
 llevan, el índice y la portada muestran el nombre del registro, y buscar "POO" llega al capítulo
 de clases y objetos. Build y auditoría limpios.
+
+L45: Dos arreglos pedidos por el dueño en la misma tanda ("Justo te iba a decir eso, lo veía
+incompleto. Que se entienda que las propiedades de la POO son esas", y después "Me gusta tu
+planteamiento, adelante"). Primero, la portada dejó de mentir: cada paso del recorrido saca su
+chip del contenido con `groupDocs(await getDocs())`, así que una sección con capítulos enlaza a
+su ancla del índice (`/docs/#objetos`) y dice cuántos son, y una sin capítulos mantiene "En
+preparación". Los dos estados además intercambiaron el énfasis: el disponible lleva el acento
+relleno y el pendiente queda con borde discontinuo y texto apagado, porque antes destacaba más lo
+que falta que lo que se puede leer. Segundo, los cuatro pilares quedaron explícitos: el resumen
+de la sección en el registro dice "Clases y objetos, y los cuatro pilares: encapsulamiento,
+herencia, polimorfismo y abstracción", y el capítulo 1 cierra con un apartado "Los cuatro
+pilares" con un diagrama de cuatro nodos que da a cada propiedad su palabra clave (`private`,
+`extends`, `@Override`, `interface`) y el capítulo donde se cubre, más la aclaración de que los
+records no son un quinto pilar. Verificado con Playwright en 1440 y 390: la portada muestra "8
+capítulos" y "2 capítulos" como enlaces y deja "En preparación" en Collections y Concurrencia, el
+chip lleva a `/docs/#objetos` y deja a la vista las dos tarjetas, el capítulo 1 tiene el apartado
+en el TOC, el diagrama con las cuatro propiedades y el resumen del índice nombra los pilares, sin
+desbordes en ninguno de los dos anchos. Build y auditoría limpios (18 páginas, 408 enlaces
+internos, 210 clases en markup contra 357 reglas).
