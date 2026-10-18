@@ -126,6 +126,27 @@ pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos" \
 
 Después de generarlo, escribe el contenido y comprueba con `pnpm build`.
 
+### URLs y redirects
+
+Una URL publicada no cambia nunca en silencio (S12). `src/urls.json` es el manifiesto de
+lo que está publicado y se commitea junto con el contenido: es el contrato, no una
+lista informativa.
+
+- Página nueva: `pnpm urls:update` añade las rutas que se generan y todavía no están en
+  el manifiesto, en orden. Es lo único que hay que hacer aparte de escribir el capítulo.
+- Página renombrada o movida: añade la línea del redirect en `public/_redirects`
+  (`/ruta-vieja/ /ruta-nueva/ 301`) y registra el slug nuevo con `pnpm urls:update`. El
+  slug sale del path, así que mover el archivo cambia la URL: sin el redirect el build
+  falla nombrando la URL desaparecida, y el manifiesto conserva la vieja como cubierta.
+
+`pnpm build` corre `scripts/check-urls.mjs` después de la auditoría y falla si el
+manifiesto nombra una URL que ya no se genera y ningún redirect la cubre, si un
+redirect pisa una ruta viva, si el destino de un redirect no existe o si hay una ruta
+generada que no está registrada.
+
+Una entrada del manifiesto no se borra a mano salvo que el redirect ya cubra esa URL:
+la lista es el registro de lo que alguna vez se publicó.
+
 ## Callouts y bloques de código
 
 Un callout es una cita con un marcador en la primera línea. Los marcadores válidos son
@@ -168,4 +189,7 @@ Configuración en Cloudflare Pages:
 pnpm build
 ```
 
-El build corre `astro build` y después `scripts/audit.mjs`. La auditoría falla si hay enlaces internos rotos, más de un `h1` por página, clases sin regla CSS o guiones largos.
+El build corre `astro build`, después `scripts/audit.mjs` y por último
+`scripts/check-urls.mjs`. La auditoría falla si hay enlaces internos rotos, más de un
+`h1` por página, clases sin regla CSS o guiones largos. La comprobación de URLs falla si
+el contrato de `src/urls.json` y `public/_redirects` no cuadra con lo que se generó.

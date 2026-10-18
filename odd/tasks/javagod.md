@@ -98,7 +98,7 @@ this, and the build does not depend on it.
 | F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) | hecho |
 | F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | hecho |
 | F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | hecho |
-| F2.5 | S12 | docs | Slug and redirect contract | pendiente |
+| F2.5 | S12 | docs | Slug and redirect contract | hecho |
 | F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | pendiente |
 | F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | pendiente |
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | pendiente |
@@ -238,3 +238,17 @@ conserva su contenedor. Se añade "Volver arriba" al TOC, como en la referencia.
 selector de versión queda pendiente de decisión: es S16 y necesita los metadatos
 `since` de F4.2 más el filtrado de F4.3, y un selector que no filtra sería un control
 que promete lo que no hace.
+
+L20: F2.5 cerrada. `src/urls.json` es el manifiesto commiteado de lo publicado y
+`scripts/check-urls.mjs` (sin dependencias) lo contrasta con `dist` y con
+`public/_redirects` en cada build. Cuatro reglas, un mensaje cada una: una URL del
+manifiesto que ya no se genera ni está cubierta por un redirect, un redirect que pisa
+una ruta viva, un destino que no existe y una ruta generada sin registrar. `pnpm
+urls:update` solo agrega: nunca borra una entrada y sigue validando después de
+escribir, así que un renombrado no se tapa registrando el slug nuevo. Un renombrado
+necesita las dos cosas: la línea 301 en `public/_redirects` y el slug nuevo registrado.
+Decisión: una entrada del manifiesto se conserva mientras un redirect la cubra, porque
+el archivo es el registro de lo que alguna vez se publicó, no la lista de lo que se
+publica hoy. Verificado en scratch aislado: capítulo nuevo sin registrar falla, update
+lo registra, renombrado falla, redirect más update quedan limpios, destino roto y
+origen tapado fallan.

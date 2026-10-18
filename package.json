@@ -9,9 +9,10 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/audit.mjs",
+    "build": "astro build && node scripts/audit.mjs && node scripts/check-urls.mjs",
     "audit": "node scripts/audit.mjs",
     "new:doc": "node scripts/new-doc.mjs",
+    "urls:update": "node scripts/check-urls.mjs --update",
     "preview": "astro preview",
     "astro": "astro",
     "prepare": "git config core.hooksPath .githooks || true"
