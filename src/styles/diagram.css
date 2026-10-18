@@ -72,6 +72,10 @@
 
 .diagram__value {
   justify-self: start;
+  /* Long identifiers must not widen the node: the chip keeps its frame and
+     breaks the token instead of spilling past the box. */
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
   margin-block-start: var(--space-3xs);
   padding-block: 0.1em;
   padding-inline: 0.35em;

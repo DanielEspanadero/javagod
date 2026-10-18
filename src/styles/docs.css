@@ -453,12 +453,34 @@
   border-radius: 0;
 }
 
+/* A Markdown table cannot shrink below its content width, so on a narrow
+   screen it used to widen the page. The wrapper scrolls instead, and the
+   radius matches the table frame so its corners keep their curve while the
+   table moves under the wrapper edge. */
+.table-wrap {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+}
+
+.table-wrap:focus-visible {
+  outline: var(--hairline) solid var(--brand);
+  outline-offset: 2px;
+}
+
 .prose table {
   inline-size: 100%;
   border-collapse: collapse;
   border: var(--hairline) solid var(--line);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
+}
+
+/* On a narrow screen the wrapper scrolls instead of squeezing the columns: the
+   table keeps a readable measure, so the prose column of a table does not wrap
+   into eight lines and leave the row half empty. */
+.prose .table-wrap > table {
+  inline-size: max(100%, 40rem);
 }
 
 .prose thead {
