@@ -3,7 +3,7 @@ title: 'Variables y constantes'
 description: 'Declarar, nombrar y acotar valores: ámbito, final, var y la trampa de comparar cajas con dos iguales.'
 section: fundamentos
 order: 3
-since: 11
+since: 8
 ---
 
 ## Un nombre con tipo
@@ -42,7 +42,7 @@ compilador lo rechaza antes de ejecutar nada.
 `final` impide reasignar la referencia. No impide modificar el objeto al que apunta:
 
 ```java
-final var nombres = new ArrayList<String>();
+final List<String> nombres = new ArrayList<String>();
 nombres.add("Ada");              // permitido
 nombres = new ArrayList<>();     // no compila: la referencia es final
 ```

@@ -3,7 +3,7 @@ title: 'Strings'
 description: 'Inmutabilidad, pool y los métodos que de verdad usas cada día.'
 section: fundamentos
 order: 6
-since: 17
+since: 8
 ---
 
 ## Un objeto que se comporta casi como un primitivo
@@ -177,7 +177,7 @@ que es lo que casi siempre buscas al filtrar texto.
 | Recortar | `strip()` | Espacios Unicode; `trim()` solo quita `<= U+0020` |
 | Comprobar vacío | `isEmpty()`, `isBlank()` | `isBlank` desde Java 11, y acepta solo espacios |
 | Repetir | `repeat(n)` | Desde Java 11, negativo lanza excepción |
-| Recorrer líneas | `lines()` | `Stream<String>` sin terminadores |
+| Recorrer líneas | `lines()` | `Stream<String>` sin terminadores; desde Java 11 |
 
 Dos trampas de esta tabla. `split` toma una expresión regular, así que `"a.b".split(".")`
 devuelve un array vacío: el punto coincide con todo. Hay que escribir `split("\\.")`. Y
@@ -220,7 +220,7 @@ String desdeCero = String.format("%,d", 1_234_567);
 
 `parseInt` no admite espacios ni separadores de miles y lanza `NumberFormatException` si el
 texto no es un número. Para entrada de usuario, `Integer.parseInt(entrada.strip())` dentro de
-un `try` es el patrón.
+un `try` es el patrón; antes de Java 11, `entrada.trim()`.
 
 > [!AVISO]
 > `String.format` y `formatted` usan el `Locale` por defecto. `String.format("%.1f", 3.14)` da

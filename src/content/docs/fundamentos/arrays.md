@@ -3,7 +3,7 @@ title: 'Arrays'
 description: 'Tamaño fijo, arrays de arrays y las utilidades de java.util.Arrays.'
 section: fundamentos
 order: 7
-since: 11
+since: 8
 ---
 
 ## Un array es un objeto de tamaño fijo
