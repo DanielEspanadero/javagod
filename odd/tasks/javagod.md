@@ -174,3 +174,11 @@ orden, salto de sección, prev/next y estado activo comprobados con un capítulo
 extra en una copia de scratch, no en el repo. Las cuatro reglas de contenido
 fallan el build con un mensaje útil: orden duplicado, sección fuera del registro,
 frontmatter incompleto y clave desconocida (`slug`).
+
+L14: Evidencia de F2.1 y F2.2 en `d56b1d8` (`feat(docs): add documentation shell
+with derived navigation and first chapter`). El corte de entrega de esta unidad
+son 1106 líneas autoradas, de las que 499 son `src/styles/docs.css`: es la
+primera hoja de estilos del área de documentación, no hay lógica duplicada. Si
+la unidad se publica como PR, conviene partirla en dos cortes revisables:
+plataforma de contenido (schema, registro, `src/lib`, capítulo) y capa de
+presentación (layout, rutas, estilos). El siguiente corte arranca en F2.3.
