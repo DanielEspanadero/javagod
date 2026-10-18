@@ -111,7 +111,7 @@ this, and the build does not depend on it.
 | F5.2 | S7 | docs | Página 404 propia | hecho |
 | F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | pendiente |
 | F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | hecho |
-| F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | en curso |
+| F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | hecho |
 | F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | pendiente |
 
 ## Releases
@@ -613,3 +613,28 @@ chip lleva a `/docs/#objetos` y deja a la vista las dos tarjetas, el capítulo 1
 en el TOC, el diagrama con las cuatro propiedades y el resumen del índice nombra los pilares, sin
 desbordes en ninguno de los dos anchos. Build y auditoría limpios (18 páginas, 408 enlaces
 internos, 210 clases en markup contra 357 reglas).
+
+L46: F6.2 cerrada en dos unidades, `ab022e5` (`feat(content): add the inheritance and polymorphism
+chapter`) y `75b5942` (`feat(content): add the interfaces and abstraction chapter`). Otra vez dos
+`gentle-ai-worker` en paralelo con superficies disjuntas y el mismo encargo de plantilla; el de
+interfaces leyó el de herencia en cuanto apareció para no solapar el `instanceof` ni el despacho
+polimórfico, y así quedó. Revisión del padre: el capítulo 3 no necesitó correcciones de datos (el
+`super()` implícito, la ocultación de campos frente a la sobrescritura de métodos, los `static`
+que se eligen por el tipo declarado, el orden de inicialización cuando el constructor del padre
+llama a un método sobrescrito y la regla covariante del retorno están bien); en el 4 corregí dos
+cosas: `@FunctionalInterface` admite los métodos públicos de `Object` además de ignorar `default`
+y `static`, y el ejemplo llamaba `cuenta.titular()`, un accesor que el capítulo 1 no exponía, así
+que lo agregué a la `Cuenta` final del capítulo 1 (viaja en el commit del capítulo 4 por ser su
+motivo). Datos contrastados de la tanda: `default`, `static` en interfaces y las lambdas son Java
+8; los métodos `private` de interfaz son Java 9; el patrón de `instanceof` es Java 16; las reglas
+de conflicto de `default` son las tres de JLS 9.4.1.3 (gana la clase, después la interfaz más
+específica, y sin ganador hay que sobrescribir) y `Interfaz.super.metodo()` solo vale con una
+superinterfaz directa. Verificado con Playwright sobre `dist`: los cuatro capítulos de la sección
+renderizan con un `h1`, chip "Desde Java 8", sus diagramas (2 figuras y 3 nodos en el primero,
+una de 4 y una de 3 en los demás) y TOC de 9 a 10 entradas; el pager encadena Métodos, clases,
+encapsulamiento, herencia, interfaces y Java 8; a 390 px ningún capítulo desborda, todos los nodos
+de diagrama entran y las tablas quedan dentro de su contenedor con scroll; árbol, índice y portada
+coinciden en los cuatro capítulos (el chip de la portada ya dice "4 capítulos"); con `?v=8` no se
+oculta ninguno y la búsqueda encuentra herencia al buscar "polimorfismo". Build completo: 20
+páginas, 17 indexadas, 19 de 19 URL en el contrato, auditoría limpia con 210 clases en markup
+contra 357 reglas. La sección queda a falta de F6.3 (Object y records).
