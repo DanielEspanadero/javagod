@@ -12,6 +12,37 @@ herramientas. `javac` traduce el texto que escribes a bytecode. `java` ejecuta e
 bytecode sobre la máquina virtual. Ninguna hace el trabajo de la otra, y casi
 todos los errores de principiante salen de confundirlas.
 
+<figure class="diagram diagram--framed">
+  <p class="diagram__label">El viaje de un programa</p>
+  <ol class="diagram__flow">
+    <li class="diagram__node">
+      <span class="diagram__index">01</span>
+      <span class="diagram__title">Fuente</span>
+      <code class="diagram__value">HolaMundo.java</code>
+      <span class="diagram__hint">Lo que escribes.</span>
+    </li>
+    <li class="diagram__node">
+      <span class="diagram__index">02</span>
+      <span class="diagram__title">Compilador</span>
+      <code class="diagram__value">javac</code>
+      <span class="diagram__hint">Revisa tipos y traduce.</span>
+    </li>
+    <li class="diagram__node">
+      <span class="diagram__index">03</span>
+      <span class="diagram__title">Bytecode</span>
+      <code class="diagram__value">HolaMundo.class</code>
+      <span class="diagram__hint">Portable, no es código máquina.</span>
+    </li>
+    <li class="diagram__node">
+      <span class="diagram__index">04</span>
+      <span class="diagram__title">Ejecución</span>
+      <code class="diagram__value">java HolaMundo</code>
+      <span class="diagram__hint">La JVM lo carga y lo ejecuta.</span>
+    </li>
+  </ol>
+  <figcaption class="diagram__caption">Cuatro pasos y dos herramientas: <code>javac</code> en el segundo, <code>java</code> en el cuarto.</figcaption>
+</figure>
+
 | Qué hace | `javac` | `java` |
 | --- | --- | --- |
 | Recibe | `HolaMundo.java` | `HolaMundo.class` |

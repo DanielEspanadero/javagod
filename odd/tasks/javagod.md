@@ -99,7 +99,7 @@ this, and the build does not depend on it.
 | F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | hecho |
 | F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | hecho |
 | F2.5 | S12 | docs | Slug and redirect contract | hecho |
-| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | pendiente |
+| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | hecho |
 | F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | pendiente |
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | pendiente |
 | F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | pendiente |
@@ -252,6 +252,19 @@ el archivo es el registro de lo que alguna vez se publicó, no la lista de lo qu
 publica hoy. Verificado en scratch aislado: capítulo nuevo sin registrar falla, update
 lo registra, renombrado falla, redirect más update quedan limpios, destino roto y
 origen tapado fallan.
+
+L22: F3.1 cerrada con una desviación deliberada del enunciado. Las tres visualizaciones de
+la portada (terminal, pipeline con disclosures, simulador de hilos) comparten solo la
+etiqueta mono y el conector: son piezas interactivas a medida, ya aprobadas, y forzarlas
+dentro de una primitiva habría cambiado su aspecto sin ganar nada. Lo que sí faltaba era
+un contrato para figuras estáticas de capítulo, así que `src/styles/diagram.css` define
+las clases (`diagram`, `diagram--framed`, `diagram__label`, `diagram__flow`,
+`diagram__node`, `diagram__index`, `diagram__title`, `diagram__value`, `diagram__hint`,
+`diagram__caption`) y el capítulo de Hola, mundo estrena el primer diagrama real escrito
+como HTML dentro del Markdown. Decisión: las primitivas son CSS y no componentes porque los
+capítulos son `.md` y no pueden importar componentes; si más adelante hacen falta
+componentes con lógica, el punto de decisión es F4.1 y pasa por MDX. Unificar la portada
+con las primitivas queda fuera de alcance y sería un cambio visual aparte.
 
 L21: Evidencia de F2.5 en `dae5b2e` (`feat(tooling): enforce the published URL
 contract on every build`), 347 líneas autoradas. Verificación propia en scratch con
