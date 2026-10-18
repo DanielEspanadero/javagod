@@ -99,6 +99,13 @@ explicit "antes / desde" snippets, never as separate pages.
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section |
 | F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects |
 
+## Releases
+
+| Tag | Contenido |
+| --- | --- |
+| `v0.1.0` | Base desplegable: portada con terminal, pipeline explorable, rail progresivo, simulador de hilos y auditoría de build |
+| `v0.2.0` | Puente terminal-pipeline, tira de postura, cierre a ancho completo, atajo `/`, git flow, entornos y cabeceras de Cloudflare |
+
 ## Log
 
 L1: (recovered from the deleted task file) Crear un proyecto desde cero llamado

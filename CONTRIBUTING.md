@@ -14,6 +14,7 @@ Reglas que no se negocian:
 
 - Nadie commitea directo en `main`. Lo que llega a `main` es producción.
 - Toda feature sale de `develop` y vuelve a `develop` con `--no-ff`.
+- Los commits `docs` y `chore` que no tocan código publicado pueden ir directo a `develop`.
 - Un hotfix sale de `main`, vuelve a `main` y también a `develop`.
 - Las ramas se borran después del merge.
 
