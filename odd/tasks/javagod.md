@@ -216,3 +216,13 @@ TypeScript, `src/lib/sections.ts` pasa a `src/lib/sections.mjs` con tipos en JSD
 emitía `pager__link--previous` sin regla CSS, algo que la auditoría no veía porque
 con un solo capítulo no se renderiza; se añadió la regla y verifiqué la auditoría
 con dos capítulos en scratch. Siguiente corte: F3.1 (primitivas de diagrama).
+
+L18: Evidencia de F2.4 en `1766eb2` (`feat(tooling): add the docs scaffolder and
+the section path rule`), 294 líneas autoradas. Verificación propia en scratch con
+`cacheDir` aislado: scaffold de `fundamentos/tipos-primitivos` con `order 2`, build de
+4 páginas y auditoría limpia, prev/next renderizados en ambos sentidos y el capítulo
+nuevo enlazado desde `/docs/`; los cinco rechazos del scaffolder con exit 1 y sin
+archivos de más; y el build roto al mover el capítulo a otra carpeta conservando su
+`section`. Las carpetas de scratch y las cachés movidas por el worker quedaron
+borradas. Corrección a L17: el siguiente corte es F2.5 (contrato de slugs y
+redirects), no F3.1.
