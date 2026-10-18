@@ -1,0 +1,27 @@
+---
+// Not-found page (S7). Cloudflare Pages serves `/404.html` for any route it
+// cannot resolve, so this file is what a mistyped or retired URL lands on: it
+// says what happened and offers the two routes that can never be wrong. Every
+// link resolves, like everywhere else.
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Esta página no existe · JavaGod"
+  description="La dirección que buscas no está publicada. Vuelve al inicio o entra por la documentación."
+>
+  <section class="not-found">
+    <div class="container">
+      <p class="not-found__eyebrow">Error 404</p>
+      <h1 class="not-found__title">Esta página no existe</h1>
+      <p class="not-found__text">
+        La dirección que has pedido no está publicada. Puede que el capítulo se haya movido: las
+        rutas viejas redirigen a la nueva, así que un enlace roto aquí es un enlace que nunca
+        existió.
+      </p>
+      <div class="not-found__actions">
+        <a class="not-found__link not-found__link--primary" href="/docs/">Ir a la documentación</a>
+        <a class="not-found__link" href="/">Volver al inicio</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
