@@ -40,6 +40,7 @@ const path: PathStep[] = [
   description="Aprende Java viendo qué pasa adentro: diagramas animados, bytecode paso a paso y la máquina virtual explicada en español neutro. Java 21 LTS."
 >
   <section class="hero">
+    <div class="hero__spotlight" aria-hidden="true" data-spotlight></div>
     <div class="container hero__inner">
       <div class="hero__copy">
         <p class="hero__eyebrow" style="--i: 0">Documentación visual de Java</p>
@@ -78,6 +79,9 @@ const path: PathStep[] = [
         <h2 class="section__title">Del código a la pantalla, sin cajas negras</h2>
         <p class="section__lead">
           Cinco etapas. La misma ruta que sigue tu programa cada vez que ejecutas java.
+        </p>
+        <p class="section__note" data-reveal>
+          Abre una etapa para ver el detalle. También funciona con Enter.
         </p>
       </div>
       <JvmPipeline />
@@ -122,7 +126,8 @@ const path: PathStep[] = [
         <h2 class="section__title">Los estados de un hilo, paso a paso</h2>
         <p class="section__lead">
           El ciclo de vida de un Thread en Java 21. El diagrama se entiende completo sin
-          JavaScript; con el botón puedes recorrerlo estado por estado.
+          JavaScript; con los controles puedes probar cada transición y ver cuáles acepta la
+          máquina virtual.
         </p>
       </div>
       <div class="showcase" data-reveal style="--i: 1">

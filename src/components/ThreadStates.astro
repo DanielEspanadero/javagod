@@ -1,10 +1,16 @@
 ---
-// Showcase piece: the lifecycle of a thread.
-// Static markup is a complete, readable chain; JavaScript only adds a stepper
-// that walks the states and narrates the active one.
+// Showcase piece: the lifecycle of a thread, as a small simulator.
+// The five cards are complete, readable content on their own; JavaScript adds
+// the controls that move the thread between states and narrates every attempt.
+// A transition that is not legal stays clickable so it can explain itself.
 type ThreadState = {
   name: string;
   hint: string;
+};
+
+type Action = {
+  id: string;
+  label: string;
 };
 
 const states: ThreadState[] = [
@@ -14,12 +20,26 @@ const states: ThreadState[] = [
   { name: 'WAITING', hint: 'Hizo wait() o join(): aguarda que otro hilo lo despierte.' },
   { name: 'TERMINATED', hint: 'El run() volvió o lanzó una excepción: ya no vuelve.' },
 ];
+
+const actions: Action[] = [
+  { id: 'start', label: 'start()' },
+  { id: 'sleep', label: 'sleep(1000)' },
+  { id: 'synchronized', label: 'synchronized' },
+  { id: 'notify', label: 'notify()' },
+  { id: 'terminate', label: 'terminar' },
+  { id: 'reset', label: 'reiniciar' },
+];
 ---
 <div class="states" data-thread-states>
   <ol class="states__list">
     {
       states.map((state, index) => (
-        <li class="states__item" data-state-item data-state={state.name} aria-current={index === 0 ? 'step' : undefined}>
+        <li
+          class="states__item"
+          data-state-item
+          data-state={state.name}
+          aria-current={index === 0 ? 'step' : undefined}
+        >
           <span class="states__name">{state.name}</span>
           <span class="states__hint">{state.hint}</span>
           {index < states.length - 1 && (
@@ -33,49 +53,143 @@ const states: ThreadState[] = [
   </ol>
 
   <div class="states__panel">
-    <div class="states__live" aria-live="polite">
-      <p class="states__counter" data-role="counter">Estado 1 de {states.length}</p>
-      <p class="states__narration" data-role="narration">
-        {states[0].name}: {states[0].hint}
-      </p>
-    </div>
+    <p class="states__counter" data-role="counter">Estado actual: NEW</p>
+    <p class="states__narration" data-role="narration" aria-live="polite">
+      NEW: {states[0].hint}
+    </p>
     <div class="states__controls">
-      <button class="btn btn--ghost" type="button" data-role="advance">Avanzar</button>
+      {
+        actions.map((action) => (
+          <button
+            class="btn btn--ghost states__control"
+            type="button"
+            data-action={action.id}
+            aria-disabled="true"
+          >
+            {action.label}
+          </button>
+        ))
+      }
     </div>
   </div>
 </div>
 
 <script>
-  const root = document.querySelector('[data-thread-states]');
+  type StateName = 'NEW' | 'RUNNABLE' | 'BLOCKED' | 'WAITING' | 'TERMINATED';
+
+  type Transition = {
+    from: StateName;
+    to: StateName;
+    message: string;
+  };
+
+  /* The only legal edges of the diagram. Anything else is rejected. */
+  const TRANSITIONS: Record<string, Transition> = {
+    start: {
+      from: 'NEW',
+      to: 'RUNNABLE',
+      message: 'start() mueve el hilo de NEW a RUNNABLE: ya compite por la CPU.',
+    },
+    sleep: {
+      from: 'RUNNABLE',
+      to: 'WAITING',
+      message: 'sleep(1000) deja el hilo en WAITING durante un segundo.',
+    },
+    synchronized: {
+      from: 'RUNNABLE',
+      to: 'BLOCKED',
+      message: 'synchronized deja el hilo en BLOCKED esperando el monitor de otro hilo.',
+    },
+    notify: {
+      from: 'WAITING',
+      to: 'RUNNABLE',
+      message: 'notify() devuelve el hilo de WAITING a RUNNABLE.',
+    },
+    terminate: {
+      from: 'RUNNABLE',
+      to: 'TERMINATED',
+      message: 'El hilo pasó de RUNNABLE a TERMINATED: ya no vuelve.',
+    },
+  };
+
+  const TERMINATED_MESSAGE = 'El hilo ya terminó. Reinicia para empezar de nuevo.';
+
+  const root = document.querySelector<HTMLElement>('[data-thread-states]');
 
   if (root) {
-    const items = Array.from(root.querySelectorAll('[data-state-item]'));
-    const counter = root.querySelector('[data-role="counter"]');
-    const narration = root.querySelector('[data-role="narration"]');
-    const button = root.querySelector('[data-role="advance"]');
-    let index = 0;
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-state-item]'));
+    const counter = root.querySelector<HTMLElement>('[data-role="counter"]');
+    const narration = root.querySelector<HTMLElement>('[data-role="narration"]');
+    const controls = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-action]'));
+
+    let current: StateName = 'NEW';
+
+    /* Why an action cannot run from the current state, in neutral Spanish. */
+    const rejection = (action: string): string => {
+      if (current === 'TERMINATED') return TERMINATED_MESSAGE;
+
+      switch (action) {
+        case 'start':
+          return 'El hilo ya arrancó. Reinicia para volver a NEW.';
+        case 'sleep':
+          return 'Para dormir un hilo primero tiene que estar corriendo.';
+        case 'synchronized':
+          return 'Para esperar un monitor, el hilo primero tiene que estar corriendo.';
+        case 'notify':
+          return `Solo un hilo en WAITING recibe notify(). Ahora está en ${current}.`;
+        case 'terminate':
+          return `Solo un hilo en RUNNABLE puede terminar. Ahora está en ${current}.`;
+        default:
+          return `Esa transición no existe desde ${current}.`;
+      }
+    };
 
     const render = () => {
-      items.forEach((item, position) => {
-        if (position === index) {
+      for (const item of items) {
+        if (item.dataset.state === current) {
           item.setAttribute('aria-current', 'step');
         } else {
           item.removeAttribute('aria-current');
         }
-      });
+      }
 
-      const active = items[index];
-      const name = active.dataset.state || '';
-      const hint = active.querySelector('.states__hint')?.textContent?.trim() || '';
+      for (const control of controls) {
+        const action = control.dataset.action ?? '';
+        const legal = action === 'reset' || TRANSITIONS[action]?.from === current;
+        control.setAttribute('aria-disabled', String(!legal));
+      }
 
-      if (counter) counter.textContent = `Estado ${index + 1} de ${items.length}`;
-      if (narration) narration.textContent = `${name}: ${hint}`;
-      if (button) button.textContent = index === items.length - 1 ? 'Reiniciar' : 'Avanzar';
+      if (counter) counter.textContent = `Estado actual: ${current}`;
     };
 
-    button?.addEventListener('click', () => {
-      index = (index + 1) % items.length;
-      render();
-    });
+    const narrate = (message: string) => {
+      if (narration) narration.textContent = message;
+    };
+
+    for (const control of controls) {
+      control.addEventListener('click', () => {
+        const action = control.dataset.action ?? '';
+
+        if (action === 'reset') {
+          current = 'NEW';
+          render();
+          narrate('Hilo reiniciado en NEW: todavía nadie llamó a start().');
+          return;
+        }
+
+        const transition = TRANSITIONS[action];
+
+        if (!transition || transition.from !== current) {
+          narrate(rejection(action));
+          return;
+        }
+
+        current = transition.to;
+        render();
+        narrate(transition.message);
+      });
+    }
+
+    render();
   }
 </script>

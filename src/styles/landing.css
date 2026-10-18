@@ -1,10 +1,11 @@
 /*
  * Landing page — direction "consola viva".
  *
- * Asymmetric split hero, scroll-sequenced JVM pipeline, progressive rail and
- * the thread-state showcase. Every animation is CSS driven by the single
- * reveal controller in BaseLayout.astro, and every value comes from
- * tokens.css. The reduced-motion block at the end leaves the page complete.
+ * Asymmetric split hero with a playable terminal, scroll-sequenced JVM
+ * pipeline that opens stage by stage, progressive rail and the thread-state
+ * simulator. Every animation is CSS driven by the single controller in
+ * BaseLayout.astro, and every value comes from tokens.css. The reduced-motion
+ * block at the end leaves the page complete and readable.
  */
 
 /* ---------------------------------------------------------------- Hero --- */
@@ -57,6 +58,31 @@
   background-size: var(--grid-cell) var(--grid-cell);
   -webkit-mask-image: radial-gradient(72% 70% at 50% 0%, var(--mask-solid) 4%, var(--mask-clear) 76%);
   mask-image: radial-gradient(72% 70% at 50% 0%, var(--mask-solid) 4%, var(--mask-clear) 76%);
+}
+
+/*
+ * Ambient depth: a soft glow that follows a fine pointer. The controller in
+ * BaseLayout writes --pointer-x / --pointer-y once per animation frame; the
+ * layer is purely decorative, so it never takes an event.
+ */
+.hero__spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle var(--pointer-spot) at var(--pointer-x) var(--pointer-y),
+    color-mix(in srgb, var(--brand) var(--pointer-strength), transparent),
+    transparent 72%
+  );
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+@media (pointer: fine) {
+  .hero__spotlight.is-lit {
+    opacity: 1;
+  }
 }
 
 .hero__inner {
@@ -239,21 +265,46 @@
 
 .terminal__body {
   display: grid;
-  gap: var(--space-xs);
-  min-block-size: 10.5rem;
+  align-content: start;
+  gap: var(--space-sm);
+  min-block-size: var(--terminal-body-min);
   padding: var(--space-lg);
 }
 
-.terminal__line {
+/* Bounded transcript: the card never grows past this box, it scrolls. */
+.terminal__transcript {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3xs);
+  max-block-size: var(--terminal-transcript-max);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+  list-style: none;
+}
+
+.terminal__entry {
   display: flex;
   align-items: baseline;
   gap: var(--space-xs);
+  min-inline-size: 0;
   font-size: var(--text-sm);
-  line-height: 1.8;
+  line-height: 1.7;
 }
 
-.terminal__line--output {
-  margin-block-start: var(--space-2xs);
+.terminal__entry--command,
+.terminal__entry--output {
+  color: var(--text);
+}
+
+.terminal__entry--output .terminal__output {
+  color: var(--brand);
+  font-weight: 500;
+}
+
+.terminal__entry--error .terminal__output {
+  color: var(--brand-accent);
 }
 
 .terminal__prompt {
@@ -263,173 +314,44 @@
 
 .terminal__code,
 .terminal__output {
-  display: inline-block;
-  white-space: nowrap;
-  clip-path: inset(0 0 0 0);
+  min-inline-size: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font-size: var(--text-sm);
 }
 
-.terminal__line--output .terminal__output {
-  color: var(--brand);
-  font-weight: 500;
+/*
+ * `javap -c` keeps its own shape: monospace and every newline intact. Long
+ * instruction lines wrap like a real terminal instead of being clipped.
+ */
+.terminal__block {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  margin: 0;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-xs);
+  background-color: var(--surface-sunken);
+  font-size: var(--text-2xs);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-.terminal__cursor {
+.terminal__block-code {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Typing caret for the boot transcript. */
+.terminal__caret {
   display: inline-block;
   inline-size: 0.5em;
-  block-size: 1.05em;
-  margin-inline-start: var(--space-3xs);
+  block-size: 1em;
   border-radius: var(--radius-xs);
   background-color: var(--brand);
-  vertical-align: -0.16em;
-}
-
-.terminal__footer {
-  padding-block: var(--space-2xs);
-  padding-inline: var(--space-md);
-  border-block-start: var(--hairline) solid var(--line);
-  background-color: var(--surface-sunken);
-  color: var(--text-faint);
-  font-size: var(--text-2xs);
-  letter-spacing: 0.06em;
-}
-
-/*
- * Typewriter loop. One shared cycle keeps the three lines in sync; each line
- * owns the percentages for its own beat. `clip-path` only repaints, so the
- * card never changes size while it types.
- */
-.terminal__prompt,
-.terminal__code,
-.terminal__output {
-  animation-duration: var(--terminal-cycle);
-  animation-timing-function: steps(24, end);
-  animation-iteration-count: infinite;
-  animation-fill-mode: both;
-  animation-delay: var(--terminal-start);
-}
-
-.terminal__line--compile .terminal__prompt {
-  animation-name: terminal-prompt-compile;
-}
-
-.terminal__line--compile .terminal__code {
-  animation-name: terminal-code-compile;
-}
-
-.terminal__line--run .terminal__prompt {
-  animation-name: terminal-prompt-run;
-}
-
-.terminal__line--run .terminal__code {
-  animation-name: terminal-code-run;
-}
-
-.terminal__output {
-  animation-name: terminal-output;
-}
-
-.terminal__cursor {
-  animation:
-    terminal-cursor-gate var(--terminal-cycle) linear infinite both,
-    terminal-blink var(--duration-blink) steps(1, end) infinite;
-  animation-delay: var(--terminal-start);
-}
-
-@keyframes terminal-prompt-compile {
-  0%,
-  3% {
-    opacity: 0;
-  }
-
-  4%,
-  96% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes terminal-code-compile {
-  0%,
-  6% {
-    clip-path: inset(0 100% 0 0);
-  }
-
-  26%,
-  96% {
-    clip-path: inset(0 0 0 0);
-  }
-
-  100% {
-    clip-path: inset(0 100% 0 0);
-  }
-}
-
-@keyframes terminal-prompt-run {
-  0%,
-  28% {
-    opacity: 0;
-  }
-
-  30%,
-  96% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes terminal-code-run {
-  0%,
-  30% {
-    clip-path: inset(0 100% 0 0);
-  }
-
-  50%,
-  96% {
-    clip-path: inset(0 0 0 0);
-  }
-
-  100% {
-    clip-path: inset(0 100% 0 0);
-  }
-}
-
-@keyframes terminal-output {
-  0%,
-  54% {
-    clip-path: inset(0 100% 0 0);
-  }
-
-  72%,
-  96% {
-    clip-path: inset(0 0 0 0);
-  }
-
-  100% {
-    clip-path: inset(0 100% 0 0);
-  }
-}
-
-@keyframes terminal-cursor-gate {
-  0%,
-  71% {
-    visibility: hidden;
-  }
-
-  72%,
-  96% {
-    visibility: visible;
-  }
-
-  100% {
-    visibility: hidden;
-  }
+  vertical-align: -0.12em;
+  animation: terminal-blink var(--duration-blink) steps(1, end) infinite;
 }
 
 @keyframes terminal-blink {
@@ -442,6 +364,99 @@
   100% {
     opacity: 0;
   }
+}
+
+/* Input line: a real field, styled as one more row of the transcript. */
+.terminal__form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-3xs) var(--space-sm);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-sunken);
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+.terminal__form:focus-within {
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+}
+
+.terminal__input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  padding-block: var(--space-3xs);
+  border: 0;
+  background-color: transparent;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+.terminal__input::placeholder {
+  color: var(--text-faint);
+}
+
+/* Hint chips: shortcuts that run a command on click. */
+.terminal__hints {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.terminal__hint {
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-sm);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-sunken);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  cursor: pointer;
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+
+.terminal__hint:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  background-color: var(--brand-soft);
+  color: var(--brand);
+}
+
+/*
+ * Progressive enhancement. Without JavaScript the card is a static
+ * transcript: no field, no chips. With JavaScript both stay hidden until the
+ * boot transcript has finished typing.
+ */
+:root:not(.js) .terminal__form,
+:root:not(.js) .terminal__hints {
+  display: none;
+}
+
+:root.js .terminal__form,
+:root.js .terminal__hints {
+  display: none;
+}
+
+:root.js .terminal.is-ready .terminal__form,
+:root.js .terminal.is-ready .terminal__hints {
+  display: flex;
+}
+
+.terminal__footer {
+  padding-block: var(--space-2xs);
+  padding-inline: var(--space-md);
+  border-block-start: var(--hairline) solid var(--line);
+  background-color: var(--surface-sunken);
+  color: var(--text-faint);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
 }
 
 /* ------------------------------------------------------------- Sections --- */
@@ -483,6 +498,7 @@
 .pipeline {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
   gap: clamp(var(--space-sm), 2vw, var(--space-lg));
   list-style: none;
 }
@@ -499,6 +515,39 @@
   border-radius: var(--radius-lg);
   background-color: var(--surface-raised);
   box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.pipeline__stage:hover {
+  border-color: color-mix(in srgb, var(--brand) 40%, var(--line));
+}
+
+/* Selected stage: the open one, marked with the brand ring. */
+.pipeline__stage.is-active {
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+  box-shadow: var(--shadow-brand);
+}
+
+.pipeline__heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.pipeline__toggle {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2xs);
+  inline-size: 100%;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
 }
 
 .pipeline__number {
@@ -515,11 +564,29 @@
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   font-weight: 500;
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+
+.pipeline__stage.is-active .pipeline__number {
+  border-color: var(--brand);
+  background-color: var(--brand);
+  color: var(--on-brand);
 }
 
 .pipeline__title {
+  color: var(--text);
   font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.2;
   letter-spacing: -0.02em;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.pipeline__stage:hover .pipeline__title {
+  color: var(--brand);
 }
 
 .pipeline__code {
@@ -536,6 +603,106 @@
   color: var(--text-muted);
   font-size: var(--text-sm);
   line-height: 1.55;
+}
+
+/* Open/closed affordance; pure CSS so it needs no icon asset. */
+.pipeline__indicator {
+  position: absolute;
+  inset-block-start: var(--space-lg);
+  inset-inline-end: var(--space-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--badge-size);
+  block-size: var(--badge-size);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-sunken);
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1;
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+
+.pipeline__indicator::before {
+  content: '+';
+}
+
+.pipeline__toggle[aria-expanded='true'] .pipeline__indicator::before {
+  content: '−';
+}
+
+.pipeline__stage.is-active .pipeline__indicator {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  background-color: var(--brand-soft);
+  color: var(--brand);
+}
+
+.pipeline__panel {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-xs);
+  inline-size: 100%;
+  margin-block-start: var(--space-sm);
+  padding-block-start: var(--space-sm);
+  border-block-start: var(--hairline) solid var(--line);
+  animation: panel-enter var(--duration-base) var(--ease-out) both;
+}
+
+.pipeline__panel[hidden] {
+  display: none;
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Without JavaScript every panel is already expanded and the stage has no
+ * disclosure to drive, so the indicator disappears with it.
+ */
+:root:not(.js) .pipeline__panel[hidden] {
+  display: grid;
+}
+
+:root:not(.js) .pipeline__indicator {
+  display: none;
+}
+
+.pipeline__detail {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.pipeline__snippet {
+  max-inline-size: 100%;
+  margin: 0;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-xs);
+  background-color: var(--surface-sunken);
+  font-size: var(--text-2xs);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.pipeline__snippet-code {
+  color: var(--text);
+  font-family: var(--font-mono);
 }
 
 /* Connector between stages; it draws in after the stages have landed. */
@@ -729,11 +896,6 @@
   background-color: var(--surface);
 }
 
-.states__live {
-  display: grid;
-  gap: var(--space-3xs);
-}
-
 .states__counter {
   color: var(--text-faint);
   font-family: var(--font-mono);
@@ -756,9 +918,28 @@
   gap: var(--space-sm);
 }
 
-/* The stepper only exists when JavaScript can drive it. */
+/* The simulator controls only exist when JavaScript can drive them. */
 :root.js .states__controls {
   display: flex;
+}
+
+.states__control {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.01em;
+}
+
+/* Illegal transitions stay clickable so they can explain themselves. */
+.states__control[aria-disabled='true'] {
+  border-color: var(--line);
+  color: var(--text-faint);
+  opacity: 0.72;
+}
+
+.states__control[aria-disabled='true']:hover {
+  border-color: var(--line);
+  background-color: transparent;
+  color: var(--text-faint);
 }
 
 /* --------------------------------------------------------- Closing CTA --- */
@@ -887,8 +1068,9 @@
 
 /* ---------------------------------------------------- Reduced motion --- */
 /*
- * No entrance, no typing, no rail transition. Everything is already at its
- * final state: the terminal shows the full transcript and a static cursor.
+ * No entrance, no typing, no rail transition, no pointer glow. Everything is
+ * already at its final state: the terminal shows the full transcript and the
+ * REPL keeps working without animation.
  */
 @media (prefers-reduced-motion: reduce) {
   .hero__eyebrow,
@@ -920,18 +1102,13 @@
     transition: none;
   }
 
-  .terminal__prompt,
-  .terminal__code,
-  .terminal__output {
+  .terminal__caret {
     animation: none;
-    clip-path: none;
     opacity: 1;
   }
 
-  .terminal__cursor {
-    animation: none;
-    opacity: 1;
-    visibility: visible;
+  .hero__spotlight {
+    display: none;
   }
 }
 

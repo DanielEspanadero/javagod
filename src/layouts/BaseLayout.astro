@@ -73,10 +73,11 @@ const { title, description } = Astro.props;
 
     {
       /*
-       * One controller for the whole page (S14): scroll reveals and the
-       * progressive rail. It only toggles classes; all motion lives in CSS.
-       * With reduced motion we settle every target immediately and never
-       * create an observer, so nothing depends on the animation layer.
+       * One controller for the whole page (S14): scroll reveals, the
+       * progressive rail and the hero pointer spotlight. It only toggles
+       * classes and custom properties; all motion lives in CSS. With reduced
+       * motion we settle every target immediately and never create an
+       * observer, so nothing depends on the animation layer.
        */
     }
     <script>
@@ -107,6 +108,44 @@ const { title, description } = Astro.props;
 
           targets.forEach((target) => observer.observe(target));
         }
+      }
+
+      /*
+       * Ambient depth for the hero: a soft glow that follows a fine pointer.
+       * Coordinates arrive as CSS custom properties, throttled to one write per
+       * animation frame. Coarse pointers and reduced motion never start it.
+       */
+      const spotlight = document.querySelector<HTMLElement>('[data-spotlight]');
+      const finePointer = window.matchMedia('(pointer: fine)');
+
+      if (spotlight) {
+        let frame = 0;
+        let queued: PointerEvent | null = null;
+
+        const paint = () => {
+          frame = 0;
+          if (!queued) return;
+
+          const bounds = spotlight.getBoundingClientRect();
+          spotlight.style.setProperty('--pointer-x', `${queued.clientX - bounds.left}px`);
+          spotlight.style.setProperty('--pointer-y', `${queued.clientY - bounds.top}px`);
+          spotlight.classList.add('is-lit');
+          queued = null;
+        };
+
+        window.addEventListener(
+          'pointermove',
+          (event) => {
+            if (!finePointer.matches || reducedMotion.matches) return;
+            queued = event;
+            if (!frame) frame = window.requestAnimationFrame(paint);
+          },
+          { passive: true },
+        );
+
+        spotlight.parentElement?.addEventListener('pointerleave', () => {
+          spotlight.classList.remove('is-lit');
+        });
       }
     </script>
   </body>

@@ -110,8 +110,16 @@
   --reveal-distance: 1.375rem;
   --stagger-enter: 55ms;
   --stagger-reveal: 90ms;
-  --terminal-cycle: 11s;
-  --terminal-start: 800ms;
+
+  /* Interactive layers — hero pointer spotlight (fine pointers only) */
+  --pointer-x: 50%;
+  --pointer-y: 30%;
+  --pointer-spot: 30rem;
+  --pointer-strength: 20%;
+
+  /* Terminal REPL — bounded transcript */
+  --terminal-body-min: 12rem;
+  --terminal-transcript-max: 16rem;
 
   /* Mask stops for decorative gradients */
   --mask-solid: #000;

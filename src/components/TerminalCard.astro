@@ -1,13 +1,25 @@
 ---
-// Hero terminal. The typewriter is pure CSS: every line lives in the markup
-// from the start, so the card is complete with JavaScript disabled and shows
-// the full transcript when the visitor prefers reduced motion. The loop
-// narrates the same three beats as the page: compile, run, print.
-const compile = 'javac HelloWorld.java';
-const run = 'java HelloWorld';
-const output = '¡Hola, mundo!';
+// Hero terminal: a playable mini-REPL.
+//
+// The markup ships the boot transcript as real text, so without JavaScript the
+// card is still a complete illustration of the three beats (compile, run,
+// print). With JavaScript the same transcript — read back from the DOM, never
+// duplicated — is typed line by line and the card becomes a whitelisted REPL:
+// it answers a fixed set of commands and never runs real code.
+type BootLine = {
+  kind: 'command' | 'output';
+  text: string;
+};
+
+const boot: BootLine[] = [
+  { kind: 'command', text: 'javac HelloWorld.java' },
+  { kind: 'command', text: 'java HelloWorld' },
+  { kind: 'output', text: '¡Hola, mundo!' },
+];
+
+const hints = ['help', 'javac', 'java', 'javap -c'];
 ---
-<figure class="terminal">
+<figure class="terminal" data-terminal>
   <div class="terminal__bar">
     <span class="terminal__dots" aria-hidden="true">
       <span class="terminal__dot"></span>
@@ -18,20 +30,287 @@ const output = '¡Hola, mundo!';
   </div>
 
   <div class="terminal__body">
-    <p class="terminal__line terminal__line--compile">
+    <ol class="terminal__transcript" data-role="transcript">
+      {
+        boot.map((line) => (
+          <li class={`terminal__entry terminal__entry--${line.kind}`}>
+            {line.kind === 'command' && (
+              <span class="terminal__prompt" aria-hidden="true">
+                $
+              </span>
+            )}
+            {line.kind === 'command' ? (
+              <code class="terminal__code">{line.text}</code>
+            ) : (
+              <code class="terminal__output">{line.text}</code>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+
+    <form class="terminal__form" data-role="form">
       <span class="terminal__prompt" aria-hidden="true">$</span>
-      <code class="terminal__code">{compile}</code>
-    </p>
-    <p class="terminal__line terminal__line--run">
-      <span class="terminal__prompt" aria-hidden="true">$</span>
-      <code class="terminal__code">{run}</code>
-    </p>
-    <p class="terminal__line terminal__line--output">
-      <code class="terminal__output"
-        >{output}<span class="terminal__cursor" aria-hidden="true"></span></code
-      >
-    </p>
+      <input
+        class="terminal__input"
+        data-role="input"
+        type="text"
+        name="comando"
+        aria-label="Comando"
+        placeholder="Escribe un comando y presiona Enter"
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+    </form>
+
+    <div class="terminal__hints">
+      {
+        hints.map((hint) => (
+          <button class="terminal__hint" type="button" data-command={hint}>
+            {hint}
+          </button>
+        ))
+      }
+    </div>
+
+    <p class="sr-only" aria-live="polite" data-role="announcer"></p>
   </div>
 
   <figcaption class="terminal__footer">javac compila · java ejecuta</figcaption>
 </figure>
+
+<script>
+  type EntryKind = 'command' | 'output' | 'error' | 'block';
+
+  type Entry = {
+    kind: EntryKind;
+    text: string;
+  };
+
+  /* Exact transcript for `javap -c`, whitespace included. */
+  const JAVAP = [
+    'Compiled from "HelloWorld.java"',
+    'public class HelloWorld {',
+    '  public static void main(java.lang.String[]);',
+    '    Code:',
+    '       0: getstatic     #7   // Field java/lang/System.out',
+    '       3: ldc           #13  // String ¡Hola, mundo!',
+    '       5: invokevirtual #15  // Method java/io/PrintStream.println',
+    '       8: return',
+    '}',
+  ].join('\n');
+
+  const HELP = 'Comandos: help, javac, java, javap -c, clear';
+  const COMPILED = 'HelloWorld.java → HelloWorld.class (1 archivo compilado)';
+  const HELLO = '¡Hola, mundo!';
+  const UNKNOWN = 'comando no reconocido. Prueba con help.';
+
+  /* Bounded transcript: older entries are dropped so the card cannot grow. */
+  const MAX_ENTRIES = 40;
+  /* Typing rhythm, in milliseconds. */
+  const TYPE_DELAY = 32;
+  const LINE_PAUSE = 200;
+  const BOOT_DELAY = 380;
+
+  const root = document.querySelector<HTMLElement>('[data-terminal]');
+
+  if (root) {
+    const transcript = root.querySelector<HTMLOListElement>('[data-role="transcript"]');
+    const form = root.querySelector<HTMLFormElement>('[data-role="form"]');
+    const input = root.querySelector<HTMLInputElement>('[data-role="input"]');
+    const announcer = root.querySelector<HTMLElement>('[data-role="announcer"]');
+    const chips = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-command]'));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const wait = (ms: number) =>
+      new Promise<void>((resolve) => {
+        window.setTimeout(resolve, ms);
+      });
+
+    const normalize = (value: string) => value.replace(/\s+/g, ' ').trim().toLowerCase();
+
+    const scrollToEnd = () => {
+      if (transcript) transcript.scrollTop = transcript.scrollHeight;
+    };
+
+    /* One DOM node per entry, always through the same builder. */
+    const build = (entry: Entry) => {
+      const item = document.createElement('li');
+      item.className = 'terminal__entry';
+
+      if (entry.kind === 'command') {
+        item.classList.add('terminal__entry--command');
+
+        const prompt = document.createElement('span');
+        prompt.className = 'terminal__prompt';
+        prompt.setAttribute('aria-hidden', 'true');
+        prompt.textContent = '$';
+
+        const code = document.createElement('code');
+        code.className = 'terminal__code';
+        code.textContent = entry.text;
+
+        item.append(prompt, code);
+        return item;
+      }
+
+      item.classList.add(entry.kind === 'error' ? 'terminal__entry--error' : 'terminal__entry--output');
+
+      if (entry.kind === 'block') {
+        const pre = document.createElement('pre');
+        pre.className = 'terminal__block';
+
+        const code = document.createElement('code');
+        code.className = 'terminal__block-code';
+        code.textContent = entry.text;
+
+        pre.append(code);
+        item.append(pre);
+        return item;
+      }
+
+      const output = document.createElement('code');
+      output.className = 'terminal__output';
+      output.textContent = entry.text;
+
+      item.append(output);
+      return item;
+    };
+
+    /* The static transcript is the single source of truth for the boot lines. */
+    const readStatic = () => {
+      if (!transcript) return [] as Entry[];
+
+      return Array.from(transcript.querySelectorAll<HTMLElement>('.terminal__entry')).map(
+        (node): Entry => ({
+          kind: node.classList.contains('terminal__entry--command') ? 'command' : 'output',
+          text: node.querySelector('.terminal__code, .terminal__output')?.textContent ?? '',
+        }),
+      );
+    };
+
+    const push = (entry: Entry) => {
+      if (!transcript) return;
+
+      transcript.append(build(entry));
+      while (transcript.childElementCount > MAX_ENTRIES) {
+        transcript.firstElementChild?.remove();
+      }
+      scrollToEnd();
+    };
+
+    /* The whitelist: every accepted spelling and its exact answer. */
+    const answer = (command: string): Entry[] => {
+      if (command === 'help') return [{ kind: 'output', text: HELP }];
+
+      if (command === 'javac' || command === 'javac helloworld.java') {
+        return [{ kind: 'output', text: COMPILED }];
+      }
+
+      if (command === 'java' || command === 'java helloworld') {
+        return [{ kind: 'output', text: HELLO }];
+      }
+
+      if (command === 'javap -c' || command === 'javap -c helloworld') {
+        return [{ kind: 'block', text: JAVAP }];
+      }
+
+      return [{ kind: 'error', text: UNKNOWN }];
+    };
+
+    const announce = (message: string) => {
+      if (!announcer) return;
+
+      announcer.textContent = '';
+      window.setTimeout(() => {
+        announcer.textContent = message;
+      }, 30);
+    };
+
+    const run = (raw: string) => {
+      const command = normalize(raw);
+      if (!command) return;
+
+      if (command === 'clear') {
+        transcript?.replaceChildren();
+        announce('Consola limpia.');
+        return;
+      }
+
+      push({ kind: 'command', text: raw.replace(/\s+/g, ' ').trim() });
+
+      const entries = answer(command);
+      for (const entry of entries) push(entry);
+
+      const spoken = entries.some((entry) => entry.kind === 'block')
+        ? 'javap -c: bytecode de HelloWorld.java.'
+        : entries.map((entry) => entry.text).join(' ');
+      announce(spoken);
+    };
+
+    const type = async (entry: Entry) => {
+      if (!transcript) return;
+
+      const item = build(entry);
+      const caret = document.createElement('span');
+      caret.className = 'terminal__caret';
+      caret.setAttribute('aria-hidden', 'true');
+      item.append(caret);
+
+      const target = item.querySelector<HTMLElement>('.terminal__code, .terminal__output');
+      const full = target?.textContent ?? '';
+      if (target) target.textContent = '';
+
+      transcript.append(item);
+      scrollToEnd();
+
+      if (target) {
+        for (const char of full) {
+          target.textContent += char;
+          scrollToEnd();
+          await wait(TYPE_DELAY);
+        }
+      }
+
+      caret.remove();
+    };
+
+    const boot = async () => {
+      const entries = readStatic();
+      transcript?.replaceChildren();
+
+      for (const [index, entry] of entries.entries()) {
+        if (index > 0) await wait(LINE_PAUSE);
+        await type(entry);
+      }
+
+      root.classList.add('is-ready');
+    };
+
+    if (reducedMotion.matches) {
+      /* No typing: the static transcript is already the final state. */
+      root.classList.add('is-ready');
+    } else {
+      window.setTimeout(() => {
+        void boot();
+      }, BOOT_DELAY);
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!input) return;
+
+      run(input.value);
+      input.value = '';
+      input.focus({ preventScroll: true });
+    });
+
+    for (const chip of chips) {
+      chip.addEventListener('click', () => {
+        run(chip.dataset.command ?? '');
+      });
+    }
+  }
+</script>

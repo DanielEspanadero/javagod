@@ -1,51 +1,137 @@
 ---
 // "Del código a la pantalla": the five stages a Java program walks through.
 // Each stage is real text with a title, a mono value and a one-line caption,
-// so the diagram reads as a static list. The reveal controller lights the
-// stages in sequence when the section enters the viewport.
+// so the diagram reads as a static list. The panel under each stage adds one
+// sentence and, where it helps, a mono snippet: with JavaScript the stages
+// behave as disclosures (one open at a time), without it every panel is
+// expanded and the diagram stays complete.
 type Stage = {
   label: string;
   value: string;
   caption: string;
+  detail: string;
+  snippet?: string;
 };
+
+const sourceSnippet = [
+  'public class HelloWorld {',
+  '  public static void main(String[] args) { … }',
+  '}',
+].join('\n');
+
+const bytecodeSnippet = [
+  '0: getstatic     #7   // Field java/lang/System.out',
+  '3: ldc           #13  // String ¡Hola, mundo!',
+  '5: invokevirtual #15  // Method java/io/PrintStream.println',
+  '8: return',
+].join('\n');
 
 const stages: Stage[] = [
   {
     label: 'Código fuente',
     value: 'HelloWorld.java',
     caption: 'Escribes una clase con un método main y un mensaje.',
+    detail: 'Escribes una clase con un método main y un mensaje.',
+    snippet: sourceSnippet,
   },
   {
     label: 'Compilador',
     value: 'javac',
     caption: 'Revisa los tipos y traduce tu código a bytecode.',
+    detail:
+      'Revisa tipos, resuelve imports y traduce tu código a bytecode. Si algo no cierra, falla aquí.',
   },
   {
     label: 'Bytecode',
     value: 'HelloWorld.class',
     caption: 'Instrucciones portables que cualquier JVM entiende.',
+    detail:
+      'Instrucciones portables que cualquier JVM entiende. Mira lo que hay adentro:',
+    snippet: bytecodeSnippet,
   },
   {
     label: 'Máquina virtual',
     value: 'JVM',
     caption: 'Carga la clase, verifica el bytecode y lo ejecuta.',
+    detail:
+      'Carga la clase, verifica el bytecode y lo interpreta o lo compila a nativo con JIT.',
   },
   {
     label: 'Salida',
     value: '¡Hola, mundo!',
     caption: 'El programa escribe el resultado en la salida estándar.',
+    detail: 'El programa escribe en la salida estándar y termina.',
   },
 ];
 ---
-<ol class="pipeline" aria-label="Recorrido de un programa Java: del código fuente a la salida">
+<ol
+  class="pipeline"
+  data-pipeline
+  aria-label="Recorrido de un programa Java: del código fuente a la salida"
+>
   {
-    stages.map((stage, index) => (
-      <li class="pipeline__stage" data-reveal style={`--i: ${index}`}>
-        <span class="pipeline__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-        <h3 class="pipeline__title">{stage.label}</h3>
-        <code class="pipeline__code">{stage.value}</code>
-        <p class="pipeline__caption">{stage.caption}</p>
-      </li>
-    ))
+    stages.map((stage, index) => {
+      const panelId = `pipeline-panel-${index + 1}`;
+      return (
+        <li class="pipeline__stage" data-reveal style={`--i: ${index}`} data-stage>
+          <h3 class="pipeline__heading">
+            <button
+              class="pipeline__toggle"
+              type="button"
+              tabindex="-1"
+              aria-expanded="true"
+              aria-controls={panelId}
+              data-stage-toggle
+            >
+              <span class="pipeline__number" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="pipeline__title">{stage.label}</span>
+              <code class="pipeline__code">{stage.value}</code>
+              <span class="pipeline__indicator" aria-hidden="true" />
+            </button>
+          </h3>
+          <p class="pipeline__caption">{stage.caption}</p>
+          <div class="pipeline__panel" id={panelId} hidden>
+            <p class="pipeline__detail">{stage.detail}</p>
+            {stage.snippet && (
+              <pre class="pipeline__snippet"><code class="pipeline__snippet-code">{stage.snippet}</code></pre>
+            )}
+          </div>
+        </li>
+      );
+    })
   }
 </ol>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-pipeline]');
+
+  if (root) {
+    const toggles = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-stage-toggle]'));
+
+    /* One panel at a time: opening a stage closes whichever was open. */
+    const show = (active?: HTMLButtonElement) => {
+      for (const toggle of toggles) {
+        const open = toggle === active;
+        const panel = document.getElementById(toggle.getAttribute('aria-controls') ?? '');
+
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.closest('[data-stage]')?.classList.toggle('is-active', open);
+        if (panel) panel.hidden = !open;
+      }
+    };
+
+    for (const toggle of toggles) {
+      /* With scripting available the disclosure is real, so it is tabbable. */
+      toggle.tabIndex = 0;
+
+      toggle.addEventListener('click', () => {
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        show(isOpen ? undefined : toggle);
+      });
+    }
+
+    show();
+  }
+</script>
