@@ -18,6 +18,7 @@ import path from 'node:path';
 import process from 'node:process';
 
 import { sectionIds } from '../src/lib/sections.mjs';
+import { isLtsVersion, ltsVersions } from '../src/lib/versions.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const CONTENT_DIR = path.join(ROOT, 'src', 'content', 'docs');
@@ -26,20 +27,23 @@ const MANIFEST = path.join(ROOT, 'src', 'urls.json');
 /** Kebab-case: lowercase words joined by single hyphens, so the slug is URL safe. */
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-const USAGE = `Uso: pnpm new:doc <sección> <slug> --title "<Título>" [--description "<frase>"]
+const USAGE = `Uso: pnpm new:doc <sección> <slug> --title "<Título>" --since <LTS> [--description "<frase>"] [--hasta <LTS>]
 
   <sección>   id de una sección del registro: ${sectionIds.join(', ')}
   <slug>      nombre del archivo en kebab-case, por ejemplo tipos-primitivos
   --title     título del capítulo, obligatorio
+  --since     primera versión LTS en la que el capítulo se lee entero, obligatorio:
+              ${ltsVersions.join(', ')}
+  --hasta     última versión LTS en la que el capítulo sigue valiendo, opcional
   --description  frase que se ve en el índice y en los metadatos
 
-Ejemplo: pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos"`;
+Ejemplo: pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos" --since 8`;
 
 /**
- * Split argv into the two positional arguments and the two known flags.
+ * Split argv into the two positional arguments and the known flags.
  *
  * @param {string[]} argv
- * @returns {{ error?: string, section?: string, slug?: string, title?: string, description?: string }}
+ * @returns {{ error?: string, section?: string, slug?: string, title?: string, description?: string, since?: string, hasta?: string }}
  */
 function parseArgs(argv) {
   const positional = [];
@@ -48,7 +52,7 @@ function parseArgs(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
 
-    if (arg === '--title' || arg === '--description') {
+    if (arg === '--title' || arg === '--description' || arg === '--since' || arg === '--hasta') {
       const value = argv[index + 1];
 
       if (value === undefined || value.startsWith('-')) {
@@ -76,6 +80,8 @@ function parseArgs(argv) {
     slug: positional[1],
     title: flags.title,
     description: flags.description,
+    since: flags.since,
+    hasta: flags.hasta,
   };
 }
 
@@ -115,6 +121,28 @@ async function highestOrder(dir) {
   return highest;
 }
 
+/**
+ * Read a version flag and validate it against the LTS registry.
+ *
+ * @param {string} name Flag name without the dashes.
+ * @param {string | undefined} raw Value from argv.
+ * @param {{ required: boolean }} options
+ * @returns {{ error?: string, value?: number }}
+ */
+function versionFlag(name, raw, options) {
+  if (raw === undefined) {
+    return options.required ? { error: `Falta --${name}: indícalo con una versión LTS.` } : {};
+  }
+
+  const value = Number(raw);
+
+  if (!Number.isInteger(value) || !isLtsVersion(value)) {
+    return { error: `--${name} no es una versión LTS: "${raw}". Usa una de: ${ltsVersions.join(', ')}.` };
+  }
+
+  return { value };
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
@@ -144,6 +172,28 @@ async function main() {
     return 1;
   }
 
+  // Version metadata (S11): the build rejects a chapter without `since`, so the
+  // scaffolder has to ask for it instead of writing a file that cannot build.
+  const since = versionFlag('since', args.since, { required: true });
+  if (since.error) {
+    console.error(`✗ ${since.error}`);
+    console.error(USAGE);
+    return 1;
+  }
+
+  const hasta = versionFlag('hasta', args.hasta, { required: false });
+  if (hasta.error) {
+    console.error(`✗ ${hasta.error}`);
+    console.error(USAGE);
+    return 1;
+  }
+
+  if (hasta.value !== undefined && hasta.value < since.value) {
+    console.error(`✗ --hasta ${hasta.value} es anterior a --since ${since.value}.`);
+    console.error('· hasta marca la última versión LTS en la que el capítulo sigue valiendo.');
+    return 1;
+  }
+
   if (!SLUG_PATTERN.test(slug)) {
     console.error(`✗ Slug inválido: "${slug}".`);
     console.error('· Usa kebab-case en minúsculas, por ejemplo tipos-primitivos.');
@@ -169,6 +219,8 @@ async function main() {
     `description: ${quote(description)}`,
     `section: ${section}`,
     `order: ${order}`,
+    `since: ${since.value}`,
+    ...(hasta.value === undefined ? [] : [`hasta: ${hasta.value}`]),
     '---',
     '',
   ].join('\n');

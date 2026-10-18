@@ -95,6 +95,7 @@ title: 'Hola, mundo'
 description: 'Una frase que se ve en el índice y en los metadatos.'
 section: fundamentos
 order: 1
+since: 8
 ---
 ```
 
@@ -102,7 +103,18 @@ order: 1
   la carpeta donde vive el archivo: un capítulo en `objetos/` que declare
   `section: fundamentos` rompe el build.
 - `order` es la posición dentro de la sección y no puede repetirse.
+- `since` es la primera versión LTS en la que el capítulo se lee entero tal como está
+  escrito. No es la versión en la que nació el tema: si el texto usa `var` o bloques de
+  texto, el valor sube a la primera LTS que los admite, aunque el concepto sea anterior.
+- `hasta` es opcional y marca la última versión LTS en la que el capítulo sigue valiendo.
+  No puede ser anterior a `since`.
+- Los dos campos aceptan solo versiones LTS: 8, 11, 17, 21 y 25. El build rechaza un
+  `since` que falte, un valor que no esté en esa lista, un `hasta` menor que `since` y
+  cualquier clave desconocida, y el error dice qué archivo y qué valor corregir.
 - No escribas `slug`: la URL sale del path y el build rechaza la clave.
+
+El capítulo muestra su versión bajo la descripción (`Desde Java 17`, o
+`Desde Java 11 hasta Java 17` cuando hay `hasta`), sin tocar ningún componente.
 
 El resto es automático: el árbol lateral, el TOC, las migas y los enlaces anterior y
 siguiente se derivan del contenido. No hay que tocar componentes ni índices (S9).
@@ -113,14 +125,17 @@ El scaffolder escribe el archivo con el frontmatter válido y el `order` siguien
 sección, así que no hay que calcularlo ni copiarlo de otro capítulo:
 
 ```bash
-pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos" \
+pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos" --since 8 \
   --description "Los ocho tipos primitivos y cuándo usar cada uno."
 ```
 
 - La sección tiene que existir en el registro; si no, el comando lista los ids válidos.
 - El slug es kebab-case y no se puede repetir: el scaffolder no sobrescribe archivos.
-- `--title` es obligatorio. Si no pasas `--description`, se usa el título y el comando lo
-  avisa por pantalla.
+- `--title` y `--since` son obligatorios, porque el build rechaza un capítulo sin versión.
+  `--hasta` es opcional y no puede ser anterior a `--since`. Los tres valores de versión
+  se validan contra el registro de LTS, así que un número que no sea 8, 11, 17, 21 o 25
+  falla antes de escribir nada.
+- Si no pasas `--description`, se usa el título y el comando lo avisa por pantalla.
 - Imprime la ruta del archivo y su URL final, y crea la carpeta de la sección si todavía
   no existe.
 

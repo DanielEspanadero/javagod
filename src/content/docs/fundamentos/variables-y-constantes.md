@@ -3,6 +3,7 @@ title: 'Variables y constantes'
 description: 'Declarar, nombrar y acotar valores: ámbito, final, var y la trampa de comparar cajas con dos iguales.'
 section: fundamentos
 order: 3
+since: 11
 ---
 
 ## Un nombre con tipo

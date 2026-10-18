@@ -3,6 +3,7 @@ title: 'Operadores y expresiones'
 description: 'Aritmética, comparación y lógica, con la precedencia y el desbordamiento a la vista.'
 section: fundamentos
 order: 4
+since: 17
 ---
 
 ## Una expresión devuelve un valor

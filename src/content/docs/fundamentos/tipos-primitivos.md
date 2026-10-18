@@ -3,6 +3,7 @@ title: 'Tipos primitivos'
 description: 'Los ocho tipos de Java, cuánto ocupan, hasta dónde llegan y por qué el dinero nunca va en un float.'
 section: fundamentos
 order: 2
+since: 8
 ---
 
 ## Ocho tipos, y solo ocho
