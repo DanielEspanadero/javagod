@@ -195,3 +195,10 @@ rehype corre después de Shiki: el `<pre>` llega con `class` como string y con
 la caché de HTML renderizado vive en `node_modules/.astro` y no se invalida al
 cambiar el código de un plugin, solo al cambiar el archivo fuente; hay que borrarla
 para verificar un cambio de pipeline. Queda en CONTRIBUTING.
+
+L16: Evidencia de F2.3 en `40bb403` (`feat(docs): add prose styles, callouts and
+copyable code blocks`). Corte de ~430 líneas autoradas sin contar el lockfile:
+dos plugins, la hoja de estilos y el contenido. Aquí el corte sí cabe en la guía
+de revisión; el lockfile suma 1276 líneas por la dependencia nueva y no se revisa
+línea a línea. Siguiente corte: F2.4 (scaffolder `pnpm new:doc` y validación de
+contenido en build).
