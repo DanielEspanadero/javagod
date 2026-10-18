@@ -495,8 +495,12 @@
   line-height: 1.55;
 }
 
+/* Shiki separates the line spans with a real newline inside `<pre>`, and that
+   newline is already a line break under `white-space: pre`. A block display here
+   adds a second break, so every line gets an empty line after it; the spans stay
+   inline and copy still brings the newlines, because they are text, not markup. */
 .astro-code .line {
-  display: block;
+  display: inline;
 }
 
 /* Dual-theme blocks are the only ones that can overflow horizontally. */
