@@ -78,6 +78,11 @@ creates a parallel URL tree. Reading modes cover LTS releases only (8, 11, 17,
 examples use modern Java; differences for older releases are shown inline as
 explicit "antes / desde" snippets, never as separate pages.
 
+S17: Commits carry no AI attribution. No `Co-authored-by` trailers, no tool
+names, no signatures in the message; author and committer are always the
+repository owner. A `commit-msg` hook rejects any commit message that violates
+this, and the build does not depend on it.
+
 ## Tasks
 
 | ID | Specs | Route | Task |
@@ -147,3 +152,5 @@ el uso de guiones. No quiero ver ni uno en toda la web: —
 
 L9: Ahora, en lugar de Java 21, quiero dar servicio a todas las versiones (si es
 posible). O ves viable otra opción?
+
+L10: Importante, no te pongas bajo ningún concepto como coautor

@@ -12,7 +12,8 @@
     "build": "astro build && node scripts/audit.mjs",
     "audit": "node scripts/audit.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "astro": "^7.3.8"

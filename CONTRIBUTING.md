@@ -67,6 +67,19 @@ git checkout develop
 git merge --no-ff hotfix/lo-que-sea
 ```
 
+## Autoría de los commits
+
+El autor y el committer son siempre el dueño del repositorio. Los mensajes no llevan
+trailers de coautoría, ni nombres de herramientas, ni líneas del tipo "generado con".
+
+Lo hace cumplir el hook `.githooks/commit-msg`, que rechaza el commit si el mensaje
+contiene cualquier atribución. Se activa solo con `pnpm install` mediante el script
+`prepare`; para hacerlo a mano:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## Entornos
 
 | Entorno | Rama | URL | Quién lo genera |
