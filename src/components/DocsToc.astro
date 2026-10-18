@@ -1,0 +1,29 @@
+---
+// In-page table of contents, built from the headings the renderer reports.
+// Only h2 and h3 are listed: deeper levels are detail, not structure.
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const items = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+{
+  items.length > 0 && (
+    <nav class="toc" aria-label="En esta página">
+      <p class="toc__title">En esta página</p>
+      <ol class="toc__list">
+        {items.map((heading) => (
+          <li class="toc__item" data-depth={heading.depth}>
+            <a class="toc__link" href={`#${heading.slug}`}>
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+      <a class="toc__top" href="#main">Volver arriba</a>
+    </nav>
+  )
+}

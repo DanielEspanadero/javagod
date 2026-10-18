@@ -1,14 +1,24 @@
 ---
-// Sticky top bar: brand on the left, theme toggle on the right.
-// No other links: there are no other routes yet (S7, no dead links).
+// Sticky top bar: brand and documentation link on the left, theme toggle on the
+// right. Only routes that exist are linked (S7).
 import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  /** Docs pages run full viewport width so the rail and the brand line up. */
+  wide?: boolean;
+}
+
+const { wide = false } = Astro.props;
 ---
 <header class="site-header">
-  <div class="container site-header__inner">
+  <div class:list={['container', 'site-header__inner', wide && 'container--wide']}>
     <a class="brand" href="/">
       <span class="brand__mark" aria-hidden="true">J</span>
       <span class="brand__name">JavaGod</span>
     </a>
-    <ThemeToggle />
+    <nav class="site-header__nav" aria-label="Principal">
+      <a class="site-header__link" href="/docs/">Documentación</a>
+      <ThemeToggle />
+    </nav>
   </div>
 </header>

@@ -85,24 +85,25 @@ this, and the build does not depend on it.
 
 ## Tasks
 
-| ID | Specs | Route | Task |
-| -- | ----- | ----- | ---- |
-| F0.1 | S1,S2 | setup | Scaffold Astro 7, tsconfig, config, install |
-| F0.2 | S2 | styles | Token system: color, fluid type, space, motion |
-| F0.3 | S1,S2 | verify | Build audit: dead links, h1 count, orphan classes |
-| F1.1 | S5,S6 | layout | Site shell: sticky header, brand, theme toggle, footer |
-| F1.2 | S4,S6 | landing | Hero with animated JVM pipeline diagram |
-| F1.3 | S3,S4 | landing | Progressive learning path section |
-| F1.4 | S4,S6 | landing | Visualization showcase: animated thread states |
-| F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next |
-| F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) |
-| F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables |
-| F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules |
-| F2.5 | S12 | docs | Slug and redirect contract |
-| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations |
-| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch |
-| F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section |
-| F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects |
+| ID | Specs | Route | Task | Estado |
+| -- | ----- | ----- | ---- | ------ |
+| F0.1 | S1,S2 | setup | Scaffold Astro 7, tsconfig, config, install | hecho |
+| F0.2 | S2 | styles | Token system: color, fluid type, space, motion | hecho |
+| F0.3 | S1,S2 | verify | Build audit: dead links, h1 count, orphan classes | hecho |
+| F1.1 | S5,S6 | layout | Site shell: sticky header, brand, theme toggle, footer | hecho |
+| F1.2 | S4,S6 | landing | Hero with animated JVM pipeline diagram | hecho |
+| F1.3 | S3,S4 | landing | Progressive learning path section | hecho |
+| F1.4 | S4,S6 | landing | Visualization showcase: animated thread states | hecho |
+| F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next | hecho |
+| F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) | hecho |
+| F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | hecho |
+| F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | hecho |
+| F2.5 | S12 | docs | Slug and redirect contract | hecho |
+| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | pendiente |
+| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | pendiente |
+| F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | pendiente |
+| F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | pendiente |
+| F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects | pendiente |
 
 ## Releases
 
@@ -154,3 +155,110 @@ L9: Ahora, en lugar de Java 21, quiero dar servicio a todas las versiones (si es
 posible). O ves viable otra opción?
 
 L10: Importante, no te pongas bajo ningún concepto como coautor
+
+L11: Perfecto, arrancamos con los siguientes pasos
+
+L12: Decisiones de diseño para F2.1 y F2.2. Las rutas son
+`/docs/` (índice derivado del contenido) y `/docs/<seccion>/<pagina>/` (el slug
+sale del path del archivo, S12). El registro de secciones vive en
+`src/lib/sections.ts` y es la única fuente de títulos y orden; el schema de la
+colección lo importa para validar `section` como enum. El frontmatter es
+estricto: claves desconocidas (incluido `slug`) rompen el build, de modo que un
+slug no puede divergir del path. El orden duplicado dentro de una sección
+falla al construir, igual que una sección fuera del registro. La navegación se
+deriva de las entradas existentes: una sección sin capítulos no aparece en el
+árbol ni enlaza a nada, así que nunca hay links muertos (S7) ni sidebar vacía.
+
+L13: Verificación de F2.1 y F2.2 sobre `pnpm build` (3 páginas, auditoría limpia):
+orden, salto de sección, prev/next y estado activo comprobados con un capítulo
+extra en una copia de scratch, no en el repo. Las cuatro reglas de contenido
+fallan el build con un mensaje útil: orden duplicado, sección fuera del registro,
+frontmatter incompleto y clave desconocida (`slug`).
+
+L14: Evidencia de F2.1 y F2.2 en `d56b1d8` (`feat(docs): add documentation shell
+with derived navigation and first chapter`). El corte de entrega de esta unidad
+son 1106 líneas autoradas, de las que 499 son `src/styles/docs.css`: es la
+primera hoja de estilos del área de documentación, no hay lógica duplicada. Si
+la unidad se publica como PR, conviene partirla en dos cortes revisables:
+plataforma de contenido (schema, registro, `src/lib`, capítulo) y capa de
+presentación (layout, rutas, estilos). El siguiente corte arranca en F2.3.
+
+L15: F2.3 cerrada. Los callouts son citas con marcador (`[!NOTA]`, `[!OJO]`,
+`[!AVISO]`, `[!TRUCO]`) y un marcador desconocido rompe el build. Los bloques de
+código ganan barra con etiqueta de lenguaje y botón de copiar, renderizados en el
+build; el botón solo se muestra con JavaScript. Decisión de infraestructura: se
+añade `@astrojs/markdown-remark` 7.3.3 como devDependency y el procesador pasa a
+`unified()`, porque Astro 7 ya no instala el pipeline remark/rehype por defecto y
+sin él no hay plugins que permitan mantener la autoría en Markdown puro (S9). Ese
+rehype corre después de Shiki: el `<pre>` llega con `class` como string y con
+`data-language`, no con `className` en array. Hallazgo operativo que costó tiempo:
+la caché de HTML renderizado vive en `node_modules/.astro` y no se invalida al
+cambiar el código de un plugin, solo al cambiar el archivo fuente; hay que borrarla
+para verificar un cambio de pipeline. Queda en CONTRIBUTING.
+
+L16: Evidencia de F2.3 en `40bb403` (`feat(docs): add prose styles, callouts and
+copyable code blocks`). Corte de ~430 líneas autoradas sin contar el lockfile:
+dos plugins, la hoja de estilos y el contenido. Aquí el corte sí cabe en la guía
+de revisión; el lockfile suma 1276 líneas por la dependencia nueva y no se revisa
+línea a línea. Siguiente corte: F2.4 (scaffolder `pnpm new:doc` y validación de
+contenido en build).
+
+L17: F2.4 cerrada. `pnpm new:doc <sección> <slug> --title "…" [--description "…"]`
+escribe el capítulo con frontmatter válido, calcula el `order` siguiente leyendo solo
+el bloque de frontmatter de la sección y se niega a sobrescribir. Falla con exit 1 y
+mensaje útil en sección desconocida, slug que ya existe, slug fuera de kebab-case,
+falta de `--title` y opción desconocida. El build gana una regla de colección: la
+primera carpeta del path tiene que coincidir con el `section` declarado, así que un
+archivo movido de sitio rompe el build en vez de generar una URL incoherente. Para
+que el scaffolder pueda leer el registro sin duplicarlo ni pedir un loader de
+TypeScript, `src/lib/sections.ts` pasa a `src/lib/sections.mjs` con tipos en JSDoc y
+`allowJs` en tsconfig (corrige la ruta que nombra L12). Hallazgo del worker: el pager
+emitía `pager__link--previous` sin regla CSS, algo que la auditoría no veía porque
+con un solo capítulo no se renderiza; se añadió la regla y verifiqué la auditoría
+con dos capítulos en scratch. Siguiente corte: F3.1 (primitivas de diagrama).
+
+L18: Evidencia de F2.4 en `1766eb2` (`feat(tooling): add the docs scaffolder and
+the section path rule`), 294 líneas autoradas. Verificación propia en scratch con
+`cacheDir` aislado: scaffold de `fundamentos/tipos-primitivos` con `order 2`, build de
+4 páginas y auditoría limpia, prev/next renderizados en ambos sentidos y el capítulo
+nuevo enlazado desde `/docs/`; los cinco rechazos del scaffolder con exit 1 y sin
+archivos de más; y el build roto al mover el capítulo a otra carpeta conservando su
+`section`. Las carpetas de scratch y las cachés movidas por el worker quedaron
+borradas. Corrección a L17: el siguiente corte es F2.5 (contrato de slugs y
+redirects), no F3.1.
+
+L19: Sobre la portada de documentación en un monitor de 27 pulgadas: "creo que hay
+demasiado margen a los bordes en un monitor de 27 pulgadas" y "también me gusta el
+menú que hay a la izquierda en la de Angular donde puedes elegir la versión, docs
+tutoriales y demás. Arregla eso antes de seguir". Se cambia el shell de documentación
+de contenedor centrado de 74rem a ancho completo: rail de 17rem pegado al borde
+izquierdo, artículo de 54rem pegado al rail y TOC de 15rem a la derecha, con la
+cabecera en variante ancha para que la marca quede alineada con el rail. La portada
+conserva su contenedor. Se añade "Volver arriba" al TOC, como en la referencia. El
+selector de versión queda pendiente de decisión: es S16 y necesita los metadatos
+`since` de F4.2 más el filtrado de F4.3, y un selector que no filtra sería un control
+que promete lo que no hace.
+
+L20: F2.5 cerrada. `src/urls.json` es el manifiesto commiteado de lo publicado y
+`scripts/check-urls.mjs` (sin dependencias) lo contrasta con `dist` y con
+`public/_redirects` en cada build. Cuatro reglas, un mensaje cada una: una URL del
+manifiesto que ya no se genera ni está cubierta por un redirect, un redirect que pisa
+una ruta viva, un destino que no existe y una ruta generada sin registrar. `pnpm
+urls:update` solo agrega: nunca borra una entrada y sigue validando después de
+escribir, así que un renombrado no se tapa registrando el slug nuevo. Un renombrado
+necesita las dos cosas: la línea 301 en `public/_redirects` y el slug nuevo registrado.
+Decisión: una entrada del manifiesto se conserva mientras un redirect la cubra, porque
+el archivo es el registro de lo que alguna vez se publicó, no la lista de lo que se
+publica hoy. Verificado en scratch aislado: capítulo nuevo sin registrar falla, update
+lo registra, renombrado falla, redirect más update quedan limpios, destino roto y
+origen tapado fallan.
+
+L21: Evidencia de F2.5 en `dae5b2e` (`feat(tooling): enforce the published URL
+contract on every build`), 347 líneas autoradas. Verificación propia en scratch con
+`cacheDir` aislado: (1) capítulo nuevo generado sin registrar, build y check en rojo por
+la regla del registro; (2) `--update` agrega la URL y el build queda verde con 4 rutas;
+(3) renombrado sin redirect, rojo por URL desaparecida; (4) redirect 301 más `--update`,
+verde; (5) destino inexistente, rojo; (6) origen tapado por una ruta viva, rojo. Las
+carpetas de scratch y los restos en `/tmp` del worker quedaron borradas. La rama suma
+2353 líneas en cinco unidades (shell, prosa, tooling de autoría, ancho completo y
+contrato de URLs); para publicar, un PR encadenado por unidad.

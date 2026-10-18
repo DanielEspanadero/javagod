@@ -1,8 +1,11 @@
 # Cambios de URL. Cloudflare Pages los aplica en el borde.
 #
 # La spec S12 dice que una URL es un contrato: si un documento se mueve o se
-# renombra, se agrega acá el redirect 301 desde la ruta vieja. Nunca se rompe un
-# enlace existente en silencio.
+# renombra, se añade aquí el redirect 301 desde la ruta vieja. Nunca se rompe un
+# enlace existente en silencio. `scripts/check-urls.mjs` lee este archivo en cada
+# build y falla si un origen pisa una ruta viva o si el destino no existe.
 #
 # Formato:
 # /ruta-vieja/  /ruta-nueva/  301
+#
+# Un documento nuevo no necesita redirect: se registra con `pnpm urls:update`.

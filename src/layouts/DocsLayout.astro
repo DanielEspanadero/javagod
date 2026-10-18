@@ -1,0 +1,120 @@
+---
+// Documentation shell (S5): sidebar tree, breadcrumbs, prose column, in-page
+// table of contents and previous/next pager. Everything is derived from the
+// content collection, so the layout never needs editing to add a chapter.
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import DocsNav from '../components/DocsNav.astro';
+import DocsToc from '../components/DocsToc.astro';
+import { docHref, getDocs, getNeighbours, groupDocs, sectionOf } from '../lib/docs';
+import '../styles/docs.css';
+
+interface Props {
+  /** Chapter id, used to locate the page inside the reading order. */
+  id: string;
+  title: string;
+  description: string;
+  headings: MarkdownHeading[];
+}
+
+const { id, title, description, headings } = Astro.props;
+
+const docs = await getDocs();
+const groups = groupDocs(docs);
+const { previous, next } = getNeighbours(docs, id);
+const current = docs.find((doc) => doc.id === id);
+const section = current ? sectionOf(current) : undefined;
+const sectionAnchor = section ? `/docs/#${section.id}` : '/docs/';
+---
+<BaseLayout title={`${title} · JavaGod`} description={description} wide>
+  <div class="docs">
+    <aside class="docs__sidebar">
+      <DocsNav groups={groups} currentId={id} />
+    </aside>
+
+    <article class="docs__article">
+      <nav class="breadcrumbs" aria-label="Ruta de navegación">
+        <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a class="breadcrumbs__link" href="/">Inicio</a></li>
+          <li class="breadcrumbs__item">
+            <a class="breadcrumbs__link" href="/docs/">Documentación</a>
+          </li>
+          {
+            section && (
+              <li class="breadcrumbs__item">
+                <a class="breadcrumbs__link" href={sectionAnchor}>
+                  {section.title}
+                </a>
+              </li>
+            )
+          }
+          <li class="breadcrumbs__item breadcrumbs__item--current" aria-current="page">{title}</li>
+        </ol>
+      </nav>
+
+      <header class="docs__header">
+        {section && <p class="docs__eyebrow">{section.title}</p>}
+        <h1 class="docs__title">{title}</h1>
+        <p class="docs__lead">{description}</p>
+      </header>
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      {
+        (previous || next) && (
+          <nav class="pager" aria-label="Capítulos contiguos">
+            {previous && (
+              <a class="pager__link pager__link--previous" href={docHref(previous)}>
+                <span class="pager__direction">Anterior</span>
+                <span class="pager__title">{previous.data.title}</span>
+              </a>
+            )}
+            {next && (
+              <a class="pager__link pager__link--next" href={docHref(next)}>
+                <span class="pager__direction">Siguiente</span>
+                <span class="pager__title">{next.data.title}</span>
+              </a>
+            )}
+          </nav>
+        )
+      }
+    </article>
+
+    <aside class="docs__toc">
+      <DocsToc headings={headings} />
+    </aside>
+  </div>
+</BaseLayout>
+
+{
+  /*
+   * Copy control for code blocks (S4). The block, its language label and the
+   * button are server-rendered; this only wires the click, so the page is
+   * complete and readable without it.
+   */
+}
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.code-block__copy');
+
+  for (const button of buttons) {
+    button.addEventListener('click', async () => {
+      const code = button.closest('.code-block')?.querySelector('pre');
+      if (!code) return;
+
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? '');
+        button.textContent = 'Copiado';
+        button.dataset.copied = 'true';
+      } catch {
+        button.textContent = 'No se pudo copiar';
+      }
+
+      window.setTimeout(() => {
+        button.textContent = 'Copiar';
+        delete button.dataset.copied;
+      }, 1800);
+    });
+  }
+</script>

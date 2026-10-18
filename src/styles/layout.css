@@ -12,6 +12,12 @@ body {
   padding-inline: var(--gutter);
 }
 
+/* Documentation pages use the full viewport so the rail sits at the left edge
+   and the brand stays aligned with it instead of with a centred column. */
+.container--wide {
+  max-inline-size: none;
+}
+
 /* Header */
 .site-header {
   position: sticky;
@@ -77,6 +83,27 @@ body {
 
 .brand__name {
   color: inherit;
+}
+
+.site-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.site-header__link {
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-2xs);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.site-header__link:hover {
+  color: var(--brand);
 }
 
 /* Theme toggle: icon visibility is pure CSS, keyed off [data-theme]. */

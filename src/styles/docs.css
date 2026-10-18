@@ -1,0 +1,674 @@
+/*
+ * Documentation shell: three-column grid, sidebar tree, in-page table of
+ * contents, prose baseline and the previous/next pager.
+ *
+ * Values come from tokens only (S2, S13). Prose rules stay deliberately small:
+ * F2.3 owns the full typographic treatment of Markdown output.
+ */
+
+/* Full-bleed shell: the rail sits at the left edge and the article uses the
+   remaining width, like the reference. The old centred container left a desert
+   on wide monitors. */
+.docs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding-inline: var(--gutter);
+}
+
+.docs__sidebar {
+  min-inline-size: 0;
+}
+
+.docs__article {
+  /* Hug the rail instead of centring inside a wide track: on a 27 inch screen a
+     centred column puts half the free space on each side and reads as a gap. */
+  justify-self: start;
+  inline-size: 100%;
+  max-inline-size: var(--width-docs);
+  min-inline-size: 0;
+  padding-block: var(--space-lg) var(--space-3xl);
+}
+
+.docs__toc {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .docs {
+    grid-template-columns: var(--width-docs-nav) minmax(0, 1fr);
+  }
+
+  .docs__sidebar {
+    position: sticky;
+    inset-block-start: var(--header-height);
+    align-self: start;
+    max-block-size: calc(100svh - var(--header-height));
+    overflow-y: auto;
+    padding-block: var(--space-lg) var(--space-xl);
+    padding-inline-end: var(--space-lg);
+    border-inline-end: var(--hairline) solid var(--line);
+  }
+
+  .docs__article {
+    padding-inline: clamp(var(--space-lg), 3vw, var(--space-3xl));
+  }
+}
+
+@media (min-width: 82rem) {
+  .docs {
+    grid-template-columns: var(--width-docs-nav) minmax(0, 1fr) var(--width-docs-toc);
+  }
+
+  .docs__toc {
+    display: block;
+    position: sticky;
+    inset-block-start: var(--header-height);
+    align-self: start;
+    max-block-size: calc(100svh - var(--header-height));
+    overflow-y: auto;
+    padding-block: var(--space-lg) var(--space-xl);
+    padding-inline-start: var(--space-lg);
+  }
+}
+
+/* Sidebar tree */
+.docs-nav {
+  padding-block-end: var(--space-lg);
+  border-block-end: var(--hairline) solid var(--line);
+}
+
+@media (min-width: 60rem) {
+  .docs-nav {
+    padding-block-end: 0;
+    border-block-end: 0;
+  }
+}
+
+.docs-nav__sections {
+  display: grid;
+  gap: var(--space-lg);
+  list-style: none;
+}
+
+.docs-nav__section-title {
+  margin-block-end: var(--space-xs);
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-nav__pages {
+  display: grid;
+  gap: var(--space-3xs);
+  list-style: none;
+  border-inline-start: var(--hairline) solid var(--line);
+}
+
+.docs-nav__link {
+  display: block;
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-sm);
+  margin-inline-start: calc(var(--hairline) * -1);
+  border-inline-start: var(--hairline) solid transparent;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.docs-nav__link:hover {
+  color: var(--text);
+  border-inline-start-color: var(--line-strong);
+}
+
+.docs-nav__link[aria-current='page'] {
+  border-inline-start-color: var(--brand);
+  color: var(--brand);
+  font-weight: 600;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  margin-block-end: var(--space-md);
+}
+
+.breadcrumbs__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs);
+  list-style: none;
+  font-size: var(--text-xs);
+}
+
+.breadcrumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  color: var(--text-faint);
+}
+
+.breadcrumbs__item + .breadcrumbs__item::before {
+  content: '/';
+  color: var(--line-strong);
+}
+
+.breadcrumbs__link {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.breadcrumbs__link:hover {
+  color: var(--brand);
+  text-decoration-line: underline;
+}
+
+.breadcrumbs__item--current {
+  color: var(--text);
+}
+
+/* Chapter header */
+.docs__header {
+  margin-block: var(--space-lg) var(--space-xl);
+  padding-block-end: var(--space-lg);
+  border-block-end: var(--hairline) solid var(--line);
+}
+
+.docs__eyebrow {
+  margin-block-end: var(--space-2xs);
+  color: var(--brand);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.docs__title {
+  font-size: var(--text-2xl);
+}
+
+.docs__lead {
+  margin-block-start: var(--space-sm);
+  max-inline-size: var(--width-measure);
+  color: var(--text-muted);
+  font-size: var(--text-md);
+}
+
+/* In-page table of contents */
+.toc {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.toc__title {
+  margin-block-end: var(--space-xs);
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.toc__list {
+  display: grid;
+  gap: var(--space-2xs);
+  list-style: none;
+  border-inline-start: var(--hairline) solid var(--line);
+}
+
+.toc__item {
+  display: block;
+}
+
+.toc__link {
+  display: block;
+  padding-inline-start: var(--space-sm);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.toc__link:hover {
+  color: var(--brand);
+}
+
+.toc__top {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-block-start: var(--space-md);
+  padding-inline-start: var(--space-sm);
+  color: var(--text-faint);
+  font-size: var(--text-xs);
+  text-decoration: none;
+}
+
+.toc__top::before {
+  content: '\2191';
+}
+
+.toc__top:hover {
+  color: var(--brand);
+}
+
+.toc__list li[data-depth='3'] .toc__link {
+  padding-inline-start: var(--space-lg);
+  color: var(--text-faint);
+}
+
+/* Prose baseline for rendered Markdown */
+.prose {
+  max-inline-size: var(--width-prose);
+  font-size: var(--text-base);
+}
+
+.prose > * + * {
+  margin-block-start: var(--space-md);
+}
+
+.prose h2 {
+  margin-block-start: var(--space-2xl);
+  font-size: var(--text-xl);
+  scroll-margin-block-start: calc(var(--header-height) + var(--space-md));
+}
+
+.prose h3 {
+  margin-block-start: var(--space-xl);
+  font-size: var(--text-lg);
+  scroll-margin-block-start: calc(var(--header-height) + var(--space-md));
+}
+
+.prose ul,
+.prose ol {
+  display: grid;
+  gap: var(--space-2xs);
+  padding-inline-start: var(--space-lg);
+}
+
+.prose li::marker {
+  color: var(--brand);
+}
+
+.prose strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.prose code {
+  padding-block: 0.1em;
+  padding-inline: 0.35em;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-xs);
+  background-color: var(--surface-sunken);
+  font-size: 0.9em;
+}
+
+.prose pre {
+  padding: var(--space-md);
+  overflow-x: auto;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-sunken);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.prose pre code {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  font-size: inherit;
+}
+
+.prose blockquote {
+  padding-inline-start: var(--space-md);
+  border-inline-start: 0.1875rem solid var(--brand);
+  color: var(--text-muted);
+}
+
+/* Callouts: a labelled aside produced from a Markdown blockquote (S9).
+   The base is neutral; each marker variant owns its accent. */
+.callout {
+  display: grid;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--hairline) solid var(--line);
+  border-inline-start: 0.1875rem solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-raised);
+}
+
+.callout__title {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.callout--nota {
+  border-inline-start-color: var(--brand);
+}
+
+.callout--nota .callout__title {
+  color: var(--brand);
+}
+
+.callout--ojo {
+  border-inline-start-color: var(--warn);
+  background-color: var(--warn-soft);
+}
+
+.callout--ojo .callout__title {
+  color: var(--warn);
+}
+
+.callout--aviso {
+  border-inline-start-color: var(--danger);
+  background-color: var(--danger-soft);
+}
+
+.callout--aviso .callout__title {
+  color: var(--danger);
+}
+
+.callout--truco {
+  border-inline-start-color: var(--success);
+  background-color: var(--success-soft);
+}
+
+.callout--truco .callout__title {
+  color: var(--success);
+}
+
+/* Code block chrome: language label and copy control live in the markup. */
+.code-block {
+  display: grid;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.code-block__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-block: var(--space-2xs);
+  padding-inline: var(--space-md);
+  border-block-end: var(--hairline) solid var(--line);
+  background-color: var(--surface-sunken);
+}
+
+.code-block__lang {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.code-block__copy {
+  display: none;
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-xs);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-raised);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.js .code-block__copy {
+  display: inline-flex;
+  align-items: center;
+}
+
+.code-block__copy:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  color: var(--brand);
+}
+
+.code-block__copy[data-copied='true'] {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--line));
+  color: var(--success);
+}
+
+/* Inside the wrapper the block loses its own frame. */
+.code-block .astro-code {
+  border: 0;
+  border-radius: 0;
+}
+
+.prose table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+
+.prose thead {
+  background-color: var(--surface-sunken);
+}
+
+.prose th,
+.prose td {
+  padding: var(--space-xs) var(--space-sm);
+  border-block-end: var(--hairline) solid var(--line);
+  text-align: start;
+  vertical-align: top;
+}
+
+.prose th {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.prose tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+/* Code blocks rendered by Shiki with dual themes. The renderer emits the
+   palette as CSS variables on each token, so one rule per theme class decides
+   which side wins; the site's theme attribute drives it, not the OS alone. */
+.astro-code {
+  display: block;
+  padding: var(--space-md);
+  overflow-x: auto;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.astro-code .line {
+  display: block;
+}
+
+/* Dual-theme blocks are the only ones that can overflow horizontally. */
+.astro-code-themes {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.astro-code.github-light {
+  background-color: var(--shiki-light-bg);
+}
+
+.astro-code.github-light span {
+  color: var(--shiki-light);
+}
+
+:root[data-theme='dark'] .astro-code.github-dark {
+  background-color: var(--shiki-dark-bg);
+}
+
+:root[data-theme='dark'] .astro-code.github-dark span {
+  color: var(--shiki-dark);
+}
+
+/* Pager */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-3xl);
+  padding-block-start: var(--space-lg);
+  border-block-start: var(--hairline) solid var(--line);
+}
+
+.pager__link {
+  display: grid;
+  gap: var(--space-3xs);
+  flex: 1 1 12rem;
+  padding: var(--space-sm) var(--space-md);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-raised);
+  text-decoration: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.pager__link:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  background-color: var(--surface-sunken);
+}
+
+.pager__link--previous {
+  text-align: start;
+}
+
+.pager__link--next {
+  text-align: end;
+}
+
+.pager__direction {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pager__title {
+  color: var(--brand);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+/* Documentation index */
+.docs-index {
+  max-inline-size: calc(var(--width-docs) + var(--gutter) * 2);
+  padding-block: var(--space-2xl) var(--space-3xl);
+  padding-inline: var(--gutter);
+}
+
+/* Line the index up with the article column, not with the rail. */
+@media (min-width: 64rem) {
+  .docs-index {
+    padding-inline-start: calc(var(--gutter) + var(--width-docs-nav));
+  }
+}
+
+.docs-index__header {
+  max-inline-size: var(--width-prose);
+  margin-block-end: var(--space-2xl);
+}
+
+.docs-index__title {
+  font-size: var(--text-2xl);
+}
+
+.docs-index__sections {
+  display: grid;
+  gap: var(--space-2xl);
+}
+
+.docs-index__section {
+  max-inline-size: var(--width-prose);
+  scroll-margin-block-start: calc(var(--header-height) + var(--space-md));
+}
+
+.docs-index__section-title {
+  font-size: var(--text-lg);
+}
+
+.docs-index__section-summary {
+  margin-block-start: var(--space-2xs);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Pending sections read as secondary: they are labeled, never linked (S7). */
+.docs-index__section--pending .docs-index__section-title {
+  color: var(--text-muted);
+}
+
+.docs-index__pages {
+  display: grid;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-md);
+  list-style: none;
+}
+
+.docs-index__link {
+  display: grid;
+  gap: var(--space-3xs);
+  padding: var(--space-md);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-raised);
+  text-decoration: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.docs-index__link:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  background-color: var(--surface-sunken);
+}
+
+.docs-index__page-title {
+  color: var(--brand);
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.docs-index__page-description {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.docs-index__pending {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: var(--hairline) dashed var(--line-strong);
+  border-radius: var(--radius-md);
+}
+
+.docs-index__pending-title {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}

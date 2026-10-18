@@ -80,6 +80,92 @@ contiene cualquier atribución. Se activa solo con `pnpm install` mediante el sc
 git config core.hooksPath .githooks
 ```
 
+## Añadir un capítulo
+
+La documentación vive en `src/content/docs/<sección>/<slug>.md` y el path del archivo es la
+URL: `src/content/docs/fundamentos/hola-mundo.md` se publica en
+`/docs/fundamentos/hola-mundo/`. Renombrar un archivo cambia su URL, así que exige una
+entrada en `public/_redirects` (S12).
+
+Frontmatter obligatorio, sin claves extra:
+
+```yaml
+---
+title: 'Hola, mundo'
+description: 'Una frase que se ve en el índice y en los metadatos.'
+section: fundamentos
+order: 1
+---
+```
+
+- `section` tiene que ser una de las declaradas en `src/lib/sections.mjs` y coincidir con
+  la carpeta donde vive el archivo: un capítulo en `objetos/` que declare
+  `section: fundamentos` rompe el build.
+- `order` es la posición dentro de la sección y no puede repetirse.
+- No escribas `slug`: la URL sale del path y el build rechaza la clave.
+
+El resto es automático: el árbol lateral, el TOC, las migas y los enlaces anterior y
+siguiente se derivan del contenido. No hay que tocar componentes ni índices (S9).
+
+### Con `pnpm new:doc`
+
+El scaffolder escribe el archivo con el frontmatter válido y el `order` siguiente de la
+sección, así que no hay que calcularlo ni copiarlo de otro capítulo:
+
+```bash
+pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos" \
+  --description "Los ocho tipos primitivos y cuándo usar cada uno."
+```
+
+- La sección tiene que existir en el registro; si no, el comando lista los ids válidos.
+- El slug es kebab-case y no se puede repetir: el scaffolder no sobrescribe archivos.
+- `--title` es obligatorio. Si no pasas `--description`, se usa el título y el comando lo
+  avisa por pantalla.
+- Imprime la ruta del archivo y su URL final, y crea la carpeta de la sección si todavía
+  no existe.
+
+Después de generarlo, escribe el contenido y comprueba con `pnpm build`.
+
+### URLs y redirects
+
+Una URL publicada no cambia nunca en silencio (S12). `src/urls.json` es el manifiesto de
+lo que está publicado y se commitea junto con el contenido: es el contrato, no una
+lista informativa.
+
+- Página nueva: `pnpm urls:update` añade las rutas que se generan y todavía no están en
+  el manifiesto, en orden. Es lo único que hay que hacer aparte de escribir el capítulo.
+- Página renombrada o movida: añade la línea del redirect en `public/_redirects`
+  (`/ruta-vieja/ /ruta-nueva/ 301`) y registra el slug nuevo con `pnpm urls:update`. El
+  slug sale del path, así que mover el archivo cambia la URL: sin el redirect el build
+  falla nombrando la URL desaparecida, y el manifiesto conserva la vieja como cubierta.
+
+`pnpm build` corre `scripts/check-urls.mjs` después de la auditoría y falla si el
+manifiesto nombra una URL que ya no se genera y ningún redirect la cubre, si un
+redirect pisa una ruta viva, si el destino de un redirect no existe o si hay una ruta
+generada que no está registrada.
+
+Una entrada del manifiesto no se borra a mano salvo que el redirect ya cubra esa URL:
+la lista es el registro de lo que alguna vez se publicó.
+
+## Callouts y bloques de código
+
+Un callout es una cita con un marcador en la primera línea. Los marcadores válidos son
+`[!NOTA]`, `[!OJO]`, `[!AVISO]` y `[!TRUCO]`; cualquier otro rompe el build:
+
+```md
+> [!OJO]
+> El nombre del archivo tiene que coincidir con la clase pública.
+```
+
+Los bloques de código se escriben como siempre. El build les añade la barra con el
+lenguaje y el botón de copiar, que solo aparece cuando hay JavaScript.
+
+El procesador de Markdown es `unified()`, del paquete `@astrojs/markdown-remark`,
+porque Astro 7 ya no instala el pipeline de remark y rehype por defecto y sin él los
+plugins no corren. Si tocas la parte de Markdown de `astro.config.mjs`, borra
+`node_modules/.astro` antes de verificar: ahí vive la caché de HTML renderizado y no
+se invalida al cambiar el código de un plugin.
+
 ## Entornos
 
 | Entorno | Rama | URL | Quién lo genera |
@@ -103,4 +189,7 @@ Configuración en Cloudflare Pages:
 pnpm build
 ```
 
-El build corre `astro build` y después `scripts/audit.mjs`. La auditoría falla si hay enlaces internos rotos, más de un `h1` por página, clases sin regla CSS o guiones largos.
+El build corre `astro build`, después `scripts/audit.mjs` y por último
+`scripts/check-urls.mjs`. La auditoría falla si hay enlaces internos rotos, más de un
+`h1` por página, clases sin regla CSS o guiones largos. La comprobación de URLs falla si
+el contrato de `src/urls.json` y `public/_redirects` no cuadra con lo que se generó.

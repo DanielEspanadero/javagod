@@ -8,9 +8,11 @@ import SiteHeader from '../components/SiteHeader.astro';
 interface Props {
   title: string;
   description: string;
+  /** Full-width shell for documentation pages (S5). */
+  wide?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, wide = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="es">
@@ -57,15 +59,15 @@ const { title, description } = Astro.props;
   </head>
   <body>
     <a class="skip-link" href="#main">Saltar al contenido</a>
-    <SiteHeader />
+    <SiteHeader wide={wide} />
     <main class="site-main" id="main">
       <slot />
     </main>
     <footer class="site-footer">
       <div class="container site-footer__inner">
         <p class="site-footer__note">
-          JavaGod · documentación visual de Java en español. Los capítulos están en
-          preparación; por ahora, la portada y los diagramas.
+          JavaGod · documentación visual de Java en español. Estático, sin cuentas y sin
+          cookies.
         </p>
         <p class="site-footer__meta">Java 8 a 25 · Hecho con ☕</p>
       </div>
