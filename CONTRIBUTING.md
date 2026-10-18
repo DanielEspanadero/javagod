@@ -125,14 +125,17 @@ El scaffolder escribe el archivo con el frontmatter válido y el `order` siguien
 sección, así que no hay que calcularlo ni copiarlo de otro capítulo:
 
 ```bash
-pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos" \
+pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos" --since 8 \
   --description "Los ocho tipos primitivos y cuándo usar cada uno."
 ```
 
 - La sección tiene que existir en el registro; si no, el comando lista los ids válidos.
 - El slug es kebab-case y no se puede repetir: el scaffolder no sobrescribe archivos.
-- `--title` es obligatorio. Si no pasas `--description`, se usa el título y el comando lo
-  avisa por pantalla.
+- `--title` y `--since` son obligatorios, porque el build rechaza un capítulo sin versión.
+  `--hasta` es opcional y no puede ser anterior a `--since`. Los tres valores de versión
+  se validan contra el registro de LTS, así que un número que no sea 8, 11, 17, 21 o 25
+  falla antes de escribir nada.
+- Si no pasas `--description`, se usa el título y el comando lo avisa por pantalla.
 - Imprime la ruta del archivo y su URL final, y crea la carpeta de la sección si todavía
   no existe.
 
