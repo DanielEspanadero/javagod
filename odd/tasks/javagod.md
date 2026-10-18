@@ -112,7 +112,7 @@ this, and the build does not depend on it.
 | F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | pendiente |
 | F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | hecho |
 | F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | hecho |
-| F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | en curso |
+| F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | hecho |
 
 ## Releases
 
@@ -638,3 +638,31 @@ coinciden en los cuatro capítulos (el chip de la portada ya dice "4 capítulos"
 oculta ninguno y la búsqueda encuentra herencia al buscar "polimorfismo". Build completo: 20
 páginas, 17 indexadas, 19 de 19 URL en el contrato, auditoría limpia con 210 clases en markup
 contra 357 reglas. La sección queda a falta de F6.3 (Object y records).
+
+L47: F6.3 cerrada en dos unidades, `bcb181c` (`feat(content): add the Object contracts chapter`) y
+`2bab9f9` (`feat(content): add the records chapter`), con la sección Programación Orientada a
+Objetos completa en seis capítulos. Tercer lote de dos `gentle-ai-worker` en paralelo: el de records
+leyó el de Object en cuanto apareció y aplicó sus reglas en vez de repetirlas. Revisión del padre:
+en el capítulo 5 solo cayeron dos retoques de redacción (la celda de `hashCode` decía "un entero que
+decide la implementación", que se lee al revés, y "de ella dependen `instanceof` y los `cast`"
+insinuaba una llamada que no existe); el resto verificado: plegado de literales de `String`, la
+asimetría `teclado.equals(rebajado)` / `rebajado.equals(teclado)` por el `instanceof` de cada clase,
+las tres reglas de `hashCode`, el `HashMap` que guarda la clave y devuelve `null` con `size 1`, el
+`equals` paso a paso y el intercambio `getClass()` / `instanceof` sin veredicto. En el capítulo 6
+corregí la costura de apertura: la excepción del capítulo 2 es el campo público, así que el texto
+ahora dice que la alternativa sin trampa pide cinco piezas. Decisión de datos de este lote, la
+primera vez que la restricción de LTS muerde: records son estándar desde Java 16, pero `since` solo
+admite LTS, así que la página declara `since: 17` y el cuerpo lo explica (vista previa en 14 y 15,
+estándar en 16, esta página desde 17). Es exactamente lo que pide la regla corregida en F4.4: el
+valor describe el tema y la lectura va por LTS. El worker comprobó los ejemplos con `javac 21.0.10`
+en `/tmp`: imprimen lo que dicen sus comentarios, y los rechazos (`private int z` en un record,
+`extends` en la cabecera, `this.x = x` en el constructor compacto) dan los errores esperados.
+Verificado con Playwright sobre `dist`: (1) los seis capítulos renderizan con un `h1`, chip correcto
+(Java 8 en los cinco primeros, Java 17 en records), sus diagramas y TOC de 9 a 11 entradas, y el
+pager encadena Métodos, clases, encapsulamiento, herencia, interfaces, Object, records y Java 8;
+(2) el modo de lectura esconde records con `?v=8` y `?v=11`, lo muestra desde 17, y deja Object
+visible en las cinco versiones; (3) `/docs/objetos/records/?v=8` avisa con las dos versiones y
+ofrece el salto a 17; (4) a 390 px los dos capítulos nuevos no desbordan, con diagramas y tablas
+contenidos; (5) árbol, índice (6 tarjetas), chip de la portada ("6 capítulos") y búsqueda coinciden,
+y "constructor compacto" encuentra records. Build: 22 páginas, 19 indexadas, 21 de 21 URL en el
+contrato, auditoría limpia con 210 clases en markup contra 357 reglas.
