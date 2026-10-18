@@ -1,27 +1,50 @@
 ---
-// Hero diagram: source -> javac -> bytecode -> JVM -> output.
-// CSS-only. Every node is real text, so the pipeline reads as a static list
-// when animation is disabled or unavailable.
+// "Del código a la pantalla": the five stages a Java program walks through.
+// Each stage is real text with a title, a mono value and a one-line caption,
+// so the diagram reads as a static list. The reveal controller lights the
+// stages in sequence when the section enters the viewport.
 type Stage = {
   label: string;
-  code: string;
+  value: string;
+  caption: string;
 };
 
 const stages: Stage[] = [
-  { label: 'Código fuente', code: 'HelloWorld.java' },
-  { label: 'Compilador', code: 'javac' },
-  { label: 'Bytecode', code: 'HelloWorld.class' },
-  { label: 'Máquina virtual', code: 'JVM' },
-  { label: 'Salida', code: 'Hello, world!' },
+  {
+    label: 'Código fuente',
+    value: 'HelloWorld.java',
+    caption: 'Escribes una clase con un método main y un mensaje.',
+  },
+  {
+    label: 'Compilador',
+    value: 'javac',
+    caption: 'Revisa los tipos y traduce tu código a bytecode.',
+  },
+  {
+    label: 'Bytecode',
+    value: 'HelloWorld.class',
+    caption: 'Instrucciones portables que cualquier JVM entiende.',
+  },
+  {
+    label: 'Máquina virtual',
+    value: 'JVM',
+    caption: 'Carga la clase, verifica el bytecode y lo ejecuta.',
+  },
+  {
+    label: 'Salida',
+    value: '¡Hola, mundo!',
+    caption: 'El programa escribe el resultado en la salida estándar.',
+  },
 ];
 ---
 <ol class="pipeline" aria-label="Recorrido de un programa Java: del código fuente a la salida">
   {
     stages.map((stage, index) => (
-      <li class="pipeline__stage">
-        <span class="pipeline__step" aria-hidden="true">{index + 1}</span>
-        <span class="pipeline__label">{stage.label}</span>
-        <code class="pipeline__code">{stage.code}</code>
+      <li class="pipeline__stage" data-reveal style={`--i: ${index}`}>
+        <span class="pipeline__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+        <h3 class="pipeline__title">{stage.label}</h3>
+        <code class="pipeline__code">{stage.value}</code>
+        <p class="pipeline__caption">{stage.caption}</p>
       </li>
     ))
   }

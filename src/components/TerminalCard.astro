@@ -1,0 +1,37 @@
+---
+// Hero terminal. The typewriter is pure CSS: every line lives in the markup
+// from the start, so the card is complete with JavaScript disabled and shows
+// the full transcript when the visitor prefers reduced motion. The loop
+// narrates the same three beats as the page: compile, run, print.
+const compile = 'javac HelloWorld.java';
+const run = 'java HelloWorld';
+const output = '¡Hola, mundo!';
+---
+<figure class="terminal">
+  <div class="terminal__bar">
+    <span class="terminal__dots" aria-hidden="true">
+      <span class="terminal__dot"></span>
+      <span class="terminal__dot"></span>
+      <span class="terminal__dot"></span>
+    </span>
+    <span class="terminal__label">terminal</span>
+  </div>
+
+  <div class="terminal__body">
+    <p class="terminal__line terminal__line--compile">
+      <span class="terminal__prompt" aria-hidden="true">$</span>
+      <code class="terminal__code">{compile}</code>
+    </p>
+    <p class="terminal__line terminal__line--run">
+      <span class="terminal__prompt" aria-hidden="true">$</span>
+      <code class="terminal__code">{run}</code>
+    </p>
+    <p class="terminal__line terminal__line--output">
+      <code class="terminal__output"
+        >{output}<span class="terminal__cursor" aria-hidden="true"></span></code
+      >
+    </p>
+  </div>
+
+  <figcaption class="terminal__footer">javac compila · java ejecuta</figcaption>
+</figure>

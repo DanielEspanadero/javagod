@@ -56,8 +56,23 @@ body {
 }
 
 .brand__mark {
-  font-size: 1.05em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--badge-size);
+  block-size: var(--badge-size);
+  border-radius: var(--radius-sm);
+  background-color: var(--brand);
+  color: var(--on-brand);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
   line-height: 1;
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+.brand:hover .brand__mark {
+  background-color: var(--brand-accent);
 }
 
 .brand__name {

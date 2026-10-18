@@ -31,9 +31,9 @@ its own ("una vista inicial muy pulida y que la gente alucine al verla").
 S7: No dead links, ever. Nothing in the UI may point to a route that does not
 exist. Placeholders are labeled as such, not rendered as broken links.
 
-S8: Content language is Spanish (Rioplatense, voseo). Code, identifiers, and
-repository artifacts are English. Java baseline: 21 LTS, with notes where 17 or
-25 LTS differ.
+S8: Content language is neutral Spanish (no voseo, no regionalisms). Code,
+identifiers, and repository artifacts are English. Java baseline: 21 LTS, with
+notes where 17 or 25 LTS differ.
 
 S9: Content is data, navigation is derived. Adding a page must require creating
 one Markdown file with valid frontmatter and nothing else: no component edit, no
@@ -55,6 +55,14 @@ file requires an explicit redirect entry, never a silent break.
 S13: The design system scales by composition: tokens for every value, reusable
 components for repeated patterns, no page-specific CSS that another page cannot
 reuse.
+
+S14: Motion is narrative, not decoration. The landing choreographs an entrance
+(staggered, orquestado, under ~800ms) and reveals each section as it enters the
+viewport. Every animation must illustrate something about Java or guide
+attention; loops that only add noise are rejected. No animation library: CSS
+transitions plus one IntersectionObserver controller. Everything must be
+disabled under `prefers-reduced-motion: reduce` and the page must remain
+complete and readable with animation off.
 
 ## Tasks
 
@@ -107,3 +115,8 @@ directory was left empty: no git history, no node_modules, no prior specs.
 L6: Tambien hay que pensar en la escalabilidad y la mantenibilidad ya que Java
 seguirá sacando versiones y se irán agregando cosas nuevas a la web
 constantemente. Tiene que ser sencillo agregar contenido nuevo
+
+L7: Hmmm, me gusta el concepto, pero no me gusta como queda para la página
+inicial. También quiero que está página esté en Español neutro. Me gustaría que
+la página tuviera más animación cuando un usuario entra en ella y cuando haga
+scroll. No se si entiendes el concepto de lo que quiero?

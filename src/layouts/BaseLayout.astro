@@ -64,11 +64,50 @@ const { title, description } = Astro.props;
     <footer class="site-footer">
       <div class="container site-footer__inner">
         <p class="site-footer__note">
-          JavaGod — documentación visual de Java en español rioplatense. Estamos escribiendo los
-          capítulos; por ahora, la portada y los diagramas.
+          JavaGod — documentación visual de Java en español neutro. Los capítulos están en
+          preparación; por ahora, la portada y los diagramas.
         </p>
         <p class="site-footer__meta">Java 21 LTS · Hecho con ☕</p>
       </div>
     </footer>
+
+    {
+      /*
+       * One controller for the whole page (S14): scroll reveals and the
+       * progressive rail. It only toggles classes; all motion lives in CSS.
+       * With reduced motion we settle every target immediately and never
+       * create an observer, so nothing depends on the animation layer.
+       */
+    }
+    <script>
+      const targets = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      const settle = (element: Element) => {
+        element.classList.add('is-visible');
+        if (element.hasAttribute('data-path-item')) {
+          element.classList.add('is-reached');
+        }
+      };
+
+      if (targets.length > 0) {
+        if (reducedMotion.matches || !('IntersectionObserver' in window)) {
+          targets.forEach(settle);
+        } else {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (!entry.isIntersecting) continue;
+                settle(entry.target);
+                observer.unobserve(entry.target);
+              }
+            },
+            { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
+          );
+
+          targets.forEach((target) => observer.observe(target));
+        }
+      }
+    </script>
   </body>
 </html>

@@ -82,6 +82,9 @@
   --width-container: 74rem;
   --width-prose: 46rem;
   --width-measure: 62ch;
+  --width-terminal: 30rem;
+  --width-steps: 52rem;
+  --grid-cell: 3.5rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --header-height: 3.75rem;
 
@@ -89,13 +92,26 @@
   --z-header: 100;
   --z-overlay: 200;
 
-  /* Motion */
+  /* Motion — interface feedback */
   --ease-out: cubic-bezier(0.16, 0.84, 0.44, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --duration-fast: 120ms;
   --duration-base: 220ms;
   --duration-slow: 420ms;
   --duration-loop: 9s;
+
+  /* Motion — narrative entrance and scroll reveals (S14) */
+  --ease-enter: cubic-bezier(0.22, 0.75, 0.24, 1);
+  --duration-enter: 380ms;
+  --duration-reveal: 520ms;
+  --duration-rail: 480ms;
+  --duration-blink: 1.1s;
+  --enter-distance: 0.875rem;
+  --reveal-distance: 1.375rem;
+  --stagger-enter: 55ms;
+  --stagger-reveal: 90ms;
+  --terminal-cycle: 11s;
+  --terminal-start: 800ms;
 
   /* Mask stops for decorative gradients */
   --mask-solid: #000;

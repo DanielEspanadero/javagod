@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import TerminalCard from '../components/TerminalCard.astro';
 import JvmPipeline from '../components/JvmPipeline.astro';
 import ThreadStates from '../components/ThreadStates.astro';
 
@@ -9,108 +10,137 @@ type PathStep = {
   text: string;
 };
 
+const words = ['Aprende', 'Java', 'viendo', 'qué', 'pasa', 'adentro.'];
+
 const path: PathStep[] = [
   {
     index: '01',
     title: 'Fundamentos',
-    text: 'La JVM, los tipos primitivos y el control de flujo. Arrancás con el primer Hola, mundo y entendés qué hace javac por vos.',
+    text: 'La JVM, los tipos y el control de flujo. Empiezas con un Hola, mundo y ves qué hace javac por ti.',
   },
   {
     index: '02',
     title: 'Orientación a Objetos',
-    text: 'Clases, encapsulamiento, herencia e interfaces, con diagramas de memoria que se leen de una sola mirada.',
+    text: 'Clases, encapsulamiento, herencia e interfaces, con diagramas de memoria que se leen de un vistazo.',
   },
   {
     index: '03',
     title: 'Collections & Streams',
-    text: 'Listas, mapas, conjuntos y el pipeline funcional de Stream: qué colección usar, cuándo y por qué.',
+    text: 'Listas, mapas y conjuntos, más el pipeline funcional de Stream: qué colección usar y cuándo.',
   },
   {
     index: '04',
     title: 'Concurrencia',
-    text: 'Hilos, estados, locks y memoria compartida. Las cosas que rompen en producción, explicadas igual de claro.',
+    text: 'Hilos, estados, locks y memoria compartida. Lo que rompe en producción, explicado igual de claro.',
   },
 ];
 ---
 <BaseLayout
-  title="JavaGod — documentación visual de Java en español"
-  description="Aprendé Java viendo qué pasa adentro: diagramas animados, bytecode y concurrencia explicados en español rioplatense. Java 21 LTS."
+  title="JavaGod — documentación visual de Java"
+  description="Aprende Java viendo qué pasa adentro: diagramas animados, bytecode paso a paso y la máquina virtual explicada en español neutro. Java 21 LTS."
 >
   <section class="hero">
     <div class="container hero__inner">
-      <p class="hero__eyebrow">Documentación visual de Java</p>
-      <h1 class="hero__title">
-        Aprendé <span class="hero__accent">Java</span> viendo qué pasa adentro.
-      </h1>
-      <p class="hero__lead">
-        Diagramas animados, bytecode paso a paso y la máquina virtual explicada sin humo. Todo en
-        español rioplatense, directo al grano y sin instalar nada.
-      </p>
-      <div class="hero__actions">
-        <a class="btn btn--primary" href="#camino">Ver el camino</a>
-        <a class="btn btn--ghost" href="#visualizaciones">Ver visualizaciones</a>
+      <div class="hero__copy">
+        <p class="hero__eyebrow" style="--i: 0">Documentación visual de Java</p>
+        <h1 class="hero__title">
+          {
+            words.map((word, index) => (
+              <>
+                <span class="hero__word" style={`--i: ${index + 1}`}>
+                  {word === 'Java' ? <span class="hero__accent">{word}</span> : word}
+                </span>{' '}
+              </>
+            ))
+          }
+        </h1>
+        <p class="hero__lead" style="--i: 6">
+          Diagramas animados, bytecode paso a paso y la máquina virtual explicada sin humo. Todo lo
+          que ocurre entre tu código y la salida.
+        </p>
+        <div class="hero__actions" style="--i: 7">
+          <a class="btn btn--primary" href="#camino">Empezar por los fundamentos</a>
+          <a class="btn btn--ghost" href="#visualizaciones">Ver visualizaciones</a>
+        </div>
+        <p class="hero__meta" style="--i: 8">Java 21 LTS · Contenido en español neutro</p>
       </div>
-      <p class="hero__meta">Java 21 LTS · Contenido en español</p>
-      <div class="hero__diagram">
-        <JvmPipeline />
+
+      <div class="hero__visual" style="--i: 8">
+        <TerminalCard />
       </div>
     </div>
   </section>
 
-  <section class="section section--soft" id="camino">
+  <section class="section section--soft">
     <div class="container">
-      <div class="section__head">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">La ruta</p>
+        <h2 class="section__title">Del código a la pantalla, sin cajas negras</h2>
+        <p class="section__lead">
+          Cinco etapas. La misma ruta que sigue tu programa cada vez que ejecutas java.
+        </p>
+      </div>
+      <JvmPipeline />
+    </div>
+  </section>
+
+  <section class="section" id="camino">
+    <div class="container">
+      <div class="section__head" data-reveal>
         <p class="section__eyebrow">El camino</p>
         <h2 class="section__title">Un recorrido progresivo, de cero a concurrencia</h2>
         <p class="section__lead">
-          Cada etapa se apoya en la anterior. Podés leerla de corrido o saltear directo a lo que
-          necesitás hoy: nada de esto depende de haber leído lo previo.
+          Cada etapa se apoya en la anterior. Puedes leerlo de corrido o ir directo a lo que
+          necesitas hoy.
         </p>
       </div>
+
       <ol class="path__list">
         {
-          path.map((step) => (
-            <li class="path__step">
-              <span class="path__step-index">{step.index}</span>
-              <h3 class="path__title">{step.title}</h3>
-              <p class="path__text">{step.text}</p>
-              <span class="chip chip--soon">En preparación</span>
+          path.map((step, index) => (
+            <li class="path__item" data-reveal data-path-item style={`--i: ${index + 1}`}>
+              <span class="path__rail" aria-hidden="true">
+                <span class="path__rail-fill" />
+              </span>
+              <span class="path__index" aria-hidden="true">{step.index}</span>
+              <div class="path__body">
+                <h3 class="path__title">{step.title}</h3>
+                <p class="path__text">{step.text}</p>
+                <span class="chip chip--soon">En preparación</span>
+              </div>
             </li>
           ))
         }
       </ol>
-      <p class="section__note">
-        Los cuatro capítulos están en preparación: todavía no hay links porque todavía no hay
-        páginas. Cuando estén, aparecen acá.
-      </p>
     </div>
   </section>
 
-  <section class="section" id="visualizaciones">
+  <section class="section section--soft" id="visualizaciones">
     <div class="container">
-      <div class="section__head">
+      <div class="section__head" data-reveal>
         <p class="section__eyebrow">Visualizaciones</p>
         <h2 class="section__title">Los estados de un hilo, paso a paso</h2>
         <p class="section__lead">
-          El ciclo de vida de un Thread en Java 21. El diagrama se lee completo sin JavaScript; con
-          el botón podés recorrerlo estado por estado.
+          El ciclo de vida de un Thread en Java 21. El diagrama se entiende completo sin
+          JavaScript; con el botón puedes recorrerlo estado por estado.
         </p>
       </div>
-      <ThreadStates />
-      <p class="section__note">
-        Lo próximo en esta sección: memoria del heap, recolector de basura y el pipeline de Stream.
-      </p>
+      <div class="showcase" data-reveal style="--i: 1">
+        <ThreadStates />
+      </div>
     </div>
   </section>
 
   <section class="closing">
     <div class="container">
-      <div class="closing__card">
-        <h2 class="closing__title">Java 21 LTS, explicado como se ve.</h2>
-        <p class="closing__lead">
-          Los capítulos se están escribiendo. Mientras tanto, la portada y los diagramas ya te
-          muestran cómo piensa la máquina virtual.
-        </p>
+      <div class="closing__card" data-reveal>
+        <div class="closing__copy">
+          <h2 class="closing__title">Java 21 LTS, explicado como se ve.</h2>
+          <p class="closing__lead">
+            Los capítulos se están escribiendo. Mientras tanto, la portada y los diagramas ya
+            muestran cómo piensa la máquina virtual.
+          </p>
+        </div>
         <div class="closing__actions">
           <a class="btn btn--primary" href="#camino">Ir al camino</a>
         </div>

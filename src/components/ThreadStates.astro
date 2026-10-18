@@ -9,7 +9,7 @@ type ThreadState = {
 
 const states: ThreadState[] = [
   { name: 'NEW', hint: 'El hilo existe, pero todavía nadie llamó a start().' },
-  { name: 'RUNNABLE', hint: 'Está en la cola del scheduler esperando su turno de CPU.' },
+  { name: 'RUNNABLE', hint: 'Está en la cola del planificador esperando su turno de CPU.' },
   { name: 'BLOCKED', hint: 'Otro hilo tiene el monitor y este quedó esperando el lock.' },
   { name: 'WAITING', hint: 'Hizo wait() o join(): aguarda que otro hilo lo despierte.' },
   { name: 'TERMINATED', hint: 'El run() volvió o lanzó una excepción: ya no vuelve.' },
