@@ -117,9 +117,10 @@
   --pointer-spot: 30rem;
   --pointer-strength: 20%;
 
-  /* Terminal REPL: bounded transcript */
+  /* Terminal REPL: bounded transcript, floor height for the hero column */
   --terminal-body-min: 12rem;
   --terminal-transcript-max: 16rem;
+  --terminal-min-block: 24rem;
 
   /* Mask stops for decorative gradients */
   --mask-solid: #000;

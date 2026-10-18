@@ -57,12 +57,16 @@ const hints = ['help', 'javac', 'java', 'javap -c'];
         type="text"
         name="comando"
         aria-label="Comando"
-        placeholder="Escribe un comando y pulsa Enter"
+        placeholder="Escribe un comando"
         autocomplete="off"
         autocapitalize="off"
         autocorrect="off"
         spellcheck="false"
       />
+      <span class="terminal__shortcut">
+        <kbd class="terminal__key">/</kbd>
+        para escribir
+      </span>
     </form>
 
     <div class="terminal__hints">
@@ -74,6 +78,17 @@ const hints = ['help', 'javac', 'java', 'javap -c'];
         ))
       }
     </div>
+
+    {/*
+      Permanent bridge to the pipeline: the bytecode the terminal can print is
+      the third stage of the route, so the card says it out loud and links
+      there. It is static markup, visible from the first paint and without
+      JavaScript.
+    */}
+    <p class="terminal__bridge" data-role="bridge">
+      <span class="terminal__bridge-label">javap -c es la etapa 3 de la ruta</span>
+      <a class="terminal__bridge-link" href="#ruta">Ver la ruta</a>
+    </p>
 
     <p class="sr-only" aria-live="polite" data-role="announcer"></p>
   </div>
@@ -102,7 +117,8 @@ const hints = ['help', 'javac', 'java', 'javap -c'];
     '}',
   ].join('\n');
 
-  const HELP = 'Comandos: help, javac, java, javap -c, clear';
+  const HELP =
+    'Comandos: help, javac, java, javap -c, clear. El bytecode es la etapa 3 de la ruta.';
   const COMPILED = 'HelloWorld.java → HelloWorld.class (1 archivo compilado)';
   const HELLO = '¡Hola, mundo!';
   const UNKNOWN = 'comando no reconocido. Prueba con help.';
@@ -121,6 +137,7 @@ const hints = ['help', 'javac', 'java', 'javap -c'];
     const form = root.querySelector<HTMLFormElement>('[data-role="form"]');
     const input = root.querySelector<HTMLInputElement>('[data-role="input"]');
     const announcer = root.querySelector<HTMLElement>('[data-role="announcer"]');
+    const bridge = root.querySelector<HTMLElement>('[data-role="bridge"]');
     const chips = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-command]'));
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -235,6 +252,7 @@ const hints = ['help', 'javac', 'java', 'javap -c'];
 
       if (command === 'clear') {
         transcript?.replaceChildren();
+        bridge?.classList.remove('is-linked');
         announce('Consola limpia.');
         return;
       }
@@ -243,6 +261,11 @@ const hints = ['help', 'javac', 'java', 'javap -c'];
 
       const entries = answer(command);
       for (const entry of entries) push(entry);
+
+      /* The bytecode block is the moment the bridge becomes relevant. */
+      if (entries.some((entry) => entry.kind === 'block')) {
+        bridge?.classList.add('is-linked');
+      }
 
       const spoken = entries.some((entry) => entry.kind === 'block')
         ? 'javap -c: bytecode de HelloWorld.java.'
@@ -312,5 +335,39 @@ const hints = ['help', 'javac', 'java', 'javap -c'];
         run(chip.dataset.command ?? '');
       });
     }
+
+    /*
+     * Keyboard layer: `/` jumps to the prompt from anywhere on the page and
+     * Escape empties the line and leaves it. Both are ignored while another
+     * field owns the keystroke, so typing a slash never loses a character, and
+     * nothing is intercepted before the prompt exists.
+     */
+    const isField = (target: EventTarget | null) => {
+      const element = target instanceof HTMLElement ? target : null;
+      if (!element) return false;
+
+      return (
+        element.tagName === 'INPUT' ||
+        element.tagName === 'TEXTAREA' ||
+        element.tagName === 'SELECT' ||
+        element.isContentEditable
+      );
+    };
+
+    document.addEventListener('keydown', (event) => {
+      if (!input || !root.classList.contains('is-ready')) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      if (event.key === '/' && !isField(event.target)) {
+        event.preventDefault();
+        input.focus({ preventScroll: true });
+        return;
+      }
+
+      if (event.key === 'Escape' && document.activeElement === input) {
+        input.value = '';
+        input.blur();
+      }
+    });
   }
 </script>
