@@ -1,0 +1,211 @@
+/* Static search (S3). The control lives in the header and the dialog is a
+   normal page surface: same tokens, same radii, same motion. Pagefind ships a
+   runtime and its own styles; this file styles our markup instead, so a search
+   result reads like the rest of the site. */
+
+.search {
+  display: none;
+}
+
+.js .search {
+  display: block;
+}
+
+.search-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  block-size: var(--control-size);
+  padding-block: 0;
+  padding-inline: var(--space-xs) var(--space-2xs);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-raised);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
+}
+
+.search-toggle:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  color: var(--brand);
+}
+
+.search-toggle__icon {
+  inline-size: var(--icon-size);
+  block-size: var(--icon-size);
+}
+
+/* The word is the first thing to go when the header runs out of room: the
+   icon and the dialog label still say what the control does. */
+.search-toggle__label {
+  display: none;
+}
+
+/* The key badge only makes sense where there is a keyboard to press. */
+.search-toggle__key {
+  display: none;
+  padding-inline: var(--space-3xs);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-xs);
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+}
+
+/* The dialog: one surface, opened as a real modal so the page behind it cannot
+   be tabbed into, with the backdrop dimming the rest of the site. */
+.search-dialog {
+  inline-size: min(40rem, calc(100vw - var(--space-md)));
+  max-block-size: min(36rem, calc(100svh - var(--space-3xl)));
+  margin-block-start: 10svh;
+  padding: 0;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+
+.search-dialog::backdrop {
+  background-color: color-mix(in srgb, var(--surface) 30%, rgb(0 0 0 / 55%));
+  backdrop-filter: blur(2px);
+}
+
+.search-dialog__inner {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+.search-field {
+  display: grid;
+  gap: var(--space-3xs);
+}
+
+.search-field__label {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.search-field__input {
+  inline-size: 100%;
+  padding-block: var(--space-xs);
+  padding-inline: var(--space-sm);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-raised);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+}
+
+.search-field__input::placeholder {
+  color: var(--text-faint);
+}
+
+.search-field__input:focus-visible {
+  border-color: var(--focus);
+  outline: var(--hairline) solid var(--focus);
+  outline-offset: 1px;
+}
+
+.search-hint,
+.search-status {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.02em;
+}
+
+.search-results {
+  display: grid;
+  gap: var(--space-3xs);
+  max-block-size: 22rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.search-result__link {
+  display: grid;
+  gap: var(--space-3xs);
+  padding-block: var(--space-2xs);
+  padding-inline: var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.search-result__link:hover,
+.search-result__link:focus-visible {
+  background-color: var(--surface-raised);
+}
+
+.search-result__title {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.search-result__excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+/* Pagefind already wraps the matched terms; only the paint is ours. */
+.search-result__excerpt mark {
+  padding-inline: 0.1em;
+  border-radius: var(--radius-xs);
+  background-color: var(--brand-soft);
+  color: var(--text);
+}
+
+.search-dialog__close {
+  justify-self: end;
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-sm);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  cursor: pointer;
+}
+
+.search-dialog__close:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.search-dialog__close kbd {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+/* Wide viewports can afford the label and the shortcut badge; narrow ones keep
+   the icon and let the header breathe. */
+@media (min-width: 48rem) {
+  .search-toggle__label {
+    display: inline;
+  }
+
+  .search-toggle__key {
+    display: inline-block;
+  }
+}
