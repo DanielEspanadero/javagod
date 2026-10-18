@@ -1,0 +1,109 @@
+# JavaGod — Visual Java documentation site
+
+Static documentation site for Java, in Spanish, with illustrated and animated
+diagrams. Reference for information architecture and presentation: angular.dev.
+
+The previous attempt was deleted on request (see L5). This document starts the
+project from an empty directory and is the only authoritative record of scope.
+
+## Specs
+
+S1: Static Astro site, no backend, deployable to Cloudflare Pages. Build must
+stay reproducible with `pnpm install && pnpm build`.
+
+S2: Native CSS design system organized as tokens / base / layout / page styles.
+Every class used in markup must have a CSS rule; the build fails otherwise.
+
+S3: Progressive but searchable. The site is read front to back as a course, and
+any specific topic must be reachable directly (search + deep links + TOC).
+
+S4: Illustrated diagrams as the core differentiator. Every diagram must be
+readable as static SVG/HTML; animation is an enhancement layer, never the only
+carrier of meaning, and must respect `prefers-reduced-motion`.
+
+S5: Navigation and chrome modeled on angular.dev: sticky top bar with brand and
+theme toggle, left nav tree, in-page TOC, breadcrumbs, previous/next.
+Deliberately excluded: versioned docs and an in-browser code runner.
+
+S6: The landing page ships before the documentation and must look polished on
+its own ("una vista inicial muy pulida y que la gente alucine al verla").
+
+S7: No dead links, ever. Nothing in the UI may point to a route that does not
+exist. Placeholders are labeled as such, not rendered as broken links.
+
+S8: Content language is Spanish (Rioplatense, voseo). Code, identifiers, and
+repository artifacts are English. Java baseline: 21 LTS, with notes where 17 or
+25 LTS differ.
+
+S9: Content is data, navigation is derived. Adding a page must require creating
+one Markdown file with valid frontmatter and nothing else: no component edit, no
+sidebar edit, no manual index. Section titles and ordering live in a single
+registry, never repeated per page.
+
+S10: Every content rule is enforced by the build, not by discipline: missing or
+invalid frontmatter, unknown section, duplicate order within a section, dead
+links, and classes without CSS rules all fail the build.
+
+S11: Java version evolution is handled by annotation, not duplication. One
+canonical page per topic plus `since` metadata and a per-release "novedades"
+section. A per-version content tree is explicitly rejected: it multiplies
+maintenance cost by the number of supported releases.
+
+S12: URLs are a public contract. The slug derives from the file path; renaming a
+file requires an explicit redirect entry, never a silent break.
+
+S13: The design system scales by composition: tokens for every value, reusable
+components for repeated patterns, no page-specific CSS that another page cannot
+reuse.
+
+## Tasks
+
+| ID | Specs | Route | Task |
+| -- | ----- | ----- | ---- |
+| F0.1 | S1,S2 | setup | Scaffold Astro 7, tsconfig, config, install |
+| F0.2 | S2 | styles | Token system: color, fluid type, space, motion |
+| F0.3 | S1,S2 | verify | Build audit: dead links, h1 count, orphan classes |
+| F1.1 | S5,S6 | layout | Site shell: sticky header, brand, theme toggle, footer |
+| F1.2 | S4,S6 | landing | Hero with animated JVM pipeline diagram |
+| F1.3 | S3,S4 | landing | Progressive learning path section |
+| F1.4 | S4,S6 | landing | Visualization showcase: animated thread states |
+| F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next |
+| F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) |
+| F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables |
+| F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules |
+| F2.5 | S12 | docs | Slug and redirect contract |
+| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations |
+| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch |
+| F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section |
+| F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects |
+
+## Log
+
+L1: (recovered from the deleted task file) Crear un proyecto desde cero llamado
+javagod — documentación de Java lo más completa posible, visual y agradable.
+Sitio web estático con visualizaciones animadas.
+
+L2: Borra el proyecto y lo empezamos de cero. Lo empezó un modelo en local que no
+es muy bueno y se ve que no lo hizo bien. Quiero una base para crear JavaGod
+
+L3: te tiras media hora para borrar un puto repo. Si te digo todo fuera, es todo
+fuera!
+
+L4: Me gusta tu idea. El punto 1 te diría de hacer una mezcla de ambas, que sea
+progresivo, pero si alguien busca algo en concreto que pueda encontrarlo con
+facilidad. El punto 2 son diagramas ilustrados, aunque me gustaría meter
+animaciones para hacer más agradable la página. Me gustaría que tomes como
+referencia la web de https://angular.dev/ pero en lugar de angular, aplicarlo a
+Java. El punto 3 te diría que sin backend ya que es más sencillo de desplegar,
+aunque si crees que un backend puede aportar, lo miramos. Punto 4 tiraría de
+cloudflare. Punto 5 lo escribes tú y yo te puedo ir guiando. Creo que lo mejor
+para que quede bien es ir haciendolo por fases. Antes de la documentación estaría
+bien tener una vista inicial muy pulida y que la gente alucine al verla. Que
+opinas de todo esto?
+
+L5: Everything under the project directory deleted on explicit request. The
+directory was left empty: no git history, no node_modules, no prior specs.
+
+L6: Tambien hay que pensar en la escalabilidad y la mantenibilidad ya que Java
+seguirá sacando versiones y se irán agregando cosas nuevas a la web
+constantemente. Tiene que ser sencillo agregar contenido nuevo
