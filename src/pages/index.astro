@@ -72,7 +72,18 @@ const path: PathStep[] = [
     </div>
   </section>
 
-  <section class="section section--soft">
+  <aside class="stance" aria-label="Cómo es este sitio">
+    <div class="container">
+      <ul class="stance__list">
+        <li class="stance__item">Sin anuncios</li>
+        <li class="stance__item">Sin registro</li>
+        <li class="stance__item">Sin cuentas</li>
+        <li class="stance__item">De Java 8 a Java 25</li>
+      </ul>
+    </div>
+  </aside>
+
+  <section class="section section--soft" id="ruta">
     <div class="container">
       <div class="section__head" data-reveal>
         <p class="section__eyebrow">La ruta</p>
@@ -137,19 +148,18 @@ const path: PathStep[] = [
   </section>
 
   <section class="closing">
-    <div class="container">
-      <div class="closing__card" data-reveal>
-        <div class="closing__copy">
-          <h2 class="closing__title">Todo Java, explicado como se ve.</h2>
-          <p class="closing__lead">
-            Los capítulos se están escribiendo. Mientras tanto, la portada y los diagramas ya
-            muestran cómo piensa la máquina virtual.
-          </p>
-        </div>
-        <div class="closing__actions">
-          <a class="btn btn--primary" href="#camino">Ir al camino</a>
-        </div>
-      </div>
+    <div class="container closing__inner" data-reveal>
+      <h2 class="closing__title">Todo Java, explicado como se ve.</h2>
+      <p class="closing__lead">
+        Sin anuncios, sin registro y sin cookies. Un sitio estático generado en el build, sin
+        backend ni base de datos.
+      </p>
+      <ul class="closing__principles">
+        <li class="closing__principle">Estático</li>
+        <li class="closing__principle">Sin cookies</li>
+        <li class="closing__principle">Sin cuentas</li>
+      </ul>
+      <a class="btn btn--primary closing__cta" href="#camino">Empezar por los fundamentos</a>
     </div>
   </section>
 </BaseLayout>
