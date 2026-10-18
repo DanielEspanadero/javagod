@@ -21,6 +21,7 @@ import { sectionIds } from '../src/lib/sections.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const CONTENT_DIR = path.join(ROOT, 'src', 'content', 'docs');
+const MANIFEST = path.join(ROOT, 'src', 'urls.json');
 
 /** Kebab-case: lowercase words joined by single hyphens, so the slug is URL safe. */
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -184,12 +185,24 @@ async function main() {
     throw error;
   }
 
+  // Register the URL in the published contract (S12). The build fails on an
+  // unregistered route, so the scaffolder leaving it out would mean two extra
+  // build runs before a new chapter is green.
+  const url = `/docs/${section}/${slug}/`;
+  const manifest = JSON.parse(await readFile(MANIFEST, 'utf8'));
+
+  if (!manifest.urls.includes(url)) {
+    const sorted = [...manifest.urls, url].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    await writeFile(MANIFEST, `${JSON.stringify({ urls: sorted }, null, 2)}\n`, 'utf8');
+    console.log('· URL registrada en src/urls.json');
+  }
+
   if (description === title.trim()) {
     console.log('· Sin --description: se usa el título como descripción.');
   }
 
   console.log(`✓ Creado src/content/docs/${section}/${slug}.md (order ${order})`);
-  console.log(`· URL: /docs/${section}/${slug}/`);
+  console.log(`· URL: ${url}`);
   return 0;
 }
 

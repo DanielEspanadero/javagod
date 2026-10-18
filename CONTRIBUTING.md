@@ -132,8 +132,9 @@ Una URL publicada no cambia nunca en silencio (S12). `src/urls.json` es el manif
 lo que está publicado y se commitea junto con el contenido: es el contrato, no una
 lista informativa.
 
-- Página nueva: `pnpm urls:update` añade las rutas que se generan y todavía no están en
-  el manifiesto, en orden. Es lo único que hay que hacer aparte de escribir el capítulo.
+- Página nueva con `pnpm new:doc`: el scaffolder registra la URL en el manifiesto, así que
+  no hay que hacer nada más. Si creas el archivo a mano, `pnpm urls:update` añade las rutas
+  que se generan y todavía no están en el manifiesto, en orden.
 - Página renombrada o movida: añade la línea del redirect en `public/_redirects`
   (`/ruta-vieja/ /ruta-nueva/ 301`) y registra el slug nuevo con `pnpm urls:update`. El
   slug sale del path, así que mover el archivo cambia la URL: sin el redirect el build
