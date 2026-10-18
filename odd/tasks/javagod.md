@@ -102,7 +102,7 @@ this, and the build does not depend on it.
 | F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | hecho |
 | F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | hecho |
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | hecho |
-| F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | pendiente |
+| F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | hecho |
 | F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects | pendiente |
 
 ## Releases
@@ -442,3 +442,28 @@ estático o de instancia con o sin `String[]`, e importan `java.base` solos. El 
 a 15 rutas: auditoría limpia con 182 clases en markup contra 193 reglas, 15 de 15 URL en el
 contrato, un `h1` por página y cero guiones largos o medios; el auditor temporal de Playwright
 pasa las 15 rutas por 1440, 1024 y 390 sin un desborde.
+
+L37: F4.3 cerrada (`c54db66`, `feat(docs): add the version reading mode`). El modo de
+lectura es un `select` en `src/components/VersionSwitcher.astro` que se renderiza desde el
+registro de LTS, encima del árbol del rail y encima de las tarjetas del índice. El estado vive
+en `javagod:version` de `localStorage` y en un `?v=`; el query gana, un valor desconocido cae en
+`all`, y al cambiar el selector la URL se reescribe con `history.replaceState`. La regla de qué
+aplica está una sola vez (`appliesTo`) y la preguntan el árbol, las tarjetas, el pager y el
+aviso. Se oculta con `hidden`, nunca borrando nodos, así que sin JavaScript la página está
+completa; el control queda oculto bajo la clase `js` porque un selector que no filtra promete
+lo que no hace. Un capítulo fuera del rango se sigue viendo y avisa sobre la prosa con su rango,
+la versión en lectura y un botón que salta al límite más cercano. Contrato para superficies
+nuevas: `data-since`/`data-hasta` del frontmatter más `data-version-item` en lo que se oculta.
+Verificado con Playwright sobre `dist` en 9 casos: (a) carga limpia con las 13 entradas
+visibles, sin aviso y sin nada guardado; (b) Java 17 esconde `java-25`, `java-21` y
+`control-de-flujo` del árbol y del índice, y el pager de `java-17` deja de ofrecer `java-21`
+manteniendo el anterior; (c) `/docs/novedades/java-25/?v=17` muestra el aviso con las dos
+versiones y el botón pasa a 25, guarda y actualiza la URL; (d) `arrays?v=11` aplica sin aviso
+con `variables-y-constantes` visible y `control-de-flujo` oculto; (e) `?v=99` y `?v=abc` caen
+en "todas" aunque haya un 11 guardado; (f) el 11 guardado sobrevive a una recarga sin query y
+avisa en `control-de-flujo`; (g) sin JavaScript las 13 entradas están visibles, no hay aviso y
+el control no se ve; extra: con los dos enlaces del pager ocultos desaparece la barra entera.
+Build y auditoría limpias: 15 rutas, 321 enlaces, 188 clases en markup contra 199 reglas, un
+`h1` por página, contrato de URLs intacto y cero desbordes en las 15 rutas por 1440, 1024 y 390.
+La rama `feature/version-reading-mode` va por su primera unidad; con la deuda de la rama
+anterior ya mergeada, la entrega (PR encadenado por unidad) sigue siendo decisión del dueño.
