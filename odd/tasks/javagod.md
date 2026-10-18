@@ -101,7 +101,7 @@ this, and the build does not depend on it.
 | F2.5 | S12 | docs | Slug and redirect contract | hecho |
 | F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | hecho |
 | F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | hecho |
-| F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | pendiente |
+| F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | hecho |
 | F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | pendiente |
 | F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects | pendiente |
 
@@ -403,3 +403,42 @@ frío: cero desbordes de página en las 10 rutas por 1440, 1024 y 390, y las dos
 quedaban eran falsos positivos del propio auditor (los nodos non-últimos sumaban exactamente 16
 píxeles por la flecha decorativa posicionada fuera de la caja, y las tablas ya estaban dentro de
 su contenedor). El auditor quedó corregido para medir desborde horizontal real: cero problemas.
+
+L34: F4.2, primera mitad (`88299a7`, `feat(docs): add version metadata and the chapter version
+line`). `src/lib/versions.mjs` es el único registro de las LTS (8, 11, 17, 21, 25); el schema
+exige `since` y admite `hasta`, los dos validados contra ese registro, y `assertContentRules`
+gana la regla de que `hasta` no puede ser anterior a `since`, con mensaje que nombra archivo y
+valores. Los ocho capítulos de Fundamentos declaran su versión, y la línea se ve bajo la
+descripción. Decisión de semántica: `since` es la primera LTS en la que el capítulo se lee
+entero tal como está escrito, no la versión en la que nació el tema. El worker subió
+`hola-mundo` de 8 a 11 y lo verifiqué: el capítulo menciona el lanzador de archivo único
+(JEP 330, Java 11), así que el valor alto es el correcto. Dos correcciones sobre lo entregado:
+la línea de versión era texto suelto con un `·` decorativo delante, que se leía como una viñeta
+huérfana, y pasó a chip como los demás datos mono del sitio; y el mensaje del schema decía "año
+entero" para 8 y 11, que no son años. Cuatro rechazos probados en copias aparte con build en
+rojo: falta `since`, `since: 9`, `hasta` menor que `since` y clave desconocida.
+
+L35: Hueco que el worker no podía tocar y encontré al revisar: `scripts/new-doc.mjs` escribía
+frontmatter sin `since`, así que el próximo capítulo generado no compilaba. Arreglo en
+`c7a2041` (`feat(tooling): ask the scaffolder for the chapter version`): el scaffolder pide
+`--since` obligatorio y `--hasta` opcional, valida los tres casos contra el registro de LTS
+antes de escribir, y el `--hasta` menor que `--since` falla con su mensaje. Verificado en una
+copia con `node_modules` por enlaces duros: los tres rechazos con exit 1, el caso feliz escribe
+`since: 21`, y con `--hasta 25` el build genera el chip "Desde Java 11 hasta Java 25".
+CONTRIBUTING quedó con los campos nuevos, el registro de LTS y la regla de qué rechaza el
+build.
+
+L36: F4.2, segunda mitad (`f42945a`, `feat(content): add the per-release novedades pages`).
+Sección nueva `novedades` en el registro y una página por LTS (8, 11, 17, 21, 25), cada una con
+`since` igual a su release: así el modo de lectura de F4.3 podrá ocultar la página de Java 25 a
+quien lea en 17 sin inventar nada. Cada página tiene intro, las piezas que cambian el modelo
+mental, un aviso de lo que se quedó por el camino, la tabla de JEP por área y el cierre de
+siempre. Datos de `openjdk.org` para las cinco versiones, con las JEP de cada release y las
+notas de retiradas y cambios de comportamiento; las JEP que el investigador no pudo confirmar
+se dejaron fuera en vez de rellenarlas. Dos datos que verifiqué aparte antes de publicar:
+`import module java.base;` es la sintaxis de la JEP 511 (no `import java.base.*;`) y los
+archivos fuente compactos de la JEP 512 declaran la clase de forma implícita, admiten `main`
+estático o de instancia con o sin `String[]`, e importan `java.base` solos. El sitio pasa de 10
+a 15 rutas: auditoría limpia con 182 clases en markup contra 193 reglas, 15 de 15 URL en el
+contrato, un `h1` por página y cero guiones largos o medios; el auditor temporal de Playwright
+pasa las 15 rutas por 1440, 1024 y 390 sin un desborde.
