@@ -3,6 +3,7 @@ title: 'Arrays'
 description: 'Tamaño fijo, arrays de arrays y las utilidades de java.util.Arrays.'
 section: fundamentos
 order: 7
+since: 11
 ---
 
 ## Un array es un objeto de tamaño fijo
@@ -177,14 +178,9 @@ elementos iguales conservan su orden relativo, que es lo que necesitas cuando or
 campo y esperas mantener el orden del otro.
 
 ```java
-record Persona(String nombre, int edad) {}
-Persona[] gente = {
-    new Persona("Ada", 36),
-    new Persona("Alan", 36),
-    new Persona("Grace", 45)
-};
-Arrays.sort(gente, Comparator.comparingInt(Persona::edad));
-// Ada y Alan siguen en el orden en que estaban: el sort es estable
+String[] palabras = {"pera", "kiwi", "uva", "sala"};
+Arrays.sort(palabras, Comparator.comparingInt(String::length));
+// [uva, pera, kiwi, sala]: las tres de cuatro letras conservan su orden
 ```
 
 ## Arrays y `List` comparten poco

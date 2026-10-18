@@ -28,6 +28,8 @@ const { Content, headings } = await render(doc);
   id={doc.id}
   title={doc.data.title}
   description={doc.data.description}
+  since={doc.data.since}
+  hasta={doc.data.hasta}
   headings={headings}
 >
   <Content />

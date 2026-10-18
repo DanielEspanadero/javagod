@@ -7,6 +7,7 @@ import BaseLayout from './BaseLayout.astro';
 import DocsNav from '../components/DocsNav.astro';
 import DocsToc from '../components/DocsToc.astro';
 import { docHref, getDocs, getNeighbours, groupDocs, sectionOf } from '../lib/docs';
+import { versionLabel } from '../lib/versions.mjs';
 import '../styles/docs.css';
 import '../styles/diagram.css';
 
@@ -15,10 +16,14 @@ interface Props {
   id: string;
   title: string;
   description: string;
+  /** First LTS release in which the chapter reads whole, from the frontmatter (S11). */
+  since: number;
+  /** Last LTS release the chapter is still valid for, when declared (S11). */
+  hasta?: number;
   headings: MarkdownHeading[];
 }
 
-const { id, title, description, headings } = Astro.props;
+const { id, title, description, since, hasta, headings } = Astro.props;
 
 const docs = await getDocs();
 const groups = groupDocs(docs);
@@ -26,6 +31,13 @@ const { previous, next } = getNeighbours(docs, id);
 const current = docs.find((doc) => doc.id === id);
 const section = current ? sectionOf(current) : undefined;
 const sectionAnchor = section ? `/docs/#${section.id}` : '/docs/';
+
+// One line under the lead. The range is written with "hasta": a dash would
+// trip the punctuation rule, and the words read better in Spanish anyway.
+const versionLine =
+  hasta === undefined
+    ? `Desde ${versionLabel(since)}`
+    : `Desde ${versionLabel(since)} hasta ${versionLabel(hasta)}`;
 ---
 <BaseLayout title={`${title} · JavaGod`} description={description} wide>
   <div class="docs">
@@ -57,6 +69,7 @@ const sectionAnchor = section ? `/docs/#${section.id}` : '/docs/';
         {section && <p class="docs__eyebrow">{section.title}</p>}
         <h1 class="docs__title">{title}</h1>
         <p class="docs__lead">{description}</p>
+        <p class="docs__version">{versionLine}</p>
       </header>
 
       <div class="prose">

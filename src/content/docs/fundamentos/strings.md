@@ -3,6 +3,7 @@ title: 'Strings'
 description: 'Inmutabilidad, pool y los métodos que de verdad usas cada día.'
 section: fundamentos
 order: 6
+since: 17
 ---
 
 ## Un objeto que se comporta casi como un primitivo

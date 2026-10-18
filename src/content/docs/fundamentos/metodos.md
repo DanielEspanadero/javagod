@@ -3,6 +3,7 @@ title: 'Métodos'
 description: 'Firmas, sobrecarga, paso por valor y métodos que hacen una sola cosa.'
 section: fundamentos
 order: 8
+since: 8
 ---
 
 ## Un método es un contrato con nombre

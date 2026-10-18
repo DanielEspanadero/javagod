@@ -199,6 +199,23 @@
   font-size: var(--text-md);
 }
 
+/* Version metadata from the chapter frontmatter (S11), as a chip: the site
+   already reads small mono facts that way, and a bare faint line under the lead
+   looked like a leftover bullet. The range says "hasta", never a dash. */
+.docs__version {
+  display: inline-flex;
+  margin-block-start: var(--space-sm);
+  padding-block: 0.15em;
+  padding-inline: 0.6em;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-raised);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.04em;
+}
+
 /* In-page table of contents */
 .toc {
   display: grid;

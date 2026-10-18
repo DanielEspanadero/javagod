@@ -23,9 +23,10 @@ export function docHref(doc: Doc): string {
 /**
  * Enforce the content rules that only a whole-collection pass can check (S9, S10).
  *
- * Two rules, each with its own message so a failure names exactly one thing to
- * fix: the section directory must match the declared `section`, and no two
- * chapters may claim the same position in a section.
+ * Three rules, each with its own message so a failure names exactly one thing
+ * to fix: the section directory must match the declared `section`, no two
+ * chapters may claim the same position in a section, and `hasta` cannot be
+ * lower than `since`.
  */
 function assertContentRules(docs: Doc[]): void {
   const seen = new Map<string, Doc>();
@@ -39,6 +40,14 @@ function assertContentRules(docs: Doc[]): void {
         `Sección inconsistente en "${file}": el archivo vive en la carpeta "${folder}" ` +
           `pero su frontmatter declara section: "${doc.data.section}". ` +
           `Mueve el archivo a la carpeta "${doc.data.section}" o cambia el section del frontmatter.`,
+      );
+    }
+
+    if (doc.data.hasta !== undefined && doc.data.hasta < doc.data.since) {
+      throw new Error(
+        `Rango de versiones inválido en "${file}": since ${doc.data.since} va después de ` +
+          `hasta ${doc.data.hasta}. hasta marca la última versión LTS en la que el capítulo sigue ` +
+          `valiendo, así que no puede ser anterior a since: sube hasta o baja since.`,
       );
     }
 
