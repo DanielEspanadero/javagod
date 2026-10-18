@@ -305,3 +305,28 @@ verde; (5) destino inexistente, rojo; (6) origen tapado por una ruta viva, rojo.
 carpetas de scratch y los restos en `/tmp` del worker quedaron borradas. La rama suma
 2353 líneas en cinco unidades (shell, prosa, tooling de autoría, ancho completo y
 contrato de URLs); para publicar, un PR encadenado por unidad.
+
+L26: Segundo lote de F4.1: capítulos 4, 5 y 6 del índice (Operadores y expresiones, Control
+de flujo, Strings). Los tres se escribieron en línea en la sesión principal: el guard del
+writer exige una referencia `Spec: odd/tasks/javagod.md, T<n>` y este documento numera con
+`F<n>`, así que la delegación se rechazó y no se reintentó. Datos contrastados antes de
+escribir: JLS 15.17.3 (signo del resto), 15.18.2 (desbordamiento) y 15.19 (máscara de la
+distancia de desplazamiento), 15.26.2 (cast implícito de la asignación compuesta), 14.21 y
+14.22 (alcanzabilidad de `while(true)` y de `if(false)`), 14.15 y 14.16 (etiquetas sin saltos
+no locales), JEP 441 (exhaustividad, `case null`, guardas `when`, dominancia), JEP 394
+(patrón en `instanceof`), JLS 3.10.5 (literales internados), API de `String` de Java 21
+(`strip` con `Character.isWhitespace` contra `trim` con `<= U+0020`, `isBlank`, `repeat`,
+`lines`, `indent`, `formatted`, `join`, `split` con límite cero, `intern`, `compareTo`) y
+JEP 378 (bloques de texto). Cada capítulo lleva un diagrama estático de las primitivas de
+F3.1 y cierra con `Qué te llevas`, como los anteriores.
+
+L27: Evidencia del segundo lote de F4.1: `517a3f0` (`feat(content): add the operators and
+expressions chapter`), `2014458` (`feat(content): add the control flow chapter`) y `c4980db`
+(`feat(content): add the strings chapter`). Cada commit lleva su capítulo y su línea en
+`src/urls.json`, así que el contrato queda verde en cada corte y no solo en el último. Build
+limpio con 8 rutas: auditoría con 180 clases en markup contra 191 reglas, 111 enlaces
+internos, un solo `h1` por página, cero guiones largos o medios en el HTML. Contrato de URLs:
+8 de 8 registradas y sin redirects. Revisión del HTML generado: los tres capítulos emiten su
+`figure` (los valores del diagrama de Control de flujo llegan escapados como
+`i &#x3C; nombres.size()`), una tabla en Operadores y otra en Strings, y los bloques de código
+con su barra. F4.1 sigue en curso: quedan los capítulos 7 y 8 (Arrays, Métodos).
