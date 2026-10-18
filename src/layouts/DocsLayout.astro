@@ -54,13 +54,22 @@ const chapterRange =
       <DocsNav groups={groups} currentId={id} />
     </aside>
 
+    {
+      /*
+       * Search indexing (S3): this article is the only part of the site that
+       * belongs in the index, so `data-pagefind-body` marks it and every piece
+       * of chrome around the prose is ignored. The h1 names the result instead
+       * of the whole document title.
+       */
+    }
     <article
       class="docs__article"
       data-version-page
       data-since={since}
       data-hasta={hasta}
+      data-pagefind-body
     >
-      <nav class="breadcrumbs" aria-label="Ruta de navegación">
+      <nav class="breadcrumbs" aria-label="Ruta de navegación" data-pagefind-ignore>
         <ol class="breadcrumbs__list">
           <li class="breadcrumbs__item"><a class="breadcrumbs__link" href="/">Inicio</a></li>
           <li class="breadcrumbs__item">
@@ -81,7 +90,7 @@ const chapterRange =
 
       <header class="docs__header">
         {section && <p class="docs__eyebrow">{section.title}</p>}
-        <h1 class="docs__title">{title}</h1>
+        <h1 class="docs__title" data-pagefind-meta="title">{title}</h1>
         <p class="docs__lead">{description}</p>
         <p class="docs__version">{versionLine}</p>
       </header>
@@ -95,7 +104,7 @@ const chapterRange =
          * what the reader actually chose.
          */
       }
-      <div class="version-notice" data-version-notice role="status" hidden>
+      <div class="version-notice" data-version-notice role="status" hidden data-pagefind-ignore>
         <p class="version-notice__text">
           Este capítulo cubre {chapterRange}. Estás leyendo en{' '}
           <span data-version-selected></span>.
@@ -111,7 +120,7 @@ const chapterRange =
 
       {
         (previous || next) && (
-          <nav class="pager" aria-label="Capítulos contiguos" data-version-pager>
+          <nav class="pager" aria-label="Capítulos contiguos" data-version-pager data-pagefind-ignore>
             {previous && (
               <a
                 class="pager__link pager__link--previous"
