@@ -4,6 +4,7 @@ import TerminalCard from '../components/TerminalCard.astro';
 import JvmPipeline from '../components/JvmPipeline.astro';
 import ThreadStates from '../components/ThreadStates.astro';
 import { findSection } from '../lib/sections.mjs';
+import { getDocs, groupDocs } from '../lib/docs';
 
 type PathStep = {
   /** Section id from the registry: the title is never repeated here (S9). */
@@ -12,6 +13,15 @@ type PathStep = {
 };
 
 const words = ['Aprende', 'Java', 'viendo', 'qué', 'pasa', 'por', 'dentro.'];
+
+/**
+ * Chapters published per section. The landing never claims a section is ready
+ * on its own: the count comes from the content collection, so a section with
+ * chapters links to them and the rest stay honestly marked as in preparation
+ * (S7). It also keeps the landing from drifting from what docs actually has.
+ */
+const groups = groupDocs(await getDocs());
+const chaptersPerSection = new Map(groups.map((group) => [group.section.id, group.docs.length]));
 
 const path: PathStep[] = [
   {
@@ -118,7 +128,17 @@ const path: PathStep[] = [
               <div class="path__body">
                 <h3 class="path__title">{findSection(step.id)?.title}</h3>
                 <p class="path__text">{step.text}</p>
-                <span class="chip chip--soon">En preparación</span>
+                {
+                  (chaptersPerSection.get(step.id) ?? 0) > 0 ? (
+                    <a class="chip chip--ready" href={`/docs/#${step.id}`}>
+                      {(chaptersPerSection.get(step.id) ?? 0) === 1
+                        ? '1 capítulo'
+                        : `${chaptersPerSection.get(step.id)} capítulos`}
+                    </a>
+                  ) : (
+                    <span class="chip chip--soon">En preparación</span>
+                  )
+                }
               </div>
             </li>
           ))
