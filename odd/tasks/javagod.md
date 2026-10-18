@@ -100,7 +100,7 @@ this, and the build does not depend on it.
 | F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | hecho |
 | F2.5 | S12 | docs | Slug and redirect contract | hecho |
 | F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | hecho |
-| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | pendiente |
+| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | en curso |
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | pendiente |
 | F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | pendiente |
 | F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects | pendiente |
@@ -273,6 +273,19 @@ diagrama del capítulo se genera como HTML estático dentro del `.md` (el CSS se
 en la página), con conectores por CSS y sin JavaScript, y la fila pasa a columna por
 debajo de 40rem. Antes del corte: `feature/docs-shell` mergeada a `develop` con `--no-ff`
 (`3cd8f95`) y la rama borrada, según el flujo del repositorio.
+
+L24: Índice acordado para Fundamentos, en orden de lectura: 1 Hola, mundo (ya
+publicado), 2 Tipos primitivos, 3 Variables y constantes, 4 Operadores y expresiones,
+5 Control de flujo, 6 Strings, 7 Arrays, 8 Métodos. El usuario prefiere corregir textos
+antes que escribirlos ("si tengo que escribir yo a mano, me da algo... prefiero corregir
+tus textos") y pide contrastar los datos para no alucinar. Primer lote publicado: los
+capítulos 2 y 3. Datos verificados contra docs.oracle.com y openjdk.org antes de escribir
+(tamaños y rangos JLS 4.2, literales, división JLS 15.17.2, desbordamiento silencioso JLS
+4.2.2 y `Math.addExact`, `char` como tipo numérico JLS 5.6, cache de `Integer` JLS 5.1.7
+con el matiz de que fuera de -128..127 no hay garantía, `var` JEP 286, `final`, autoboxing
+y NPE al desboxar `null` JLS 5.1.8). Dos matices de la investigación aplicados al texto:
+el tamaño de `boolean` no lo fija la especificación de la JVM, y el cache de `Integer`
+solo está garantizado para expresiones constantes.
 
 L21: Evidencia de F2.5 en `dae5b2e` (`feat(tooling): enforce the published URL
 contract on every build`), 347 líneas autoradas. Verificación propia en scratch con

@@ -2,6 +2,8 @@
   "urls": [
     "/",
     "/docs/",
-    "/docs/fundamentos/hola-mundo/"
+    "/docs/fundamentos/hola-mundo/",
+    "/docs/fundamentos/tipos-primitivos/",
+    "/docs/fundamentos/variables-y-constantes/"
   ]
 }
