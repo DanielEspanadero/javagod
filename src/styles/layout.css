@@ -12,6 +12,12 @@ body {
   padding-inline: var(--gutter);
 }
 
+/* Documentation pages use the full viewport so the rail sits at the left edge
+   and the brand stays aligned with it instead of with a centred column. */
+.container--wide {
+  max-inline-size: none;
+}
+
 /* Header */
 .site-header {
   position: sticky;

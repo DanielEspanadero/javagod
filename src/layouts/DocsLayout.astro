@@ -26,8 +26,8 @@ const current = docs.find((doc) => doc.id === id);
 const section = current ? sectionOf(current) : undefined;
 const sectionAnchor = section ? `/docs/#${section.id}` : '/docs/';
 ---
-<BaseLayout title={`${title} · JavaGod`} description={description}>
-  <div class="container docs">
+<BaseLayout title={`${title} · JavaGod`} description={description} wide>
+  <div class="docs">
     <aside class="docs__sidebar">
       <DocsNav groups={groups} currentId={id} />
     </aside>

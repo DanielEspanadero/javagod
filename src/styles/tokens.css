@@ -88,6 +88,10 @@
 
   /* Layout */
   --width-container: 74rem;
+  /* Documentation shell: rail, article column and in-page TOC (S5) */
+  --width-docs: 54rem;
+  --width-docs-nav: 17rem;
+  --width-docs-toc: 15rem;
   --width-prose: 46rem;
   --width-measure: 62ch;
   --width-terminal: 30rem;

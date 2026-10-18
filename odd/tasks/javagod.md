@@ -226,3 +226,15 @@ archivos de más; y el build roto al mover el capítulo a otra carpeta conservan
 `section`. Las carpetas de scratch y las cachés movidas por el worker quedaron
 borradas. Corrección a L17: el siguiente corte es F2.5 (contrato de slugs y
 redirects), no F3.1.
+
+L19: Sobre la portada de documentación en un monitor de 27 pulgadas: "creo que hay
+demasiado margen a los bordes en un monitor de 27 pulgadas" y "también me gusta el
+menú que hay a la izquierda en la de Angular donde puedes elegir la versión, docs
+tutoriales y demás. Arregla eso antes de seguir". Se cambia el shell de documentación
+de contenedor centrado de 74rem a ancho completo: rail de 17rem pegado al borde
+izquierdo, artículo de 54rem pegado al rail y TOC de 15rem a la derecha, con la
+cabecera en variante ancha para que la marca quede alineada con el rail. La portada
+conserva su contenedor. Se añade "Volver arriba" al TOC, como en la referencia. El
+selector de versión queda pendiente de decisión: es S16 y necesita los metadatos
+`since` de F4.2 más el filtrado de F4.3, y un selector que no filtra sería un control
+que promete lo que no hace.
