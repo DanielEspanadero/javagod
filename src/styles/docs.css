@@ -132,6 +132,50 @@
   font-weight: 600;
 }
 
+/* Version reading mode (S16). The control sits above the tree and also above
+   the index cards. It is a real form control, hidden until JavaScript runs:
+   without the script it would promise a filter that does not exist, so the CSS
+   only shows it under the `js` class the document already carries. */
+.version-switcher {
+  display: none;
+  max-inline-size: 16rem;
+  margin-block-end: var(--space-lg);
+}
+
+.js .version-switcher {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.version-switcher__label {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.version-switcher__select {
+  inline-size: 100%;
+  padding-block: var(--space-2xs);
+  padding-inline: var(--space-sm);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-raised);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+/* The reading mode hides with the `hidden` attribute, never by removing nodes,
+   so every element whose own rule sets a display needs this guard. */
+[data-version-item][hidden],
+[data-version-pager][hidden],
+.version-notice[hidden] {
+  display: none;
+}
+
 /* Breadcrumbs */
 .breadcrumbs {
   margin-block-end: var(--space-md);
@@ -214,6 +258,49 @@
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   letter-spacing: 0.04em;
+}
+
+/* Reading mode notice (S16): shown only when the selected version excludes the
+   chapter on screen. It is information, not an error, so the surface stays
+   neutral and the accent is the brand line, not the warning palette. */
+.version-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-block-end: var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--hairline) solid var(--line);
+  border-inline-start: 0.1875rem solid var(--brand);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-raised);
+}
+
+.version-notice__text {
+  max-inline-size: var(--width-measure);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.version-notice__action {
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-sm);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-sunken);
+  color: var(--brand);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.version-notice__action:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
 }
 
 /* In-page table of contents */

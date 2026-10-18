@@ -1,7 +1,9 @@
 ---
 // Documentation index. Derived from the collection: published chapters are
 // links, sections without chapters are labeled as such and never linked (S7).
+// The cards carry their version range so the reading mode filters them (S16).
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import VersionSwitcher from '../../components/VersionSwitcher.astro';
 import { docHref, getDocs, groupDocs } from '../../lib/docs';
 import { sections } from '../../lib/sections.mjs';
 import '../../styles/docs.css';
@@ -25,6 +27,8 @@ const pending = sections.filter((section) => !groups.some((group) => group.secti
       </p>
     </header>
 
+    <VersionSwitcher />
+
     <div class="docs-index__sections">
       {
         groups.map((group) => (
@@ -33,7 +37,7 @@ const pending = sections.filter((section) => !groups.some((group) => group.secti
             <p class="docs-index__section-summary">{group.section.summary}</p>
             <ul class="docs-index__pages">
               {group.docs.map((doc) => (
-                <li>
+                <li data-version-item data-since={doc.data.since} data-hasta={doc.data.hasta}>
                   <a class="docs-index__link" href={docHref(doc)}>
                     <span class="docs-index__page-title">{doc.data.title}</span>
                     <span class="docs-index__page-description">{doc.data.description}</span>
