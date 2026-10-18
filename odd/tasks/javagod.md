@@ -85,24 +85,25 @@ this, and the build does not depend on it.
 
 ## Tasks
 
-| ID | Specs | Route | Task |
-| -- | ----- | ----- | ---- |
-| F0.1 | S1,S2 | setup | Scaffold Astro 7, tsconfig, config, install |
-| F0.2 | S2 | styles | Token system: color, fluid type, space, motion |
-| F0.3 | S1,S2 | verify | Build audit: dead links, h1 count, orphan classes |
-| F1.1 | S5,S6 | layout | Site shell: sticky header, brand, theme toggle, footer |
-| F1.2 | S4,S6 | landing | Hero with animated JVM pipeline diagram |
-| F1.3 | S3,S4 | landing | Progressive learning path section |
-| F1.4 | S4,S6 | landing | Visualization showcase: animated thread states |
-| F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next |
-| F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) |
-| F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables |
-| F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules |
-| F2.5 | S12 | docs | Slug and redirect contract |
-| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations |
-| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch |
-| F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section |
-| F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects |
+| ID | Specs | Route | Task | Estado |
+| -- | ----- | ----- | ---- | ------ |
+| F0.1 | S1,S2 | setup | Scaffold Astro 7, tsconfig, config, install | hecho |
+| F0.2 | S2 | styles | Token system: color, fluid type, space, motion | hecho |
+| F0.3 | S1,S2 | verify | Build audit: dead links, h1 count, orphan classes | hecho |
+| F1.1 | S5,S6 | layout | Site shell: sticky header, brand, theme toggle, footer | hecho |
+| F1.2 | S4,S6 | landing | Hero with animated JVM pipeline diagram | hecho |
+| F1.3 | S3,S4 | landing | Progressive learning path section | hecho |
+| F1.4 | S4,S6 | landing | Visualization showcase: animated thread states | hecho |
+| F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next | hecho |
+| F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) | hecho |
+| F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | pendiente |
+| F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | pendiente |
+| F2.5 | S12 | docs | Slug and redirect contract | pendiente |
+| F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | pendiente |
+| F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | pendiente |
+| F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | pendiente |
+| F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | pendiente |
+| F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects | pendiente |
 
 ## Releases
 
@@ -154,3 +155,22 @@ L9: Ahora, en lugar de Java 21, quiero dar servicio a todas las versiones (si es
 posible). O ves viable otra opción?
 
 L10: Importante, no te pongas bajo ningún concepto como coautor
+
+L11: Perfecto, arrancamos con los siguientes pasos
+
+L12: Decisiones de diseño para F2.1 y F2.2. Las rutas son
+`/docs/` (índice derivado del contenido) y `/docs/<seccion>/<pagina>/` (el slug
+sale del path del archivo, S12). El registro de secciones vive en
+`src/lib/sections.ts` y es la única fuente de títulos y orden; el schema de la
+colección lo importa para validar `section` como enum. El frontmatter es
+estricto: claves desconocidas (incluido `slug`) rompen el build, de modo que un
+slug no puede divergir del path. El orden duplicado dentro de una sección
+falla al construir, igual que una sección fuera del registro. La navegación se
+deriva de las entradas existentes: una sección sin capítulos no aparece en el
+árbol ni enlaza a nada, así que nunca hay links muertos (S7) ni sidebar vacía.
+
+L13: Verificación de F2.1 y F2.2 sobre `pnpm build` (3 páginas, auditoría limpia):
+orden, salto de sección, prev/next y estado activo comprobados con un capítulo
+extra en una copia de scratch, no en el repo. Las cuatro reglas de contenido
+fallan el build con un mensaje útil: orden duplicado, sección fuera del registro,
+frontmatter incompleto y clave desconocida (`slug`).

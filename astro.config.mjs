@@ -11,4 +11,12 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto',
   },
+  markdown: {
+    // Dual themes: tokens carry both palettes as CSS variables and docs.css
+    // picks one from the site's own theme attribute, not only from the OS.
+    shikiConfig: {
+      themes: { light: 'github-light', dark: 'github-dark' },
+      defaultColor: false,
+    },
+  },
 });

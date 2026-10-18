@@ -80,6 +80,32 @@ contiene cualquier atribución. Se activa solo con `pnpm install` mediante el sc
 git config core.hooksPath .githooks
 ```
 
+## Añadir un capítulo
+
+La documentación vive en `src/content/docs/<sección>/<slug>.md` y el path del archivo es la
+URL: `src/content/docs/fundamentos/hola-mundo.md` se publica en
+`/docs/fundamentos/hola-mundo/`. Renombrar un archivo cambia su URL, así que exige una
+entrada en `public/_redirects` (S12).
+
+Frontmatter obligatorio, sin claves extra:
+
+```yaml
+---
+title: 'Hola, mundo'
+description: 'Una frase que se ve en el índice y en los metadatos.'
+section: fundamentos
+order: 1
+---
+```
+
+- `section` tiene que ser una de las declaradas en `src/lib/sections.ts`. Una sección
+  desconocida rompe el build.
+- `order` es la posición dentro de la sección y no puede repetirse.
+- No escribas `slug`: la URL sale del path y el build rechaza la clave.
+
+El resto es automático: el árbol lateral, el TOC, las migas y los enlaces anterior y
+siguiente se derivan del contenido. No hay que tocar componentes ni índices (S9).
+
 ## Entornos
 
 | Entorno | Rama | URL | Quién lo genera |

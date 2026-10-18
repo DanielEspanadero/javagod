@@ -1,0 +1,37 @@
+---
+// Sidebar tree for the docs layout. It only renders what exists: no section
+// without chapters, no link to a route that is not published (S7).
+import { docHref, type DocGroup } from '../lib/docs';
+
+interface Props {
+  groups: DocGroup[];
+  /** Chapter id that owns the current page, for the active state. */
+  currentId?: string;
+}
+
+const { groups, currentId } = Astro.props;
+---
+<nav class="docs-nav" aria-label="Índice de documentación">
+  <ul class="docs-nav__sections">
+    {
+      groups.map((group) => (
+        <li>
+          <p class="docs-nav__section-title">{group.section.title}</p>
+          <ul class="docs-nav__pages">
+            {group.docs.map((doc) => (
+              <li>
+                <a
+                  class="docs-nav__link"
+                  href={docHref(doc)}
+                  aria-current={doc.id === currentId ? 'page' : undefined}
+                >
+                  {doc.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
