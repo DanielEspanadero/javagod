@@ -266,6 +266,14 @@ capítulos son `.md` y no pueden importar componentes; si más adelante hacen fa
 componentes con lógica, el punto de decisión es F4.1 y pasa por MDX. Unificar la portada
 con las primitivas queda fuera de alcance y sería un cambio visual aparte.
 
+L23: Evidencia de F3.1 en `568cde8` (`feat(docs): add diagram primitives and the
+first chapter diagram`), 195 líneas autoradas. Build limpio: 3 páginas, 172 clases en
+markup contra 191 reglas, un solo `h1` por página, contrato de URLs intacto. El
+diagrama del capítulo se genera como HTML estático dentro del `.md` (el CSS se inlinea
+en la página), con conectores por CSS y sin JavaScript, y la fila pasa a columna por
+debajo de 40rem. Antes del corte: `feature/docs-shell` mergeada a `develop` con `--no-ff`
+(`3cd8f95`) y la rama borrada, según el flujo del repositorio.
+
 L21: Evidencia de F2.5 en `dae5b2e` (`feat(tooling): enforce the published URL
 contract on every build`), 347 líneas autoradas. Verificación propia en scratch con
 `cacheDir` aislado: (1) capítulo nuevo generado sin registrar, build y check en rojo por
