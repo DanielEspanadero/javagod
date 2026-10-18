@@ -1,0 +1,28 @@
+---
+// Hero diagram: source -> javac -> bytecode -> JVM -> output.
+// CSS-only. Every node is real text, so the pipeline reads as a static list
+// when animation is disabled or unavailable.
+type Stage = {
+  label: string;
+  code: string;
+};
+
+const stages: Stage[] = [
+  { label: 'Código fuente', code: 'HelloWorld.java' },
+  { label: 'Compilador', code: 'javac' },
+  { label: 'Bytecode', code: 'HelloWorld.class' },
+  { label: 'Máquina virtual', code: 'JVM' },
+  { label: 'Salida', code: 'Hello, world!' },
+];
+---
+<ol class="pipeline" aria-label="Recorrido de un programa Java: del código fuente a la salida">
+  {
+    stages.map((stage, index) => (
+      <li class="pipeline__stage">
+        <span class="pipeline__step" aria-hidden="true">{index + 1}</span>
+        <span class="pipeline__label">{stage.label}</span>
+        <code class="pipeline__code">{stage.code}</code>
+      </li>
+    ))
+  }
+</ol>

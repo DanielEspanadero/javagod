@@ -1,0 +1,74 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/layout.css';
+import '../styles/landing.css';
+import SiteHeader from '../components/SiteHeader.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    {
+      /*
+       * Pre-paint theme: resolve the stored choice (or the system preference)
+       * before anything renders, so there is no flash. `js` also lets CSS know
+       * that interactive enhancements can be shown.
+       */
+    }
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var stored = null;
+        try {
+          stored = window.localStorage.getItem('javagod:theme');
+        } catch (error) {
+          stored = null;
+        }
+        var theme =
+          stored === 'light' || stored === 'dark'
+            ? stored
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+        root.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Saltar al contenido</a>
+    <SiteHeader />
+    <main class="site-main" id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <p class="site-footer__note">
+          JavaGod — documentación visual de Java en español rioplatense. Estamos escribiendo los
+          capítulos; por ahora, la portada y los diagramas.
+        </p>
+        <p class="site-footer__meta">Java 21 LTS · Hecho con ☕</p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+---
+// Sticky top bar: brand on the left, theme toggle on the right.
+// No other links: there are no other routes yet (S7, no dead links).
+import ThemeToggle from './ThemeToggle.astro';
+---
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark" aria-hidden="true">☕</span>
+      <span class="brand__name">JavaGod</span>
+    </a>
+    <ThemeToggle />
+  </div>
+</header>

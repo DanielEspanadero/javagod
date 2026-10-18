@@ -1,0 +1,81 @@
+---
+// Showcase piece: the lifecycle of a thread.
+// Static markup is a complete, readable chain; JavaScript only adds a stepper
+// that walks the states and narrates the active one.
+type ThreadState = {
+  name: string;
+  hint: string;
+};
+
+const states: ThreadState[] = [
+  { name: 'NEW', hint: 'El hilo existe, pero todavía nadie llamó a start().' },
+  { name: 'RUNNABLE', hint: 'Está en la cola del scheduler esperando su turno de CPU.' },
+  { name: 'BLOCKED', hint: 'Otro hilo tiene el monitor y este quedó esperando el lock.' },
+  { name: 'WAITING', hint: 'Hizo wait() o join(): aguarda que otro hilo lo despierte.' },
+  { name: 'TERMINATED', hint: 'El run() volvió o lanzó una excepción: ya no vuelve.' },
+];
+---
+<div class="states" data-thread-states>
+  <ol class="states__list">
+    {
+      states.map((state, index) => (
+        <li class="states__item" data-state-item data-state={state.name} aria-current={index === 0 ? 'step' : undefined}>
+          <span class="states__name">{state.name}</span>
+          <span class="states__hint">{state.hint}</span>
+          {index < states.length - 1 && (
+            <span class="states__arrow" aria-hidden="true">
+              →
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="states__panel">
+    <div class="states__live" aria-live="polite">
+      <p class="states__counter" data-role="counter">Estado 1 de {states.length}</p>
+      <p class="states__narration" data-role="narration">
+        {states[0].name}: {states[0].hint}
+      </p>
+    </div>
+    <div class="states__controls">
+      <button class="btn btn--ghost" type="button" data-role="advance">Avanzar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector('[data-thread-states]');
+
+  if (root) {
+    const items = Array.from(root.querySelectorAll('[data-state-item]'));
+    const counter = root.querySelector('[data-role="counter"]');
+    const narration = root.querySelector('[data-role="narration"]');
+    const button = root.querySelector('[data-role="advance"]');
+    let index = 0;
+
+    const render = () => {
+      items.forEach((item, position) => {
+        if (position === index) {
+          item.setAttribute('aria-current', 'step');
+        } else {
+          item.removeAttribute('aria-current');
+        }
+      });
+
+      const active = items[index];
+      const name = active.dataset.state || '';
+      const hint = active.querySelector('.states__hint')?.textContent?.trim() || '';
+
+      if (counter) counter.textContent = `Estado ${index + 1} de ${items.length}`;
+      if (narration) narration.textContent = `${name}: ${hint}`;
+      if (button) button.textContent = index === items.length - 1 ? 'Reiniciar' : 'Avanzar';
+    };
+
+    button?.addEventListener('click', () => {
+      index = (index + 1) % items.length;
+      render();
+    });
+  }
+</script>

@@ -1,0 +1,118 @@
+/*
+ * JavaGod design tokens.
+ * The only file in the project allowed to hold raw values. Every colour is
+ * declared once and resolved through light-dark(); `color-scheme` decides
+ * which side of the pair wins.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* Brand — coffee orange */
+  --brand: light-dark(#b0521d, #ff9f63);
+  --brand-accent: light-dark(#8e3c12, #ffc79a);
+  --brand-soft: light-dark(#fbeadb, #2a1a11);
+  --on-brand: light-dark(#fffaf6, #1d1209);
+
+  /* Surfaces — three levels */
+  --surface: light-dark(#fdfbf9, #0f0d0c);
+  --surface-raised: light-dark(#ffffff, #171413);
+  --surface-sunken: light-dark(#f5efea, #0a0807);
+
+  /* Text — three levels */
+  --text: light-dark(#1b1512, #f6f0ea);
+  --text-muted: light-dark(#584a42, #c2b5aa);
+  --text-faint: light-dark(#7b6b61, #948779);
+
+  /* Lines and focus */
+  --line: light-dark(#e8dfd7, #262120);
+  --line-strong: light-dark(#d5c9be, #3b3330);
+  --focus: light-dark(#a8440d, #ffb27a);
+
+  /* Type stacks */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Fluid type scale */
+  --text-2xs: clamp(0.7rem, 0.68rem + 0.1vw, 0.76rem);
+  --text-xs: clamp(0.78rem, 0.75rem + 0.15vw, 0.85rem);
+  --text-sm: clamp(0.88rem, 0.84rem + 0.2vw, 0.95rem);
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.07rem);
+  --text-md: clamp(1.12rem, 1.05rem + 0.35vw, 1.3rem);
+  --text-lg: clamp(1.35rem, 1.2rem + 0.7vw, 1.75rem);
+  --text-xl: clamp(1.6rem, 1.35rem + 1.2vw, 2.3rem);
+  --text-2xl: clamp(1.95rem, 1.5rem + 2.2vw, 3.05rem);
+  --text-display: clamp(2.35rem, 1.55rem + 3.6vw, 4.25rem);
+
+  /* Spacing scale */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.375rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 5.5rem;
+
+  /* Radii */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+  --radius-full: 999px;
+
+  /* Hairlines and controls */
+  --hairline: 1px;
+  --control-size: 2.5rem;
+  --icon-size: 1.125rem;
+  --badge-size: 1.75rem;
+
+  /* Elevation */
+  --shadow-color: light-dark(rgb(27 21 18 / 0.14), rgb(0 0 0 / 0.6));
+  --shadow-sm: 0 0.0625rem 0.125rem var(--shadow-color);
+  --shadow-md: 0 0.75rem 1.75rem -0.75rem var(--shadow-color);
+  --shadow-lg: 0 1.75rem 3.5rem -1.5rem var(--shadow-color);
+  --shadow-brand:
+    0 0 0 var(--hairline) color-mix(in srgb, var(--brand) 55%, transparent),
+    0 0.75rem 1.75rem -0.75rem color-mix(in srgb, var(--brand) 40%, transparent);
+
+  /* Layout */
+  --width-container: 74rem;
+  --width-prose: 46rem;
+  --width-measure: 62ch;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --header-height: 3.75rem;
+
+  /* Layers */
+  --z-header: 100;
+  --z-overlay: 200;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 0.84, 0.44, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 420ms;
+  --duration-loop: 9s;
+
+  /* Mask stops for decorative gradients */
+  --mask-solid: #000;
+  --mask-clear: #0000;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* No-JS fallback: without an explicit choice the media query decides. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+  }
+}
