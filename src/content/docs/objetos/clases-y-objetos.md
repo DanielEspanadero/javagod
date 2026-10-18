@@ -8,6 +8,10 @@ since: 8
 
 ## De valores sueltos a un objeto
 
+La programación orientada a objetos (POO) parte de una idea simple: un programa son piezas que
+juntan estado y comportamiento, y se hablan entre ellas. Este capítulo construye la primera y
+enseña dónde vive.
+
 El capítulo de variables acabó con las cajas: un `Integer` que puede ser `null` porque una caja ya
 no es un número, es una referencia a un objeto. Aquí se ve qué hay al otro lado, con la memoria a la
 vista.

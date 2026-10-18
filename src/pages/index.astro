@@ -3,10 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import TerminalCard from '../components/TerminalCard.astro';
 import JvmPipeline from '../components/JvmPipeline.astro';
 import ThreadStates from '../components/ThreadStates.astro';
+import { findSection } from '../lib/sections.mjs';
 
 type PathStep = {
-  index: string;
-  title: string;
+  /** Section id from the registry: the title is never repeated here (S9). */
+  id: string;
   text: string;
 };
 
@@ -14,23 +15,19 @@ const words = ['Aprende', 'Java', 'viendo', 'qué', 'pasa', 'por', 'dentro.'];
 
 const path: PathStep[] = [
   {
-    index: '01',
-    title: 'Fundamentos',
+    id: 'fundamentos',
     text: 'La JVM, los tipos y el control de flujo. Empiezas con un Hola, mundo y ves qué hace javac por ti.',
   },
   {
-    index: '02',
-    title: 'Orientación a Objetos',
+    id: 'objetos',
     text: 'Clases, encapsulamiento, herencia e interfaces, con diagramas de memoria que se leen de un vistazo.',
   },
   {
-    index: '03',
-    title: 'Collections & Streams',
+    id: 'colecciones',
     text: 'Listas, mapas y conjuntos, más el pipeline funcional de Stream: qué colección usar y cuándo.',
   },
   {
-    index: '04',
-    title: 'Concurrencia',
+    id: 'concurrencia',
     text: 'Hilos, estados, locks y memoria compartida. Lo que rompe en producción, explicado igual de claro.',
   },
 ];
@@ -117,9 +114,9 @@ const path: PathStep[] = [
               <span class="path__rail" aria-hidden="true">
                 <span class="path__rail-fill" />
               </span>
-              <span class="path__index" aria-hidden="true">{step.index}</span>
+              <span class="path__index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
               <div class="path__body">
-                <h3 class="path__title">{step.title}</h3>
+                <h3 class="path__title">{findSection(step.id)?.title}</h3>
                 <p class="path__text">{step.text}</p>
                 <span class="chip chip--soon">En preparación</span>
               </div>

@@ -32,8 +32,8 @@ export const sections = [
   },
   {
     id: 'objetos',
-    title: 'Orientación a Objetos',
-    summary: 'Clases, encapsulamiento, herencia e interfaces, con la memoria a la vista.',
+    title: 'Programación Orientada a Objetos',
+    summary: 'La POO en Java: clases, encapsulamiento, herencia e interfaces, con la memoria a la vista.',
   },
   {
     id: 'colecciones',
