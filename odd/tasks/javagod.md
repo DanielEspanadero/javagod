@@ -103,7 +103,9 @@ this, and the build does not depend on it.
 | F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | hecho |
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | hecho |
 | F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | hecho |
-| F5.1 | S1,S3 | release | Search (Pagefind), Cloudflare deploy, 404, redirects | pendiente |
+| F5.1 | S3 | search | Búsqueda estática (Pagefind) con interfaz propia | hecho |
+| F5.2 | S7 | docs | Página 404 propia | hecho |
+| F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | pendiente |
 
 ## Releases
 
@@ -467,3 +469,41 @@ Build y auditoría limpias: 15 rutas, 321 enlaces, 188 clases en markup contra 1
 `h1` por página, contrato de URLs intacto y cero desbordes en las 15 rutas por 1440, 1024 y 390.
 La rama `feature/version-reading-mode` va por su primera unidad; con la deuda de la rama
 anterior ya mergeada, la entrega (PR encadenado por unidad) sigue siendo decisión del dueño.
+
+L38: F5.2 cerrada (`0bb7087`, `feat(docs): add a not-found page`). `src/pages/404.astro`
+genera `dist/404.html`, que es lo que Cloudflare Pages sirve para una ruta que no existe; sus
+estilos viven en `layout.css` con el resto del shell. Verificado sobre `dist`: una ruta
+inventada (`/docs/fundamentos/no-existe/`) responde 404 con la página nueva, un solo `h1`, los
+dos enlaces seguros (`/docs/` y `/`) y cero enlaces rotos. La auditoría y el contrato de URLs
+no cuentan el 404 como ruta publicada, así que no hay nada que registrar en `src/urls.json`.
+
+L39: F5.1 cerrada en dos unidades (`d7420d0`, `feat(search): index the chapters with Pagefind`;
+`9367480`, `feat(search): add the search dialog to the header`). Pagefind 1.5.2 como
+devDependency: el build encadena `astro build`, `pagefind --site dist --force-language es`,
+auditoría y contrato de URLs, y `pnpm search:index` reindexa sin recompilar. Solo el artículo
+del capítulo lleva `data-pagefind-body`, así que se indexan 13 páginas (las de capítulo) y
+quedan fuera la portada, el índice y el 404; el chrome se marca con `data-pagefind-ignore` y el
+`h1` con `data-pagefind-meta="title"`. El diálogo es propio en `src/components/SiteSearch.astro`
+más `src/styles/search.css`, con Pagefind solo como índice y runtime: se carga en la primera
+apertura, la escritura va con debounce de 140 ms y cada consulta lleva token para que una
+respuesta lenta no pise otra nueva. `Cmd`/`Ctrl`+`K` abre y cierra; `/` sigue libre para el
+terminal de la portada. Trampa encontrada en `pnpm dev`: Vite 8 resuelve un `import()` con
+literal aunque lleve `@vite-ignore` y rompía el arranque con "Failed to resolve import
+/pagefind/pagefind.js", así que la ruta del bundle pasa por una variable. Verificado con
+Playwright sobre el build servido: (1) el control abre el diálogo, "ArrayList" encuentra Arrays
+con el término resaltado y el resultado navega al capítulo; (2) `Cmd+K` abre y enfoca, `Esc`
+cierra, `Ctrl+K` reabre y el botón cierra; (3) consulta vacía deja la pista, una palabra
+inexistente da "Sin resultados" y vaciar restaura la pista; (4) a 390 px el control queda en
+icono, sin desborde horizontal y el diálogo entra en el viewport y encuentra "hilos"; (5) sin
+JavaScript no hay control usable ni diálogo; (6) la ruta inventada sirve el 404; (7) ningún
+resultado apunta a la portada ni al índice. En dev y sin índice el diálogo avisa que la
+búsqueda no está disponible en ese build. Auditoría limpia (16 páginas, 209 clases en markup
+contra 357 reglas) y las 15 rutas del contrato pasan el auditor visual por 1440, 1024 y 390 sin
+desbordes.
+
+L40: F5.3 queda pendiente y no se puede cerrar desde el repositorio: el proyecto no tiene
+remoto git configurado y el deploy en Cloudflare Pages necesita la cuenta y las credenciales del
+dueño (producción desde `main`, previews por rama, `JAVAGOD_SITE_URL` en producción, que es lo
+que ya describe `CONTRIBUTING` en "Entornos"). Los dos redirects y las cabeceras ya están en
+`public/` y el contrato de URLs los valida en cada build, así que la parte de configuración
+estática está lista: falta conectar el repositorio y el dominio. Decisión pendiente del dueño.
