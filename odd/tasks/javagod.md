@@ -340,3 +340,15 @@ entrega es un PR encadenado por unidad, no uno solo: cada eslabón es un corte v
 build, y los capítulos van con su línea de `src/urls.json` para que ningún eslabón rompa el
 contrato. Esa decisión de publicación es del dueño del repositorio: aquí solo queda
 registrada la frontera.
+
+L29: Fallo visual reportado por el dueño: en los bloques de código se ve una línea en blanco
+entre cada línea, aunque al copiar el texto sale bien. Causa: Shiki emite un `span.line` por
+línea y los separa con un salto de línea real dentro de `<pre>`; con `white-space: pre` ese
+salto ya es un salto de línea, y la regla `.astro-code .line { display: block }` añadía un
+segundo, así que cada línea ocupaba dos renglones. La copia no se veía afectada porque el
+botón escribe `pre.textContent`, que son los saltos del texto y no el layout. Arreglo en
+`e083e57` (`fix(docs): stop doubling the line height in code blocks`): el `span.line` pasa a
+`display: inline` con el porqué comentado. La regla se queda porque la auditoría exige una
+regla para cada clase del markup, y aquí se cumplen las dos cosas con la misma declaración.
+Lección para cualquier bloque de código futuro: en `<pre>` el salto de línea del HTML es el
+salto de línea de la pantalla, y añadir `display: block` a los spans lo duplica.
