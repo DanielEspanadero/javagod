@@ -110,6 +110,9 @@ this, and the build does not depend on it.
 | F5.1 | S3 | search | Búsqueda estática (Pagefind) con interfaz propia | hecho |
 | F5.2 | S7 | docs | Página 404 propia | hecho |
 | F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | pendiente |
+| F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | en curso |
+| F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | pendiente |
+| F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | pendiente |
 
 ## Releases
 
@@ -540,3 +543,11 @@ guardado, `java-17` leído como 11 avisa con las dos versiones y leído como 17 
 árbol está completo con las 13 entradas y sin control. Build, auditoría y contrato de URLs
 limpios. El caso (b) de L37 usaba `control-de-flujo` como ejemplo de capítulo oculto y ya no
 aplica: ahora se ocultan solo las páginas de `novedades` posteriores a la versión elegida.
+
+L42: "si, mergea a develop, borra landing-stance y continuamos". `feature/release-and-search`
+mergeada a `develop` con `--no-ff` (`b457aab`) y borrada en local y en remoto; `feature/landing-stance`
+borrada en local y en remoto. `develop` queda publicado (`b457aab`) y el remoto ya solo tiene
+`main` y `develop`. Rama nueva para contenido: `feature/oop-chapters` desde `develop`. Índice
+propuesto para Orientación a Objetos (pendiente de revisión del dueño, como en L24): 1 Clases y
+objetos; 2 Encapsulamiento y modificadores de acceso; 3 Herencia y polimorfismo; 4 Interfaces y
+abstracción; 5 Object y sus contratos; 6 Records y clases de datos. Primer lote: capítulos 1 y 2.
