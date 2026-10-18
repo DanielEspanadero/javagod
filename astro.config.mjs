@@ -1,9 +1,13 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
+// Canonical origin per environment: production sets JAVAGOD_SITE_URL, any Cloudflare
+// deployment falls back to its own URL, and local builds use the placeholder.
+const site =
+  process.env.JAVAGOD_SITE_URL ?? process.env.CF_PAGES_URL ?? 'https://javagod.pages.dev';
+
 export default defineConfig({
-  // Placeholder: replace with the real Cloudflare Pages domain before launch.
-  site: 'https://javagod.pages.dev',
+  site,
   build: {
     inlineStylesheets: 'auto',
   },
