@@ -330,3 +330,13 @@ internos, un solo `h1` por página, cero guiones largos o medios en el HTML. Con
 `figure` (los valores del diagrama de Control de flujo llegan escapados como
 `i &#x3C; nombres.size()`), una tabla en Operadores y otra en Strings, y los bloques de código
 con su barra. F4.1 sigue en curso: quedan los capítulos 7 y 8 (Arrays, Métodos).
+
+L28: Corte de entrega de la rama. `feature/diagram-primitives` suma 22 commits y 3666 líneas
+autoradas desde `main`, muy por encima del corte revisable de ~400. Inventario por unidad,
+en orden: contrato de URLs (F2.5), prosa y callouts (F2.3), scaffolder y regla de carpeta
+(F2.4), shell de documentación (F2.1, F2.2), ancho completo del shell, primitivas de diagrama
+(F3.1), primer lote de contenido (capítulos 2 y 3) y segundo lote (capítulos 4 a 6). La
+entrega es un PR encadenado por unidad, no uno solo: cada eslabón es un corte verde con su
+build, y los capítulos van con su línea de `src/urls.json` para que ningún eslabón rompa el
+contrato. Esa decisión de publicación es del dueño del repositorio: aquí solo queda
+registrada la frontera.
