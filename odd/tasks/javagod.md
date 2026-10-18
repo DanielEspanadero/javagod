@@ -252,3 +252,13 @@ el archivo es el registro de lo que alguna vez se publicó, no la lista de lo qu
 publica hoy. Verificado en scratch aislado: capítulo nuevo sin registrar falla, update
 lo registra, renombrado falla, redirect más update quedan limpios, destino roto y
 origen tapado fallan.
+
+L21: Evidencia de F2.5 en `dae5b2e` (`feat(tooling): enforce the published URL
+contract on every build`), 347 líneas autoradas. Verificación propia en scratch con
+`cacheDir` aislado: (1) capítulo nuevo generado sin registrar, build y check en rojo por
+la regla del registro; (2) `--update` agrega la URL y el build queda verde con 4 rutas;
+(3) renombrado sin redirect, rojo por URL desaparecida; (4) redirect 301 más `--update`,
+verde; (5) destino inexistente, rojo; (6) origen tapado por una ruta viva, rojo. Las
+carpetas de scratch y los restos en `/tmp` del worker quedaron borradas. La rama suma
+2353 líneas en cinco unidades (shell, prosa, tooling de autoría, ancho completo y
+contrato de URLs); para publicar, un PR encadenado por unidad.
