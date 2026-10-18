@@ -287,6 +287,15 @@ y NPE al desboxar `null` JLS 5.1.8). Dos matices de la investigación aplicados 
 el tamaño de `boolean` no lo fija la especificación de la JVM, y el cache de `Integer`
 solo está garantizado para expresiones constantes.
 
+L25: Evidencia del primer lote de F4.1: `81f1928` (`feat(tooling): register the
+chapter URL when scaffolding`) y `f761c11` (`feat(content): add tipos primitivos and
+variables y constantes`). Build limpio con 5 rutas: auditoría con 179 clases en markup y
+191 reglas, contrato de URLs limpio, pager anterior/siguiente correcto en los tres
+capítulos, el diagrama de familias primitivas y la tabla de tamaños renderizados, cero
+guiones largos o medios. En scratch se comprobó que el scaffolder registra la URL en
+`src/urls.json` y sigue negándose a sobrescribir un capítulo existente. F4.1 sigue en
+curso: quedan los capítulos 4 a 8 del índice.
+
 L21: Evidencia de F2.5 en `dae5b2e` (`feat(tooling): enforce the published URL
 contract on every build`), 347 líneas autoradas. Verificación propia en scratch con
 `cacheDir` aislado: (1) capítulo nuevo generado sin registrar, build y check en rojo por
