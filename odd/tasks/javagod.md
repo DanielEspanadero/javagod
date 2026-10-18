@@ -70,13 +70,16 @@ copy, not in source comments. The build fails if one appears in any generated
 page, naming the page and the surrounding text.
 
 S16: Version support is a reading mode, not a content fork. Canonical content
-stays single: one page per topic, each declaring its minimum version. A version
-switcher filters what the reader sees (hiding or marking content newer than the
-selected version) and persists in `localStorage` plus a `?v=` query. It never
-creates a parallel URL tree. Reading modes cover LTS releases only (8, 11, 17,
-21, 25); non-LTS releases appear only in the `novedades` section. Canonical
-examples use modern Java; differences for older releases are shown inline as
-explicit "antes / desde" snippets, never as separate pages.
+stays single: one page per topic, each declaring the minimum version of the
+topic itself, never the version of its newest example: a section that needs a
+newer release is labelled with it inside the page, so the chapter keeps
+existing for older readers. A version switcher filters what the reader sees
+(hiding or marking content newer than the selected version) and persists in
+`localStorage` plus a `?v=` query. It never creates a parallel URL tree.
+Reading modes cover LTS releases only (8, 11, 17, 21, 25); non-LTS releases
+appear only in the `novedades` section. Canonical examples use modern Java;
+differences for older releases are shown inline as explicit "antes / desde"
+snippets, never as separate pages.
 
 S17: Commits carry no AI attribution. No `Co-authored-by` trailers, no tool
 names, no signatures in the message; author and committer are always the
@@ -103,6 +106,7 @@ this, and the build does not depend on it.
 | F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | hecho |
 | F4.2 | S11 | content | Version annotations (`since`) + "novedades por versión" section | hecho |
 | F4.3 | S16 | docs | Version reading mode: selector, `localStorage` + `?v=`, filtering | hecho |
+| F4.4 | S16 | content | `since` por capítulo: la versión del tema, no la del ejemplo | hecho |
 | F5.1 | S3 | search | Búsqueda estática (Pagefind) con interfaz propia | hecho |
 | F5.2 | S7 | docs | Página 404 propia | hecho |
 | F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | pendiente |
@@ -507,3 +511,32 @@ dueño (producción desde `main`, previews por rama, `JAVAGOD_SITE_URL` en produ
 que ya describe `CONTRIBUTING` en "Entornos"). Los dos redirects y las cabeceras ya están en
 `public/` y el contrato de URLs los valida en cada build, así que la parte de configuración
 estática está lista: falta conectar el repositorio y el dominio. Decisión pendiente del dueño.
+
+L41: Corrección del enunciado de S16 por indicación del dueño: "Está bien, pero hay cosas que
+desaparecen en algunas versines que tienen que estar, revisa eso. Por ejemplo en Java 8
+desaparece el hola mundo". La causa no estaba en el modo de lectura sino en los datos y en la
+regla que los guiaba: `CONTRIBUTING` decía que `since` era "la primera versión LTS en la que el
+capítulo se lee entero tal como está escrito" y que el valor subía si el texto usaba `var` o
+bloques de texto. Así, cinco capítulos declaraban la versión de su feature más moderna:
+Hola, mundo 11 (sin nada de 11 dentro), variables 11 por `var`, operadores 17 por el patrón de
+`instanceof`, strings 17 por los bloques de texto y control de flujo 21 por el `switch` moderno.
+Leídos en Java 8 desaparecía el capítulo entero, incluida la primera página del sitio. Lo
+corregido: `since` declara la versión del tema (los ocho de Fundamentos pasan a 8) y la feature
+nueva se queda donde ya estaba, anotada en su sección. Dos muestras necesitaban el mismo
+tratamiento para que un lector de Java 8 nunca vea código que no compila sin etiqueta: el
+ejemplo de `final` usa tipo explícito en vez de `final var`, y en strings el consejo de
+`parseInt` admite `trim()` antes de Java 11 y la tabla marca `lines()` como Java 11. El
+enunciado de S16 recoge la regla (la versión mínima del tema, no la del ejemplo más moderno) y
+el bullet de `since` en CONTRIBUTING la explica con el motivo: un hueco es peor que una
+anotación. Verificado con Playwright sobre `dist`: con Java 8 se ven los ocho capítulos de
+Fundamentos, `Hola, mundo` incluido, con chip "Desde Java 8", sin aviso, y en Novedades solo
+`java-8`; el índice muestra las ocho tarjetas más las tres secciones pendientes y `java-8`, con
+las cuatro versiones nuevas ocultas; con Java 17 se ven los ocho más Novedades 8, 11 y 17 y el
+pager sigue ofreciendo el capítulo siguiente; `/docs/novedades/java-25/?v=8` sigue avisando y
+ofreciendo el salto a 25. Comprobado además que el mecanismo no se rompió con los datos nuevos:
+el modo guardado sobrevive a una recarga sin query, `?v=abc` cae en "todas" conservando el 8
+guardado, `java-17` leído como 11 avisa con las dos versiones y leído como 17 no dice nada,
+`java-21` leído como 8 esconde los dos enlaces del pager y la barra entera, y sin JavaScript el
+árbol está completo con las 13 entradas y sin control. Build, auditoría y contrato de URLs
+limpios. El caso (b) de L37 usaba `control-de-flujo` como ejemplo de capítulo oculto y ya no
+aplica: ahora se ocultan solo las páginas de `novedades` posteriores a la versión elegida.

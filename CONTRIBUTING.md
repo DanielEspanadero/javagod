@@ -103,9 +103,11 @@ since: 8
   la carpeta donde vive el archivo: un capítulo en `objetos/` que declare
   `section: fundamentos` rompe el build.
 - `order` es la posición dentro de la sección y no puede repetirse.
-- `since` es la primera versión LTS en la que el capítulo se lee entero tal como está
-  escrito. No es la versión en la que nació el tema: si el texto usa `var` o bloques de
-  texto, el valor sube a la primera LTS que los admite, aunque el concepto sea anterior.
+- `since` es la primera versión LTS en la que existe el **tema** del capítulo, no la
+  versión de su ejemplo más moderno. Un capítulo de Fundamentos se lee desde Java 8 aunque
+  use `var` o bloques de texto: esa parte va en su propia sección, con la versión en el
+  título ("var: menos ruido, el mismo tipo (Java 10)"). Si el valor sube, el capítulo deja
+  de existir para quien lee en una versión anterior, y ese hueco es peor que una anotación.
 - `hasta` es opcional y marca la última versión LTS en la que el capítulo sigue valiendo.
   No puede ser anterior a `since`.
 - Los dos campos aceptan solo versiones LTS: 8, 11, 17, 21 y 25. El build rechaza un
