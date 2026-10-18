@@ -96,7 +96,7 @@ this, and the build does not depend on it.
 | F1.4 | S4,S6 | landing | Visualization showcase: animated thread states | hecho |
 | F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next | hecho |
 | F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) | hecho |
-| F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | pendiente |
+| F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | hecho |
 | F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | pendiente |
 | F2.5 | S12 | docs | Slug and redirect contract | pendiente |
 | F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | pendiente |
@@ -182,3 +182,16 @@ primera hoja de estilos del área de documentación, no hay lógica duplicada. S
 la unidad se publica como PR, conviene partirla en dos cortes revisables:
 plataforma de contenido (schema, registro, `src/lib`, capítulo) y capa de
 presentación (layout, rutas, estilos). El siguiente corte arranca en F2.3.
+
+L15: F2.3 cerrada. Los callouts son citas con marcador (`[!NOTA]`, `[!OJO]`,
+`[!AVISO]`, `[!TRUCO]`) y un marcador desconocido rompe el build. Los bloques de
+código ganan barra con etiqueta de lenguaje y botón de copiar, renderizados en el
+build; el botón solo se muestra con JavaScript. Decisión de infraestructura: se
+añade `@astrojs/markdown-remark` 7.3.3 como devDependency y el procesador pasa a
+`unified()`, porque Astro 7 ya no instala el pipeline remark/rehype por defecto y
+sin él no hay plugins que permitan mantener la autoría en Markdown puro (S9). Ese
+rehype corre después de Shiki: el `<pre>` llega con `class` como string y con
+`data-language`, no con `className` en array. Hallazgo operativo que costó tiempo:
+la caché de HTML renderizado vive en `node_modules/.astro` y no se invalida al
+cambiar el código de un plugin, solo al cambiar el archivo fuente; hay que borrarla
+para verificar un cambio de pipeline. Queda en CONTRIBUTING.

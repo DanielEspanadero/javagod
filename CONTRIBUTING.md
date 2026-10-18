@@ -106,6 +106,25 @@ order: 1
 El resto es automático: el árbol lateral, el TOC, las migas y los enlaces anterior y
 siguiente se derivan del contenido. No hay que tocar componentes ni índices (S9).
 
+## Callouts y bloques de código
+
+Un callout es una cita con un marcador en la primera línea. Los marcadores válidos son
+`[!NOTA]`, `[!OJO]`, `[!AVISO]` y `[!TRUCO]`; cualquier otro rompe el build:
+
+```md
+> [!OJO]
+> El nombre del archivo tiene que coincidir con la clase pública.
+```
+
+Los bloques de código se escriben como siempre. El build les añade la barra con el
+lenguaje y el botón de copiar, que solo aparece cuando hay JavaScript.
+
+El procesador de Markdown es `unified()`, del paquete `@astrojs/markdown-remark`,
+porque Astro 7 ya no instala el pipeline de remark y rehype por defecto y sin él los
+plugins no corren. Si tocas la parte de Markdown de `astro.config.mjs`, borra
+`node_modules/.astro` antes de verificar: ahí vive la caché de HTML renderizado y no
+se invalida al cambiar el código de un plugin.
+
 ## Entornos
 
 | Entorno | Rama | URL | Quién lo genera |

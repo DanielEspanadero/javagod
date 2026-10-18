@@ -12,6 +12,20 @@ herramientas. `javac` traduce el texto que escribes a bytecode. `java` ejecuta e
 bytecode sobre la máquina virtual. Ninguna hace el trabajo de la otra, y casi
 todos los errores de principiante salen de confundirlas.
 
+| Qué hace | `javac` | `java` |
+| --- | --- | --- |
+| Recibe | `HolaMundo.java` | `HolaMundo.class` |
+| Produce | `HolaMundo.class` | lo que imprima tu programa |
+| Cuándo falla | errores de compilación | excepciones en ejecución |
+
+Ese archivo se llama `HolaMundo.java`. El nombre del archivo tiene que coincidir
+con el de la clase pública, con la misma mayúscula y sin espacios.
+
+> [!OJO]
+> Si el archivo se llama `hola_mundo.java` y la clase `HolaMundo`, `javac` falla
+> antes de compilar nada. El nombre no es decorativo: el compilador lo usa para
+> encontrar la clase pública.
+
 ```java
 public class HolaMundo {
     public static void main(String[] args) {
@@ -63,5 +77,6 @@ nombre es el que aparece en `public class`.
   compila y ejecuta en un solo paso. Sirve para probar, no para entender el
   ciclo completo.
 
+> [!NOTA]
 > Compilar y ejecutar son dos pasos distintos. Tenlos separados en la cabeza y el
 > resto de Java deja de ser una caja negra.

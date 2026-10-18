@@ -87,3 +87,34 @@ const sectionAnchor = section ? `/docs/#${section.id}` : '/docs/';
     </aside>
   </div>
 </BaseLayout>
+
+{
+  /*
+   * Copy control for code blocks (S4). The block, its language label and the
+   * button are server-rendered; this only wires the click, so the page is
+   * complete and readable without it.
+   */
+}
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.code-block__copy');
+
+  for (const button of buttons) {
+    button.addEventListener('click', async () => {
+      const code = button.closest('.code-block')?.querySelector('pre');
+      if (!code) return;
+
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? '');
+        button.textContent = 'Copiado';
+        button.dataset.copied = 'true';
+      } catch {
+        button.textContent = 'No se pudo copiar';
+      }
+
+      window.setTimeout(() => {
+        button.textContent = 'Copiar';
+        delete button.dataset.copied;
+      }, 1800);
+    });
+  }
+</script>

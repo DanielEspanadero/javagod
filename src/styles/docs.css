@@ -302,10 +302,137 @@
   color: var(--text-muted);
 }
 
+/* Callouts: a labelled aside produced from a Markdown blockquote (S9).
+   The base is neutral; each marker variant owns its accent. */
+.callout {
+  display: grid;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--hairline) solid var(--line);
+  border-inline-start: 0.1875rem solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-raised);
+}
+
+.callout__title {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.callout--nota {
+  border-inline-start-color: var(--brand);
+}
+
+.callout--nota .callout__title {
+  color: var(--brand);
+}
+
+.callout--ojo {
+  border-inline-start-color: var(--warn);
+  background-color: var(--warn-soft);
+}
+
+.callout--ojo .callout__title {
+  color: var(--warn);
+}
+
+.callout--aviso {
+  border-inline-start-color: var(--danger);
+  background-color: var(--danger-soft);
+}
+
+.callout--aviso .callout__title {
+  color: var(--danger);
+}
+
+.callout--truco {
+  border-inline-start-color: var(--success);
+  background-color: var(--success-soft);
+}
+
+.callout--truco .callout__title {
+  color: var(--success);
+}
+
+/* Code block chrome: language label and copy control live in the markup. */
+.code-block {
+  display: grid;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.code-block__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-block: var(--space-2xs);
+  padding-inline: var(--space-md);
+  border-block-end: var(--hairline) solid var(--line);
+  background-color: var(--surface-sunken);
+}
+
+.code-block__lang {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.code-block__copy {
+  display: none;
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-xs);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-raised);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.js .code-block__copy {
+  display: inline-flex;
+  align-items: center;
+}
+
+.code-block__copy:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  color: var(--brand);
+}
+
+.code-block__copy[data-copied='true'] {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--line));
+  color: var(--success);
+}
+
+/* Inside the wrapper the block loses its own frame. */
+.code-block .astro-code {
+  border: 0;
+  border-radius: 0;
+}
+
 .prose table {
   inline-size: 100%;
   border-collapse: collapse;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
   font-size: var(--text-sm);
+}
+
+.prose thead {
+  background-color: var(--surface-sunken);
 }
 
 .prose th,
@@ -313,11 +440,16 @@
   padding: var(--space-xs) var(--space-sm);
   border-block-end: var(--hairline) solid var(--line);
   text-align: start;
+  vertical-align: top;
 }
 
 .prose th {
   color: var(--text-muted);
   font-weight: 600;
+}
+
+.prose tbody tr:last-child td {
+  border-block-end: 0;
 }
 
 /* Code blocks rendered by Shiki with dual themes. The renderer emits the
