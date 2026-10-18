@@ -520,6 +520,10 @@
   background-color: var(--surface-sunken);
 }
 
+.pager__link--previous {
+  text-align: start;
+}
+
 .pager__link--next {
   text-align: end;
 }

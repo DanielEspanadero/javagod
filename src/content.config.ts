@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { sectionIds } from './lib/sections';
+import { sectionIds } from './lib/sections.mjs';
 
 /**
  * Documentation chapters (S9, S10, S12).

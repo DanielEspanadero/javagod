@@ -98,13 +98,33 @@ order: 1
 ---
 ```
 
-- `section` tiene que ser una de las declaradas en `src/lib/sections.ts`. Una sección
-  desconocida rompe el build.
+- `section` tiene que ser una de las declaradas en `src/lib/sections.mjs` y coincidir con
+  la carpeta donde vive el archivo: un capítulo en `objetos/` que declare
+  `section: fundamentos` rompe el build.
 - `order` es la posición dentro de la sección y no puede repetirse.
 - No escribas `slug`: la URL sale del path y el build rechaza la clave.
 
 El resto es automático: el árbol lateral, el TOC, las migas y los enlaces anterior y
 siguiente se derivan del contenido. No hay que tocar componentes ni índices (S9).
+
+### Con `pnpm new:doc`
+
+El scaffolder escribe el archivo con el frontmatter válido y el `order` siguiente de la
+sección, así que no hay que calcularlo ni copiarlo de otro capítulo:
+
+```bash
+pnpm new:doc fundamentos tipos-primitivos --title "Tipos primitivos" \
+  --description "Los ocho tipos primitivos y cuándo usar cada uno."
+```
+
+- La sección tiene que existir en el registro; si no, el comando lista los ids válidos.
+- El slug es kebab-case y no se puede repetir: el scaffolder no sobrescribe archivos.
+- `--title` es obligatorio. Si no pasas `--description`, se usa el título y el comando lo
+  avisa por pantalla.
+- Imprime la ruta del archivo y su URL final, y crea la carpeta de la sección si todavía
+  no existe.
+
+Después de generarlo, escribe el contenido y comprueba con `pnpm build`.
 
 ## Callouts y bloques de código
 

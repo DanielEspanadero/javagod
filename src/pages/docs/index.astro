@@ -3,7 +3,7 @@
 // links, sections without chapters are labeled as such and never linked (S7).
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { docHref, getDocs, groupDocs } from '../../lib/docs';
-import { sections } from '../../lib/sections';
+import { sections } from '../../lib/sections.mjs';
 import '../../styles/docs.css';
 
 const docs = await getDocs();

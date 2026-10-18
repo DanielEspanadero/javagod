@@ -8,9 +8,12 @@
  */
 
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { findSection, sectionRank, sections, type Section } from './sections';
+import { findSection, sectionRank, sections } from './sections.mjs';
 
 export type Doc = CollectionEntry<'docs'>;
+
+/** A registry entry, inferred from the JavaScript registry (S9). */
+export type Section = (typeof sections)[number];
 
 /** Canonical URL for a chapter: derived from the content path, never a slug field. */
 export function docHref(doc: Doc): string {
@@ -18,16 +21,27 @@ export function docHref(doc: Doc): string {
 }
 
 /**
- * Fail the build when two chapters claim the same position in a section (S10).
+ * Enforce the content rules that only a whole-collection pass can check (S9, S10).
  *
- * A duplicated `order` would make the reading order depend on directory
- * listing order, which is exactly the kind of silent breakage the specs
- * forbid.
+ * Two rules, each with its own message so a failure names exactly one thing to
+ * fix: the section directory must match the declared `section`, and no two
+ * chapters may claim the same position in a section.
  */
-function assertUniqueOrder(docs: Doc[]): void {
+function assertContentRules(docs: Doc[]): void {
   const seen = new Map<string, Doc>();
 
   for (const doc of docs) {
+    const file = `src/content/docs/${doc.id}.md`;
+    const folder = doc.id.split('/')[0];
+
+    if (folder !== doc.data.section) {
+      throw new Error(
+        `Sección inconsistente en "${file}": el archivo vive en la carpeta "${folder}" ` +
+          `pero su frontmatter declara section: "${doc.data.section}". ` +
+          `Mueve el archivo a la carpeta "${doc.data.section}" o cambia el section del frontmatter.`,
+      );
+    }
+
     const key = `${doc.data.section}:${doc.data.order}`;
     const previous = seen.get(key);
 
@@ -56,7 +70,7 @@ function compareDocs(a: Doc, b: Doc): number {
 /** Every chapter, validated and in reading order. */
 export async function getDocs(): Promise<Doc[]> {
   const entries = await getCollection('docs');
-  assertUniqueOrder(entries);
+  assertContentRules(entries);
 
   return entries.sort(compareDocs);
 }

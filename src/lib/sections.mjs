@@ -7,18 +7,24 @@
  * build instead of producing an unreachable page.
  *
  * Adding a section is one entry here. Adding a chapter is one Markdown file.
+ *
+ * Plain JavaScript on purpose: `scripts/new-doc.mjs` reads this registry to
+ * validate the section of a new chapter, and Node cannot import a TypeScript
+ * file without a loader flag (`.node-version` pins Node 22.12). Types live in
+ * JSDoc so the site still type-checks while the scaffolder stays dependency free.
  */
 
-export type Section = {
-  /** Stable identifier used in frontmatter and anchors. Never translated. */
-  id: string;
-  /** Title shown in navigation, breadcrumbs and the docs index. */
-  title: string;
-  /** One line explaining what the section covers. */
-  summary: string;
-};
+/**
+ * One documentation section.
+ *
+ * @typedef {object} Section
+ * @property {string} id Stable identifier used in frontmatter and anchors. Never translated.
+ * @property {string} title Title shown in navigation, breadcrumbs and the docs index.
+ * @property {string} summary One line explaining what the section covers.
+ */
 
-export const sections: readonly Section[] = [
+/** @type {readonly Section[]} */
+export const sections = [
   {
     id: 'fundamentos',
     title: 'Fundamentos',
@@ -42,15 +48,25 @@ export const sections: readonly Section[] = [
 ];
 
 /** Section ids in registry order, for the content schema and ordering. */
-export const sectionIds: readonly string[] = sections.map((section) => section.id);
+export const sectionIds = sections.map((section) => section.id);
 
-/** Resolve a section id, or `undefined` when it is not registered. */
-export function findSection(id: string): Section | undefined {
+/**
+ * Resolve a section id, or `undefined` when it is not registered.
+ *
+ * @param {string} id
+ * @returns {Section | undefined}
+ */
+export function findSection(id) {
   return sections.find((section) => section.id === id);
 }
 
-/** Registry position, used to sort chapters across sections. */
-export function sectionRank(id: string): number {
+/**
+ * Registry position, used to sort chapters across sections.
+ *
+ * @param {string} id
+ * @returns {number}
+ */
+export function sectionRank(id) {
   const index = sections.findIndex((section) => section.id === id);
   return index === -1 ? sections.length : index;
 }

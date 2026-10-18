@@ -97,7 +97,7 @@ this, and the build does not depend on it.
 | F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next | hecho |
 | F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) | hecho |
 | F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | hecho |
-| F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | pendiente |
+| F2.4 | S9,S10 | tooling | Authoring scaffolder (`pnpm new:doc`) + build validation for content rules | hecho |
 | F2.5 | S12 | docs | Slug and redirect contract | pendiente |
 | F3.1 | S4 | diagrams | Diagram primitives extracted from 3 real visualizations | pendiente |
 | F4.1 | S3,S8 | content | Content production by chapter, with owner review per batch | pendiente |
@@ -202,3 +202,17 @@ dos plugins, la hoja de estilos y el contenido. Aquí el corte sí cabe en la gu
 de revisión; el lockfile suma 1276 líneas por la dependencia nueva y no se revisa
 línea a línea. Siguiente corte: F2.4 (scaffolder `pnpm new:doc` y validación de
 contenido en build).
+
+L17: F2.4 cerrada. `pnpm new:doc <sección> <slug> --title "…" [--description "…"]`
+escribe el capítulo con frontmatter válido, calcula el `order` siguiente leyendo solo
+el bloque de frontmatter de la sección y se niega a sobrescribir. Falla con exit 1 y
+mensaje útil en sección desconocida, slug que ya existe, slug fuera de kebab-case,
+falta de `--title` y opción desconocida. El build gana una regla de colección: la
+primera carpeta del path tiene que coincidir con el `section` declarado, así que un
+archivo movido de sitio rompe el build en vez de generar una URL incoherente. Para
+que el scaffolder pueda leer el registro sin duplicarlo ni pedir un loader de
+TypeScript, `src/lib/sections.ts` pasa a `src/lib/sections.mjs` con tipos en JSDoc y
+`allowJs` en tsconfig (corrige la ruta que nombra L12). Hallazgo del worker: el pager
+emitía `pager__link--previous` sin regla CSS, algo que la auditoría no veía porque
+con un solo capítulo no se renderiza; se añadió la regla y verifiqué la auditoría
+con dos capítulos en scratch. Siguiente corte: F3.1 (primitivas de diagrama).
