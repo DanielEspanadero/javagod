@@ -69,6 +69,15 @@ S15: No em dashes (`\u2014`) or en dashes (`\u2013`) anywhere: not in published
 copy, not in source comments. The build fails if one appears in any generated
 page, naming the page and the surrounding text.
 
+S16: Version support is a reading mode, not a content fork. Canonical content
+stays single: one page per topic, each declaring its minimum version. A version
+switcher filters what the reader sees (hiding or marking content newer than the
+selected version) and persists in `localStorage` plus a `?v=` query. It never
+creates a parallel URL tree. Reading modes cover LTS releases only (8, 11, 17,
+21, 25); non-LTS releases appear only in the `novedades` section. Canonical
+examples use modern Java; differences for older releases are shown inline as
+explicit "antes / desde" snippets, never as separate pages.
+
 ## Tasks
 
 | ID | Specs | Route | Task |
@@ -128,3 +137,6 @@ scroll. No se si entiendes el concepto de lo que quiero?
 
 L8: Ahora sí, me va gustando más. Adapta los textos al español de españa y evita
 el uso de guiones. No quiero ver ni uno en toda la web: —
+
+L9: Ahora, en lugar de Java 21, quiero dar servicio a todas las versiones (si es
+posible). O ves viable otra opción?
