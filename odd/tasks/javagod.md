@@ -581,3 +581,16 @@ capítulo) y la tabla ancha se mide por su contenedor, no por la tabla. Build co
 páginas, 15 indexadas, auditoría limpia con 209 clases en markup contra 356 reglas y 17 de 17
 URL en el contrato. El índice propuesto en L42 sigue pendiente de revisión del dueño: los
 capítulos 3 a 6 (herencia y polimorfismo, interfaces, Object, records) son F6.2 y F6.3.
+
+L44: Renombrada la sección a "Programación Orientada a Objetos" a propuesta del dueño ("Me
+gustaría cambiar el título por Programación Orientada a Objetos (POO) que yo creo que es más
+estandard, no crees?"). Decisión: el título lleva el nombre completo y las siglas quedan fuera
+del rótulo, porque se repite en cuatro superficies (árbol, migas, índice y pager) y alargaría una
+etiqueta que hoy es corta como sus vecinas; el acrónimo vive en el resumen de la sección y en el
+primer párrafo del capítulo 1, que es lo que además indexa Pagefind. El id sigue siendo `objetos`
+y las URLs no cambian (S12). De paso, la portada dejó de duplicar los cuatro títulos de sección:
+`src/pages/index.astro` los lee del registro con `findSection` (S9), y eso corrigió un
+"Collections & Streams" que no coincidía con el registro. Verificado en navegador a 1440 y 390:
+el título completo entra en el rail partido en dos líneas sin desbordar, migas y eyebrow lo
+llevan, el índice y la portada muestran el nombre del registro, y buscar "POO" llega al capítulo
+de clases y objetos. Build y auditoría limpios.
