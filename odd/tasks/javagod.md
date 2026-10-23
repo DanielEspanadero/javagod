@@ -115,7 +115,7 @@ this, and the build does not depend on it.
 | F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | hecho |
 | F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | hecho |
 | F7.1 | S3,S8 | content | Colecciones 1-2: el marco de colecciones, listas | hecho |
-| F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | pendiente |
+| F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | hecho |
 | F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | pendiente |
 
 ## Releases
@@ -719,3 +719,23 @@ Build: 24 páginas, 21 indexadas, 23 de 23 URL en el contrato, auditoría limpia
 markup contra 357 reglas. Corte de entrega de la rama hasta aquí: cuatro commits, de los que dos son
 los capítulos (268 y 251 líneas) y uno la marca (`1deb58e`, 33 líneas más los dos PNG); el commit de
 spec (`744d480`, 18 líneas) abre el lote. Nada supera el corte de 400 líneas autoradas.
+
+L51: F7.2 cerrada en dos unidades, `4eceda5` (`feat(content): add the sets chapter`) y `dfe8829`
+(`feat(content): add the maps chapter`), de 281 y 279 líneas, con dos `gentle-ai-worker` en paralelo.
+Hallazgo del worker de conjuntos que corrige mi enunciado: con un comparador incoherente con `equals`,
+un `TreeSet` NO guarda las dos grafías, guarda una y `contains` contesta `true` para la otra; el texto
+quedó con el comportamiento observado, que es el que se comprobó ejecutando
+`String.CASE_INSENSITIVE_ORDER`. Revisión del padre en los conjuntos: la frase de `headSet` y `tailSet`
+decía que los dos excluyen el límite y contradecía el ejemplo de arriba (`tailSet(6)` incluye el 6); el
+árbol rojo-negro del cubo quedó precisado con las dos condiciones (tabla de 64 cubos y cubo de ocho
+entradas); el coste de `LinkedHashSet` decía a la vez "lo mismo" y "un poco más"; y "el que viene
+ahora" quedó sustituido por el criterio explícito. En los mapas solo cayó el género de "caché". Datos
+contrastados en esta tanda: `HashSet` con 16 cubos, factor 0,75 y umbral 12 comprobado con reflexión
+sobre el JDK 21; `TreeMap.put(null)` con orden natural da NPE; `compute`, `computeIfPresent` y `merge`
+borran la pareja cuando la función devuelve `null`; `putIfAbsent` trata como ausente un valor `null`;
+`Map.of` llega a diez parejas y `Map.ofEntries` no tiene tope; `Set.copyOf` descarta duplicados y
+`Set.of` los rechaza; una clave o un elemento mutado deja de encontrarse sin excepción. Playwright
+sobre `dist` en 1440 y 390: los dos capítulos renderizan con un `h1`, chip "Desde Java 8", figura de
+tres nodos, TOC de 12 y 11 entradas, árbol de 23 enlaces, y ninguno desborda (390 exactos). Build: 26
+páginas, 23 indexadas, 25 de 25 URL en el contrato, auditoría limpia con 210 clases en markup contra
+357 reglas. Corte de entrega: dos commits de ~280 líneas cada uno, por debajo del límite de 400.
