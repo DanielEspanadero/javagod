@@ -125,8 +125,8 @@ this, and the build does not depend on it.
 | F9.3 | S1 | release | Pulido: registro al día y guía de entrega verificable | hecho |
 | F10.1 | S1,S3 | release | Entrega: rendimiento medido y presupuesto en el build | hecho |
 | F10.2 | S1 | release | Entrega: README del repositorio y arranque en un minuto | hecho |
-| F11.1 | S3,S16 | search | Buscador: respetar el modo de lectura en los resultados | pendiente |
-| F11.2 | S3 | search | Buscador: teclado en los resultados y recuento honesto | pendiente |
+| F11.1 | S3,S16 | search | Buscador: respetar el modo de lectura en los resultados | hecho |
+| F11.2 | S3 | search | Buscador: teclado en los resultados y recuento honesto | hecho |
 
 ## Releases
 
@@ -926,3 +926,24 @@ resultados: `Tab` sí entra en ellos, pero `ArrowDown` no mueve el foco y `Enter
 fallo la coincidencia por prefijo con identificadores de una letra en el código (`zzzz` casa con el
 token `z` de tres capítulos): es cómo indexa Pagefind y se queda como está. Rama `feature/search-fixes`
 con F11.1 y F11.2.
+
+L62: buscador arreglado en una unidad, `555eec6` (`fix(search): respect the reading mode and make the
+results usable`). El worker se paró a preguntar porque mi criterio de aceptación pedía que
+`novedades/java-25` apareciera en modo Java 21, y eso contradice S16: se aprobó la regla única, un
+resultado se oculta cuando su `since` supera la versión elegida y `hasta` cuenta al revés. Cambios:
+`BaseLayout` gana un slot `head`; `DocsLayout` publica `since` y `hasta` como metadatos de Pagefind
+(la sintaxis que funciona es `data-pagefind-meta="since[content]"`, sin `[content]` el meta no
+llega al resultado); `SiteSearch` lee el modo igual que el selector, filtra antes de recortar a ocho
+filas y anuncia disponibles y ocultos; las flechas mueven el foco entre los enlaces, `Enter` abre
+el primero y el foco visible de los resultados se ve. El padre corrigió tres cosas del handoff: el
+plural (`1 oculto`, no `1 ocultos`), la nota de ocultos cuando son cero y el modo por defecto, que
+ahora es `all` como en el selector en vez de la LTS más reciente. También encontró un defecto que
+venía de antes: con texto en el campo, el primer `Escape` lo vaciaba y el diálogo seguía abierto;
+ahora cierra a la primera y devuelve el foco. Verificación del padre sobre `dist` en HEAD: build en
+verde con 34 páginas, auditoría y contrato limpios; `search.mjs` (temporal, en `/tmp`) en verde con
+Java 17 (`virtual` oculta los dos capítulos, `8 resultados, 3 ocultos`), Java 21 (`8 de 10
+resultados, 1 oculto`) y Java 25 (`8 de 11 resultados`, sin nota), `java` con `8 de 31 resultados`,
+flechas arriba y abajo en los dos sentidos, `Enter` abriendo el primer resultado y `Escape`
+cerrando; `keyboard.mjs` sigue en verde; `axe` con 0 violaciones en 136 pasadas y Playwright a 1440
+y 390 sin desbordamiento. Queda abierto, como decisión de producto, que la búsqueda no tiene
+paginación: anuncia `8 de 31` pero no hay forma de ver el resto desde el diálogo.
