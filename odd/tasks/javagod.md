@@ -118,7 +118,7 @@ this, and the build does not depend on it.
 | F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | hecho |
 | F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | hecho |
 | F8.1 | S3,S8 | content | Concurrencia 1-2: hilos y ciclo de vida, memoria compartida | hecho |
-| F8.2 | S3,S8 | content | Concurrencia 3-4: executors y tareas, estructuras concurrentes | pendiente |
+| F8.2 | S3,S8 | content | Concurrencia 3-4: executors y tareas, estructuras concurrentes | hecho |
 | F8.3 | S3,S8 | content | Concurrencia 5-6: locks y deadlocks, hilos virtuales | pendiente |
 
 ## Releases
@@ -803,3 +803,25 @@ capítulos renderizan con un `h1`, chip "Desde Java 8", figuras de 4 y 3 nodos, 
 árbol de 27 enlaces, ninguno desborda (390 exactos) y la portada ya dice "2 capítulos" en Concurrencia.
 Build: 30 páginas, 27 indexadas, 29 de 29 URL en el contrato, auditoría limpia con 206 clases en markup
 contra 357 reglas. Corte de entrega: dos commits de ~283 líneas cada uno.
+
+L55: F8.2 cerrada en dos unidades, `9040afc` (`feat(content): add the executors chapter`) y
+`1b4b4a9` (`feat(content): add the concurrent structures chapter`), de 283 y 280 líneas, con dos
+`gentle-ai-worker` en paralelo. El padre no necesitó corregir datos en ninguno de los dos. Comprobaciones
+de la tanda: las tres fábricas de `Executors` y sus colas se leyeron del `src.zip` del JDK 21 (pool fijo
+con `LinkedBlockingQueue` sin tope, cacheado con `SynchronousQueue` de 0 a `Integer.MAX_VALUE` y 60 s,
+single con un hilo y cola sin tope), `ExecutorService.close()` está anotado `@since 19`, y los cuatro
+ejemplos de executors dan una sola variante de salida en veinte pasadas cada uno (`isDone` antes y
+después, causa real de `ExecutionException`, `shutdownNow` con un pendiente, y los cuatro valores del
+ejemplo de `CompletableFuture`). En estructuras, el mapa roto se midió en 17 pasadas (28663-38088 de
+40000), el `ConcurrentModificationException` de `ArrayList` salió en las ocho, el iterador de
+`CopyOnWriteArrayList` creado antes del escritor ve 1 y el tamaño final es 1001 siempre (lo garantiza el
+contrato de foto, no el planificador), la cola acotada suma 15 y termina en todas las pasadas, los
+contadores dan 400000 tras los `join`, y el `CountDownLatch` deja la última línea fija con las tres
+primeras en orden variable. Se verificaron además los detalles de API que el texto afirma: `size()` como
+estimación y `mappingCount()` de Java 8, `LinkedBlockingQueue` con tope por defecto `Integer.MAX_VALUE`,
+`LongAdder.sum()` sin foto atómica, y la necesidad de `synchronized` externo para iterar un
+`Collections.synchronizedList`. Playwright sobre `dist` en 1440 y 390: los dos capítulos renderizan con
+un `h1`, chip "Desde Java 8", figuras de 3 nodos cada uno, TOC de 13 y 12 entradas, árbol de 29 enlaces,
+ninguno desborda (390 exactos) y la portada ya dice "4 capítulos" en Concurrencia. Build: 32 páginas, 29
+indexadas, 31 de 31 URL en el contrato, auditoría limpia con 206 clases en markup contra 357 reglas.
+Corte de entrega: dos commits de ~281 líneas cada uno.
