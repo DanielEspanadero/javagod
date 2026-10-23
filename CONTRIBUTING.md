@@ -304,6 +304,32 @@ Configuración en Cloudflare Pages:
 - La versión de Node está fijada en `.node-version`.
 - `public/_headers` controla caché y cabeceras de seguridad. `public/_redirects` es donde van los cambios de URL, que según la spec S12 nunca pueden romper un enlace existente.
 
+### Puesta en marcha del proyecto
+
+1. En Cloudflare, Pages > Connect to Git, y elige el repositorio.
+2. Build command `pnpm build`, output directory `dist`. La versión de Node sale de
+   `.node-version`.
+3. Rama de producción `main`; el resto generan previews automáticos.
+4. Define `JAVAGOD_SITE_URL` con el dominio final, sin barra al final.
+
+El primer deploy tiene que publicar un sitio completo, no un esqueleto: si `dist` no trae
+el índice de Pagefind o las cabeceras de `public/_headers`, el build local tampoco las
+estaba generando.
+
+### Comprobación tras desplegar
+
+- `/` carga la portada con el logo y el pipeline.
+- `/docs/` lista las tres secciones y los dieciocho capítulos.
+- Un capítulo profundo, por ejemplo `/docs/concurrencia/hilos-virtuales/`, abre con su
+  TOC y muestra el aviso de versión al cambiar el modo de lectura a Java 17.
+- `/404.html` responde con la página propia, no con la de Cloudflare.
+- `curl -I https://<dominio>/logo.png` devuelve las cabeceras de caché de
+  `public/_headers`.
+- La búsqueda devuelve resultados: el índice vive en `dist/pagefind`.
+
+`pnpm preview` sirve lo mismo que se despliega, así que sirve para ensayar estas
+comprobaciones antes de conectar el repositorio.
+
 ## Antes de mergear
 
 ```bash
