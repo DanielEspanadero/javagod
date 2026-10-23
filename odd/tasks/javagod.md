@@ -97,7 +97,7 @@ this, and the build does not depend on it.
 | F1.2 | S4,S6 | landing | Hero with animated JVM pipeline diagram | hecho |
 | F1.3 | S3,S4 | landing | Progressive learning path section | hecho |
 | F1.4 | S4,S6 | landing | Visualization showcase: animated thread states | hecho |
-| F1.5 | S2,S6 | layout | Marca de JavaGod: logo en la cabecera y favicon | pendiente |
+| F1.5 | S2,S6 | layout | Marca de JavaGod: logo en la cabecera y favicon | hecho |
 | F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next | hecho |
 | F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) | hecho |
 | F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | hecho |
@@ -120,9 +120,9 @@ this, and the build does not depend on it.
 | F8.1 | S3,S8 | content | Concurrencia 1-2: hilos y ciclo de vida, memoria compartida | hecho |
 | F8.2 | S3,S8 | content | Concurrencia 3-4: executors y tareas, estructuras concurrentes | hecho |
 | F8.3 | S3,S8 | content | Concurrencia 5-6: locks y deadlocks, hilos virtuales | hecho |
-| F9.1 | S5,S7 | docs | Pulido: accesibilidad, teclado, foco y contraste en todas las rutas | pendiente |
-| F9.2 | S2,S13 | styles | Pulido: reglas duplicadas, tokens muertos y peso del CSS | pendiente |
-| F9.3 | S1 | release | Pulido: registro al día y guía de entrega verificable | pendiente |
+| F9.1 | S5,S7 | docs | Pulido: accesibilidad, teclado, foco y contraste en todas las rutas | hecho |
+| F9.2 | S2,S13 | styles | Pulido: reglas duplicadas, tokens muertos y peso del CSS | hecho |
+| F9.3 | S1 | release | Pulido: registro al día y guía de entrega verificable | hecho |
 
 ## Releases
 
@@ -859,3 +859,26 @@ pendiente del registro: F5.3, que no se puede cerrar desde el repositorio porque
 no tiene sesión y el proyecto de Pages no existe. El dueño elige "Pulido de lo existente": rama
 `feature/polish` desde `develop` y tres unidades, F9.1 accesibilidad, F9.2 CSS y F9.3 registro y
 entrega. F1.5 deja de estar pendiente: el logo ya está en `1deb58e`.
+
+L58: pulido cerrado en dos unidades, `2bad76c` (`fix(a11y): raise contrast and name the search toggle`) y
+este commit de documentación. La auditoría de axe cubrió 34 rutas (las 33 publicadas más la 404), en
+tema claro y oscuro y a 1440 y 390 px: 136 pasadas, 0 violaciones al final. Antes de arreglar salieron
+dos reglas: contraste (1429 nodos) por `--text-faint` en 4,47:1 sobre `--surface-sunken`, y
+`button-name` en móvil porque la etiqueta del buscador se ocultaba con `display:none`. El primer
+arreglo destapó dos reglas más que el ruido escondía: `label-content-name-mismatch`, porque un
+`aria-label` a secas no incluye el texto visible del `kbd`, y contraste dentro de los bloques de
+código, 3,48:1 en claro (`#e36209` para constantes) y 3,04:1 en oscuro (`#6a737d` para comentarios).
+Arreglos: `--text-faint` pasa a `#746359` (mínimo 4,87:1 en las cuatro superficies claras), la
+etiqueta del botón se oculta visualmente sin salir del árbol de accesibilidad, el `kbd` queda
+decorativo, y los dos temas de Shiki pasan a sus variantes de alto contraste. Revisión de CSS: no hay
+reglas duplicadas de verdad (los dos casos que salieron eran animación frente a maquetación y un
+`@media`), y se fueron dos tokens muertos, `--ease-in-out` y `--duration-loop`. Comprobación de
+teclado propia, fuera del repo: el primer `Tab` enfoca el enlace de salto y `Enter` lleva a `#main`;
+el buscador abre con `Cmd+K` y con `Control+K`, deja el foco dentro, y `Escape` lo cierra y lo
+devuelve al botón; el conmutador de tema tiene nombre accesible; los diez anclajes del TOC resuelven;
+con `prefers-reduced-motion` la portada conserva el titular y la animación de entrada queda en
+`none`. Verificación del padre sobre `dist`: `pnpm build` en verde con 34 páginas, 33 de 33 URL y
+auditoría limpia; Playwright a 1440 y 390 px sin desbordamiento de página; capturas de los bloques de
+código en ambos temas revisadas a ojo. F1.5 pasa a `hecho` porque el logo ya estaba en `1deb58e`.
+F5.3 sigue pendiente: `wrangler whoami` no tiene sesión y el proyecto de Pages no existe, así que la
+guía de entrega queda escrita pero no ejecutada.
