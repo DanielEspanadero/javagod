@@ -113,6 +113,9 @@ this, and the build does not depend on it.
 | F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | hecho |
 | F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | hecho |
 | F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | hecho |
+| F7.1 | S3,S8 | content | Colecciones 1-2: el marco de colecciones, listas | pendiente |
+| F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | pendiente |
+| F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | pendiente |
 
 ## Releases
 
@@ -666,3 +669,18 @@ ofrece el salto a 17; (4) a 390 px los dos capítulos nuevos no desbordan, con d
 contenidos; (5) árbol, índice (6 tarjetas), chip de la portada ("6 capítulos") y búsqueda coinciden,
 y "constructor compacto" encuentra records. Build: 22 páginas, 19 indexadas, 21 de 21 URL en el
 contrato, auditoría limpia con 210 clases en markup contra 357 reglas.
+
+L48: "buenas, continuamos con las tareas correspondientes. Abre una rama desde dev y dale caña.
+Abierta `feature/collections-streams` desde `develop` y empezada la sección `colecciones`
+("Collections y Streams", la tercera del registro). F5.3 sigue pendiente y no entra aquí: no se
+puede cerrar desde el repositorio porque el proyecto de Cloudflare todavía no existe (L40). Índice
+acordado para la sección, en orden de lectura: 1 El marco de colecciones, 2 Listas: orden e índice,
+3 Conjuntos y el contrato de equals, 4 Mapas: claves y valores, 5 Stream: el pipeline perezoso,
+6 Collectors, Optional y agregación. Los seis declaran `since: 8` porque el tema (el marco de
+colecciones, Stream y Optional) nace en Java 8; las APIs posteriores que aparezcan en los ejemplos
+(`List.of` y `Map.of` de Java 9, `List.copyOf` de Java 10, `Stream.toList` de Java 16) se etiquetan
+dentro del cuerpo, nunca suben el `since`, que es la regla de F4.4. Tres lotes de dos capítulos, con
+dos `gentle-ai-worker` en paralelo por lote y superficies disjuntas, como en la sección anterior: el
+capítulo 1 fija el vocabulario y los demás lo leen en vez de repetirlo. Las seis unidades llevan
+además numeración de entrega T1 a T6: T1 el marco de colecciones y T2 listas (F7.1), T3 conjuntos y
+T4 mapas (F7.2), T5 Stream y T6 collectors y Optional (F7.3).
