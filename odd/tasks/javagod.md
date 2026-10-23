@@ -125,6 +125,8 @@ this, and the build does not depend on it.
 | F9.3 | S1 | release | Pulido: registro al día y guía de entrega verificable | hecho |
 | F10.1 | S1,S3 | release | Entrega: rendimiento medido y presupuesto en el build | hecho |
 | F10.2 | S1 | release | Entrega: README del repositorio y arranque en un minuto | hecho |
+| F11.1 | S3,S16 | search | Buscador: respetar el modo de lectura en los resultados | pendiente |
+| F11.2 | S3 | search | Buscador: teclado en los resultados y recuento honesto | pendiente |
 
 ## Releases
 
@@ -914,3 +916,13 @@ Inter y JetBrains Mono servidas en local, sin ninguna petición fallida. F10.2 a
 no existía: qué es el sitio, stack, arranque en un minuto, comandos, estructura, cómo escribir
 contenido, entrega y el puntero al registro. F5.3 sigue pendiente y sin cambios: la cuenta de
 Cloudflare no tiene sesión y el proyecto de Pages no existe.
+
+L61: "Perfecto, crees que lo siguiente es arreglar el buscador?". Comprobado antes de tocar nada: el
+buscador funciona (consulta, resultados, enlace y estado vacío), pero tiene tres defectos reales.
+(1) Ignora el modo de lectura: con Java 17 seleccionado, `virtual` devuelve "Hilos virtuales" y hasta
+la página `Java 25`, capítulos que el árbol y el índice ocultan. (2) El teclado no llega a los
+resultados: `Tab` sí entra en ellos, pero `ArrowDown` no mueve el foco y `Enter` no abre el primero.
+(3) El recuento miente: pinta como mucho 8 filas y anuncia "15 resultados" sin decirlo. No es un
+fallo la coincidencia por prefijo con identificadores de una letra en el código (`zzzz` casa con el
+token `z` de tres capítulos): es cómo indexa Pagefind y se queda como está. Rama `feature/search-fixes`
+con F11.1 y F11.2.
