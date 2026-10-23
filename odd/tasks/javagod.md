@@ -97,6 +97,7 @@ this, and the build does not depend on it.
 | F1.2 | S4,S6 | landing | Hero with animated JVM pipeline diagram | hecho |
 | F1.3 | S3,S4 | landing | Progressive learning path section | hecho |
 | F1.4 | S4,S6 | landing | Visualization showcase: animated thread states | hecho |
+| F1.5 | S2,S6 | layout | Marca de JavaGod: logo en la cabecera y favicon | pendiente |
 | F2.1 | S5 | docs | Documentation layout: nav tree, TOC, breadcrumbs, prev/next | hecho |
 | F2.2 | S3 | docs | Content collection schema + section registry + first real chapter (Hello World) | hecho |
 | F2.3 | S2 | docs | Prose styles: headings, code blocks with copy, callouts, tables | hecho |
@@ -684,3 +685,13 @@ dos `gentle-ai-worker` en paralelo por lote y superficies disjuntas, como en la 
 capítulo 1 fija el vocabulario y los demás lo leen en vez de repetirlo. Las seis unidades llevan
 además numeración de entrega T1 a T6: T1 el marco de colecciones y T2 listas (F7.1), T3 conjuntos y
 T4 mapas (F7.2), T5 Stream y T6 collectors y Optional (F7.3).
+
+L49: "Tengo un logo de Javagod que puede encajar bien en la web, te lo paso por aquí:
+/Users/daniel/Downloads/Java cup with golden halo.png". El original es un PNG de 1254 px con
+transparencia, con el dibujo casi a sangre (caja 1201x1211). Decisión: va a la marca de la cabecera
+(`SiteHeader.astro`), en el hueco del cuadro con la "J", y sustituye al favicon SVG, que se retira.
+En el repo quedan solo dos assets recortados y reducidos: `public/logo.png` de 256 px (cabecera a
+`--badge-size`, `object-fit: contain`) y `public/favicon.png` de 64 px. No se versiona el original de
+1254 px ni se generan en build. La imagen lleva `alt` vacío porque el nombre ya lo pone la palabra
+`JavaGod` al lado. El logo no recolorea con el tema: azules, naranjas y halo amarillo se leen sobre
+claro y sobre oscuro. Queda documentado en CONTRIBUTING ("Marca y logo").
