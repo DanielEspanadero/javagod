@@ -117,6 +117,9 @@ this, and the build does not depend on it.
 | F7.1 | S3,S8 | content | Colecciones 1-2: el marco de colecciones, listas | hecho |
 | F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | hecho |
 | F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | hecho |
+| F8.1 | S3,S8 | content | Concurrencia 1-2: hilos y ciclo de vida, memoria compartida | pendiente |
+| F8.2 | S3,S8 | content | Concurrencia 3-4: executors y tareas, estructuras concurrentes | pendiente |
+| F8.3 | S3,S8 | content | Concurrencia 5-6: locks y deadlocks, hilos virtuales | pendiente |
 
 ## Releases
 
@@ -763,3 +766,18 @@ sección y `?v=8` no oculta ninguno de los seis. Build: 28 páginas, 25 indexada
 contrato, auditoría limpia con 210 clases en markup contra 357 reglas. Corte de entrega: dos commits de
 ~284 líneas cada uno. Queda pendiente F5.3 (deploy en Cloudflare Pages), que no se puede cerrar desde el
 repositorio mientras el proyecto de Cloudflare no exista.
+
+L53: "vale, mergea a dev y luego seguimos desde ahí con una nueva rama y continuamos con las
+siguientes tareas". `feature/collections-streams` fusionada en `develop` con `--no-ff` (`d02d8c5`) y
+borrada; rama nueva `feature/concurrency` desde `develop`. Siguiente sección: `concurrencia`, la última
+del registro sin capítulos ("Hilos, estados, locks y memoria compartida, sin humo"). Índice acordado, en
+orden de lectura: 1 Hilos y su ciclo de vida, 2 Memoria compartida y sincronización, 3 Executors y
+tareas, 4 Colecciones y utilidades concurrentes, 5 Locks, deadlocks y diagnóstico, 6 Hilos virtuales.
+`since: 8` en los cinco primeros; el sexto declara `since: 21`, porque los hilos virtuales son estándar
+en 21 y solo vista previa en 19 y 20, y el cuerpo lo explica. Numeración de entrega T7 a T12, continuando
+la de la sección anterior, y tres lotes de dos capítulos con dos workers en paralelo. Regla añadida para
+esta sección, porque el código concurrente es tramposo: ningún ejemplo puede afirmar una salida
+determinista si depende del entrelazado; los workers tienen que compilar y ejecutar con `javac` 21, usar
+`join`, `CountDownLatch` o esperas acotadas donde haga falta, y describir el resultado como "puede"
+cuando el planificador decide. El callout de la portada de estados de hilo sigue siendo la visualización
+de referencia.
