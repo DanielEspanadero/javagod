@@ -2,6 +2,12 @@
   "urls": [
     "/",
     "/docs/",
+    "/docs/colecciones/collectors-y-optional/",
+    "/docs/colecciones/conjuntos/",
+    "/docs/colecciones/el-marco-de-colecciones/",
+    "/docs/colecciones/listas/",
+    "/docs/colecciones/mapas/",
+    "/docs/colecciones/stream/",
     "/docs/fundamentos/arrays/",
     "/docs/fundamentos/control-de-flujo/",
     "/docs/fundamentos/hola-mundo/",

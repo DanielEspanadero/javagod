@@ -226,6 +226,22 @@ cualquier ruta que no exista. Es una página normal del sitio: misma cabecera, m
 solo `h1` y solo enlaces que resuelven (S7). Si algún día el sitio pasa a tener rutas
 retiradas, el aviso de esa página es lo que ve quien llega por un enlace viejo.
 
+## Marca y logo
+
+La marca es la taza de café con halo: un PNG con transparencia derivado del original del dueño
+(1254 px). En el repositorio viven solo los dos tamaños que el sitio usa, recortados al contenido y
+con un 3 por ciento de margen:
+
+- `public/logo.png`, 256 px: marca de la cabecera que pinta `SiteHeader.astro`, con una caja de
+  `--badge-size` y `object-fit: contain`.
+- `public/favicon.png`, 64 px: icono de la pestaña, declarado en `BaseLayout.astro`.
+
+Los dos son assets estáticos y el build no los genera. Si el original cambia, recórtalo y redúcelo
+desde el archivo grande, nunca amplíes el pequeño. La imagen lleva `alt` vacío porque el nombre lo
+pone la palabra `JavaGod` al lado: un `alt` con texto haría que un lector de pantalla lo leyera dos
+veces. La marca no cambia con el tema; sus azules, naranjas y el amarillo del halo se leen sobre
+claro y sobre oscuro.
+
 ## Diagramas en un capítulo
 
 Un diagrama se escribe como HTML dentro del Markdown, sin componentes ni imports (S4). La
