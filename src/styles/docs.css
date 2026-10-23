@@ -413,6 +413,12 @@
   font-size: 0.9em;
 }
 
+/* Inline code can be a long expression with no spaces, so it must be allowed to
+   break. Block code is excluded: a `pre` scrolls horizontally instead. */
+.prose :not(pre) > code {
+  overflow-wrap: anywhere;
+}
+
 .prose pre {
   padding: var(--space-md);
   overflow-x: auto;
