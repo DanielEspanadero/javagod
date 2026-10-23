@@ -127,7 +127,7 @@ this, and the build does not depend on it.
 | F10.2 | S1 | release | Entrega: README del repositorio y arranque en un minuto | hecho |
 | F11.1 | S3,S16 | search | Buscador: respetar el modo de lectura en los resultados | hecho |
 | F11.2 | S3 | search | Buscador: teclado en los resultados y recuento honesto | hecho |
-| F12.1 | S3 | search | Buscador en desarrollo: servir el índice del build en `pnpm dev` | pendiente |
+| F12.1 | S3 | search | Buscador en desarrollo: servir el índice del build en `pnpm dev` | hecho |
 
 ## Releases
 
