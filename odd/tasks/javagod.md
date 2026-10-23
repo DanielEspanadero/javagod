@@ -127,6 +127,7 @@ this, and the build does not depend on it.
 | F10.2 | S1 | release | Entrega: README del repositorio y arranque en un minuto | hecho |
 | F11.1 | S3,S16 | search | Buscador: respetar el modo de lectura en los resultados | hecho |
 | F11.2 | S3 | search | Buscador: teclado en los resultados y recuento honesto | hecho |
+| F12.1 | S3 | search | Buscador en desarrollo: servir el índice del build en `pnpm dev` | pendiente |
 
 ## Releases
 
@@ -947,3 +948,16 @@ flechas arriba y abajo en los dos sentidos, `Enter` abriendo el primer resultado
 cerrando; `keyboard.mjs` sigue en verde; `axe` con 0 violaciones en 136 pasadas y Playwright a 1440
 y 390 sin desbordamiento. Queda abierto, como decisión de producto, que la búsqueda no tiene
 paginación: anuncia `8 de 31` pero no hay forma de ver el resto desde el diálogo.
+
+L63: captura del dueño con el diálogo diciendo "La búsqueda no está disponible en este build" y `hilos`
+escrito. Diagnóstico: no era el build, era `pnpm dev`, donde `/pagefind/pagefind.js` responde 404
+porque Pagefind indexa `dist/` y el servidor de desarrollo no lo genera. F12.1: `scripts/pagefind-dev.mjs`
+monta el último `dist/pagefind` en `/pagefind` solo en modo serve, con `no-store`, tipos correctos y
+un aviso por consola con la fecha del índice; si no hay build previo, el middleware deja pasar y el
+diálogo dice ahora qué hacer ("ejecuta `pnpm build` para generar el índice"). Verificación del padre
+sobre el servidor de desarrollo: `/pagefind/pagefind.js` responde 200, `pagefind-entry.json` anuncia
+31 páginas, y Playwright encuentra `8 de 15 resultados` para `hilos` sin errores de consola. El
+build de producción no cambia: el plugin es `apply: 'serve'`, `dist` sigue con su índice normal y
+`search.mjs`, `keyboard.mjs` y `axe` (0 violaciones en 136 pasadas) siguen en verde contra `dist`.
+Queda como límite conocido: en desarrollo el índice es el de la última compilación, así que un
+capítulo recién escrito no aparece hasta `pnpm build`.

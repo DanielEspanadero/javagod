@@ -224,9 +224,12 @@ después la auditoría y el contrato de URLs, en ese orden. Para reindexar sin r
   y flecha arriba desde el primero vuelve al campo. Intro en el campo abre el primer
   resultado visible; en un enlace conserva su comportamiento nativo. Tab sigue funcionando
   y Esc cierra y devuelve el foco al botón de búsqueda.
-- En `pnpm dev` no hay índice, porque Pagefind trabaja sobre `dist/`. El diálogo lo dice
-  ("La búsqueda no está disponible en este build") en vez de fallar en silencio; para
-  probarla de verdad, `pnpm build && pnpm preview`.
+- En `pnpm dev` el servidor no genera índice, porque Pagefind trabaja sobre `dist/`:
+  `scripts/pagefind-dev.mjs` monta el último `dist/pagefind` en `/pagefind` mientras dura el
+  desarrollo y avisa por consola de la fecha del índice. Si todavía no hay build, el diálogo
+  lo dice ("La búsqueda no está disponible todavía: ejecuta `pnpm build`") en vez de fallar
+  en silencio. El índice del desarrollo es el de la última compilación, así que un capítulo
+  recién escrito no aparece hasta `pnpm build`.
 - Sin JavaScript el control no se ve, igual que el selector de versión: la página sigue
   navegable por el árbol, el índice y el pager.
 
