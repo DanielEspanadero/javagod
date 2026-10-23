@@ -9,6 +9,9 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "dev:status": "astro dev status",
+    "dev:logs": "astro dev logs",
+    "dev:stop": "astro dev stop",
     "build": "astro build && pagefind --site dist --force-language es && node scripts/audit.mjs && node scripts/check-urls.mjs",
     "search:index": "pagefind --site dist --force-language es",
     "audit": "node scripts/audit.mjs",

@@ -128,6 +128,7 @@ this, and the build does not depend on it.
 | F11.1 | S3,S16 | search | Buscador: respetar el modo de lectura en los resultados | hecho |
 | F11.2 | S3 | search | Buscador: teclado en los resultados y recuento honesto | hecho |
 | F12.1 | S3 | search | Buscador en desarrollo: servir el índice del build en `pnpm dev` | hecho |
+| F12.2 | S1 | tooling | Servidor de desarrollo: comandos y aviso del modo segundo plano | hecho |
 
 ## Releases
 
@@ -961,3 +962,15 @@ build de producción no cambia: el plugin es `apply: 'serve'`, `dist` sigue con 
 `search.mjs`, `keyboard.mjs` y `axe` (0 violaciones en 136 pasadas) siguen en verde contra `dist`.
 Queda como límite conocido: en desarrollo el índice es el de la última compilación, así que un
 capítulo recién escrito no aparece hasta `pnpm build`.
+
+L64: "al poner pnpm dev no arranca". Reproducido: el servidor sí arrancaba, pero Astro 7.4 detecta
+que el comando lo lanza un agente y lo pasa a segundo plano, escribiendo la marca `.astro/dev.json`.
+Con una marca viva de una sesión anterior, cualquier `pnpm dev` contesta `Dev server already
+running`, termina con salida 0 y vuelve al prompt sin banner: desde fuera eso es "no arranca".
+El diagnóstico se confirmó con el puerto libre: en primer plano (`ASTRO_DEV_BACKGROUND=0`) arranca
+en 1 s, sirve `/` y `/pagefind/pagefind.js` con 200. F12.2 añade `pnpm dev:status`, `pnpm dev:logs`
+y `pnpm dev:stop`, y documenta el caso en `README.md` y `CONTRIBUTING.md`. Verificado: `pnpm dev`
+levanta el servidor, `dev:status` lo ve en segundo plano, `/` y el índice de búsqueda responden 200,
+`dev:stop` lo para y deja el puerto libre sin marca residual; `pnpm build` en verde con 34 páginas,
+auditoría y contrato de URLs limpios. Regla operativa: no dejar servidores de desarrollo vivos
+tras verificar.

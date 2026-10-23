@@ -195,6 +195,23 @@ Cualquier superficie nueva que dependa de la versión necesita dos cosas y nada 
 `data-version-item` en el elemento que se oculta. El script recorre esos atributos. El
 artículo de la página lleva `data-version-page` con su rango, que es lo que lee el aviso.
 
+## Servidor de desarrollo
+
+Astro 7 puede servir el sitio en segundo plano. Lo hace cuando el comando lo lanza un agente
+y también con `--background`, y escribe el estado en `.astro/dev.json`. Cuando eso pasa,
+`pnpm dev` vuelve al prompt sin banner y el sitio sigue en `http://localhost:4321`. Mientras
+esa marca exista, un `pnpm dev` nuevo no arranca nada: contesta `Dev server already running`
+y termina con salida 0.
+
+| Comando | Qué hace |
+| --- | --- |
+| `pnpm dev:status` | Dice si hay servidor y en qué modo |
+| `pnpm dev:logs` | Muestra lo que escribe el servidor en segundo plano |
+| `pnpm dev:stop` | Lo para y limpia la marca |
+
+Si el sitio responde pero un capítulo recién escrito no aparece en la búsqueda, falta
+`pnpm build`: en desarrollo el índice de Pagefind es el de la última compilación.
+
 ## Búsqueda
 
 La búsqueda es estática y la sirve Pagefind: el build indexa `dist/` y el navegador solo
