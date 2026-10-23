@@ -8,6 +8,7 @@
     "/docs/colecciones/listas/",
     "/docs/colecciones/mapas/",
     "/docs/colecciones/stream/",
+    "/docs/concurrencia/executors/",
     "/docs/concurrencia/hilos/",
     "/docs/concurrencia/sincronizacion/",
     "/docs/fundamentos/arrays/",
