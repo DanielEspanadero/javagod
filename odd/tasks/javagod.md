@@ -119,7 +119,7 @@ this, and the build does not depend on it.
 | F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | hecho |
 | F8.1 | S3,S8 | content | Concurrencia 1-2: hilos y ciclo de vida, memoria compartida | hecho |
 | F8.2 | S3,S8 | content | Concurrencia 3-4: executors y tareas, estructuras concurrentes | hecho |
-| F8.3 | S3,S8 | content | Concurrencia 5-6: locks y deadlocks, hilos virtuales | pendiente |
+| F8.3 | S3,S8 | content | Concurrencia 5-6: locks y deadlocks, hilos virtuales | hecho |
 
 ## Releases
 
@@ -825,3 +825,26 @@ un `h1`, chip "Desde Java 8", figuras de 3 nodos cada uno, TOC de 13 y 12 entrad
 ninguno desborda (390 exactos) y la portada ya dice "4 capítulos" en Concurrencia. Build: 32 páginas, 29
 indexadas, 31 de 31 URL en el contrato, auditoría limpia con 206 clases en markup contra 357 reglas.
 Corte de entrega: dos commits de ~281 líneas cada uno.
+
+
+L56: F8.3 cerrada: `922e748` añade locks y diagnóstico y `5dba98f` añade hilos virtuales,
+cada capítulo con su URL en su propio commit (~286 líneas por unidad). Concurrencia queda completa
+con seis capítulos. Los workers compilaron los cuatro ejemplos de locks con `javac --release 8`
+y los cuatro de virtuales con `javac --release 21`; ejecutaron los primeros 30-35 veces y los
+segundos ocho veces, sin discrepancias con las salidas descritas. El padre leyó ambos capítulos
+y corrigió la reentrancia de callbacks, la espera del escritor hasta el último lector, la
+explicación de StampedLock y las operaciones de archivo que pueden retener un carrier. Quitó
+las cifras de un experimento de pinning que no correspondían al ejemplo publicado. Las pruebas
+comparativas de pinning en JDK 21 y 25 son evidencia del worker, no ejecuciones del padre.
+
+Verificación del padre: `pnpm astro build`, `pnpm urls:update` y `pnpm build`, todos con salida 0
+y sin ocultar fallos de tuberías. Resultado: 34 páginas, 33/33 URLs, 1329 enlaces internos,
+206 clases con 357 reglas, un h1 por página y ningún guion prohibido. Playwright sobre capítulos,
+índice y portada a 1440/390: HTTP 200, sin errores JS ni desbordamiento de página; las tablas y
+el código conservan su scroll local. Ambos diagramas tienen cuatro nodos; TOC de 10/11 entradas.
+Modo de lectura comprobado: Java 17 oculta virtuales en el índice y muestra aviso en acceso directo;
+Java 21 y 25 lo muestran sin aviso. ASSESS nativo no disponible por archivos todavía sin registrar
+en el momento de consultarlo: no hubo veredicto de revisión nativa y no se reintentó.
+No se modificó lógica compartida, dependencias ni configuración de entrega. Sin merge ni push;
+la rama `feature/concurrency` queda lista para la revisión del dueño. Cloudflare sigue fuera de
+esta entrega y pendiente de la creación del proyecto (F5.3).
