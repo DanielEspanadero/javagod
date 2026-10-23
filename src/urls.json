@@ -10,6 +10,7 @@
     "/docs/colecciones/stream/",
     "/docs/concurrencia/estructuras-concurrentes/",
     "/docs/concurrencia/executors/",
+    "/docs/concurrencia/hilos-virtuales/",
     "/docs/concurrencia/hilos/",
     "/docs/concurrencia/locks/",
     "/docs/concurrencia/sincronizacion/",
