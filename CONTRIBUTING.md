@@ -228,12 +228,12 @@ retiradas, el aviso de esa página es lo que ve quien llega por un enlace viejo.
 
 ## Marca y logo
 
-La marca es la taza de café con halo: un PNG con transparencia derivado del original del dueño
-(1254 px). En el repositorio viven solo los dos tamaños que el sitio usa, recortados al contenido y
-con un 3 por ciento de margen:
+La marca es la taza de café con halo, derivada del original del dueño (1254 px). En el repositorio
+viven solo las piezas que el sitio usa, recortadas al contenido y con un 3 por ciento de margen:
 
-- `public/logo.png`, 256 px: marca de la cabecera que pinta `SiteHeader.astro`, con una caja de
-  `--badge-size` y `object-fit: contain`.
+- `public/logo.webp`, 64 px: marca de la cabecera que pinta `SiteHeader.astro`, con una caja de
+  `--badge-size` y `object-fit: contain`. Va en WebP porque se pinta a 32 px y pesa 3 KB, frente a
+  los 30 KB que ocupaba el PNG de 256 px.
 - `public/favicon.png`, 64 px: icono de la pestaña, declarado en `BaseLayout.astro`.
 
 Los dos son assets estáticos y el build no los genera. Si el original cambia, recórtalo y redúcelo
@@ -241,6 +241,16 @@ desde el archivo grande, nunca amplíes el pequeño. La imagen lleva `alt` vací
 pone la palabra `JavaGod` al lado: un `alt` con texto haría que un lector de pantalla lo leyera dos
 veces. La marca no cambia con el tema; sus azules, naranjas y el amarillo del halo se leen sobre
 claro y sobre oscuro.
+
+## Tipografías
+
+Inter y JetBrains Mono se sirven desde el propio dominio, en `public/fonts`, como un archivo
+variable latino por familia: Google devuelve los mismos bytes para todos los pesos, así que una
+sola petición cubre de 400 a 700 en Inter y de 400 a 500 en JetBrains Mono. Las declaraciones viven
+en `src/styles/fonts.css` con `font-display: swap`, e Inter se precarga desde `BaseLayout.astro`
+porque pinta la primera pantalla. Si algún día hace falta otro alfabeto, añade el archivo de esa
+familia y su `unicode-range` en vez de volver al enlace externo: la hoja de Google bloqueaba el
+primer pintado y dependía de un tercero.
 
 ## Diagramas en un capítulo
 
@@ -323,7 +333,7 @@ estaba generando.
 - Un capítulo profundo, por ejemplo `/docs/concurrencia/hilos-virtuales/`, abre con su
   TOC y muestra el aviso de versión al cambiar el modo de lectura a Java 17.
 - `/404.html` responde con la página propia, no con la de Cloudflare.
-- `curl -I https://<dominio>/logo.png` devuelve las cabeceras de caché de
+- `curl -I https://<dominio>/logo.webp` devuelve las cabeceras de caché de
   `public/_headers`.
 - La búsqueda devuelve resultados: el índice vive en `dist/pagefind`.
 
@@ -338,7 +348,14 @@ pnpm build
 
 El build corre `astro build`, después `pagefind`, después `scripts/audit.mjs` y por último
 `scripts/check-urls.mjs`. La auditoría falla si hay enlaces internos rotos, más de un
-`h1` por página, clases sin regla CSS o guiones largos. La comprobación de URLs falla si
+`h1` por página, clases sin regla CSS, guiones largos, recursos de terceros en el HTML, una
+tipografía que no está en `dist` o una página que se pasa del presupuesto de tamaño: 150 KB de
+HTML por página y 70 KB para el CSS propio de `_astro` (las hojas de Pagefind no cuentan, solo se
+cargan al abrir el buscador). La comprobación de URLs falla si
 el contrato de `src/urls.json` y `public/_redirects` no cuadra con lo que se generó.
 Si el paso de Pagefind falla, el build se detiene ahí: una búsqueda sin índice sería un
 control que promete lo que no hace.
+
+El presupuesto no viene de Lighthouse ni de un número redondo: sale de lo que mide el sitio hoy
+con margen para crecer. Si de verdad hace falta subirlo, se sube en `scripts/audit.mjs` en el
+mismo commit que lo justifica, no se desactiva la comprobación.
