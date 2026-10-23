@@ -116,7 +116,7 @@ this, and the build does not depend on it.
 | F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | hecho |
 | F7.1 | S3,S8 | content | Colecciones 1-2: el marco de colecciones, listas | hecho |
 | F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | hecho |
-| F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | pendiente |
+| F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | hecho |
 
 ## Releases
 
@@ -739,3 +739,27 @@ sobre `dist` en 1440 y 390: los dos capítulos renderizan con un `h1`, chip "Des
 tres nodos, TOC de 12 y 11 entradas, árbol de 23 enlaces, y ninguno desborda (390 exactos). Build: 26
 páginas, 23 indexadas, 25 de 25 URL en el contrato, auditoría limpia con 210 clases en markup contra
 357 reglas. Corte de entrega: dos commits de ~280 líneas cada uno, por debajo del límite de 400.
+
+L52: F7.3 cerrada en dos unidades, `9ae181e` (`feat(content): add the streams chapter`) y
+`da7f2ef` (`feat(content): add the collectors and Optional chapter`), de 283 y 284 líneas, con la
+sección `colecciones` completa en seis capítulos. Dos `gentle-ai-worker` en paralelo, el de collectors
+sin leer el de stream (se escribían a la vez) y apoyándose en el pipeline ya descrito por el enunciado.
+El worker de collectors corrigió mi enunciado: `Optional.ofNullable` es de Java 8, no de Java 9, y así
+quedó, sin etiqueta. Revisión del padre: el callout de la trampa del stream decía que modificar la lista
+durante el `forEach` terminaba en `ConcurrentModificationException` o en `NullPointerException`, y lo
+reproduje antes de aceptarlo: en `ArrayList`, un `add` dentro del `forEach` del stream añade los
+elementos y lanza el CME al terminar el recorrido; un `remove` hace que el recorrido entregue el hueco
+como `null` y el CME llega después, así que un consumidor que dereferencie el elemento lanza NPE antes;
+en un `HashSet` el CME llega tras recorrer lo que queda. El texto final describe ese comportamiento y no
+la versión simplificada. Datos contrastados en la tanda: el mensaje literal de reutilización
+(`stream has already been operated upon or closed`), el `IllegalStateException` de `toMap` con clave
+repetida y su mensaje, `Collectors.toUnmodifiableList` (Java 10) rechaza `null` mientras
+`Stream.toList()` (Java 16) lo acepta y ninguna de las dos se modifica, `partitioningBy` devuelve
+siempre las dos claves, `groupingBy` no crea grupos vacíos, `Optional.orElse` evalúa su argumento y
+`orElseGet` no, y la suma del ejemplo paralelo da 25005000. Playwright sobre `dist` en 1440 y 390: los
+dos capítulos renderizan con un `h1`, chip "Desde Java 8", figuras de 3 y 4 nodos, TOC de 13 y 11
+entradas, árbol de 25 enlaces, y ninguno desborda (390 exactos); la portada dice "6 capítulos" en la
+sección y `?v=8` no oculta ninguno de los seis. Build: 28 páginas, 25 indexadas, 27 de 27 URL en el
+contrato, auditoría limpia con 210 clases en markup contra 357 reglas. Corte de entrega: dos commits de
+~284 líneas cada uno. Queda pendiente F5.3 (deploy en Cloudflare Pages), que no se puede cerrar desde el
+repositorio mientras el proyecto de Cloudflare no exista.
