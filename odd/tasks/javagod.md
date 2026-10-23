@@ -120,6 +120,9 @@ this, and the build does not depend on it.
 | F8.1 | S3,S8 | content | Concurrencia 1-2: hilos y ciclo de vida, memoria compartida | hecho |
 | F8.2 | S3,S8 | content | Concurrencia 3-4: executors y tareas, estructuras concurrentes | hecho |
 | F8.3 | S3,S8 | content | Concurrencia 5-6: locks y deadlocks, hilos virtuales | hecho |
+| F9.1 | S5,S7 | docs | Pulido: accesibilidad, teclado, foco y contraste en todas las rutas | pendiente |
+| F9.2 | S2,S13 | styles | Pulido: reglas duplicadas, tokens muertos y peso del CSS | pendiente |
+| F9.3 | S1 | release | Pulido: registro al día y guía de entrega verificable | pendiente |
 
 ## Releases
 
@@ -848,3 +851,11 @@ en el momento de consultarlo: no hubo veredicto de revisión nativa y no se rein
 No se modificó lógica compartida, dependencias ni configuración de entrega. Sin merge ni push;
 la rama `feature/concurrency` queda lista para la revisión del dueño. Cloudflare sigue fuera de
 esta entrega y pendiente de la creación del proyecto (F5.3).
+
+L57: "commit, merge a dev, pushealo todo y pasamos a la siguiente tarea sacando rama desde dev
+actualizada". `feature/concurrency` fusionada en `develop` con `--no-ff` (`2133957`) y borrada;
+`origin/develop` actualizado (`b457aab..2133957`, 31 commits pendientes incluidos). Único trabajo
+pendiente del registro: F5.3, que no se puede cerrar desde el repositorio porque `wrangler whoami`
+no tiene sesión y el proyecto de Pages no existe. El dueño elige "Pulido de lo existente": rama
+`feature/polish` desde `develop` y tres unidades, F9.1 accesibilidad, F9.2 CSS y F9.3 registro y
+entrega. F1.5 deja de estar pendiente: el logo ya está en `1deb58e`.
