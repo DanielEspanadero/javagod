@@ -21,7 +21,7 @@
   /* Text: three levels */
   --text: light-dark(#1b1512, #f6f0ea);
   --text-muted: light-dark(#584a42, #c2b5aa);
-  --text-faint: light-dark(#7b6b61, #948779);
+  --text-faint: light-dark(#746359, #948779);
 
   /* Semantic accents: warnings, danger and confirmations for callouts */
   --warn: light-dark(#8a5300, #f0b429);
@@ -106,11 +106,9 @@
 
   /* Motion: interface feedback */
   --ease-out: cubic-bezier(0.16, 0.84, 0.44, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --duration-fast: 120ms;
   --duration-base: 220ms;
   --duration-slow: 420ms;
-  --duration-loop: 9s;
 
   /* Motion: narrative entrance and scroll reveals (S14) */
   --ease-enter: cubic-bezier(0.22, 0.75, 0.24, 1);

@@ -641,19 +641,19 @@
   scrollbar-color: var(--line-strong) transparent;
 }
 
-.astro-code.github-light {
+.astro-code.github-light-high-contrast {
   background-color: var(--shiki-light-bg);
 }
 
-.astro-code.github-light span {
+.astro-code.github-light-high-contrast span {
   color: var(--shiki-light);
 }
 
-:root[data-theme='dark'] .astro-code.github-dark {
+:root[data-theme='dark'] .astro-code.github-dark-high-contrast {
   background-color: var(--shiki-dark-bg);
 }
 
-:root[data-theme='dark'] .astro-code.github-dark span {
+:root[data-theme='dark'] .astro-code.github-dark-high-contrast span {
   color: var(--shiki-dark);
 }
 
