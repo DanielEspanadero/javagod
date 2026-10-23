@@ -123,6 +123,8 @@ this, and the build does not depend on it.
 | F9.1 | S5,S7 | docs | Pulido: accesibilidad, teclado, foco y contraste en todas las rutas | hecho |
 | F9.2 | S2,S13 | styles | Pulido: reglas duplicadas, tokens muertos y peso del CSS | hecho |
 | F9.3 | S1 | release | Pulido: registro al día y guía de entrega verificable | hecho |
+| F10.1 | S1,S3 | release | Entrega: rendimiento medido y presupuesto en el build | pendiente |
+| F10.2 | S1 | release | Entrega: README del repositorio y arranque en un minuto | pendiente |
 
 ## Releases
 
@@ -882,3 +884,9 @@ auditoría limpia; Playwright a 1440 y 390 px sin desbordamiento de página; cap
 código en ambos temas revisadas a ojo. F1.5 pasa a `hecho` porque el logo ya estaba en `1deb58e`.
 F5.3 sigue pendiente: `wrangler whoami` no tiene sesión y el proyecto de Pages no existe, así que la
 guía de entrega queda escrita pero no ejecutada.
+
+L59: "pues dale caña, pushealo y seguimos". `feature/polish` fusionada en `develop` con `--no-ff`
+(`10dd80c`) y borrada; `origin/develop` al día. Como F5.3 sigue bloqueada por la cuenta de Cloudflare,
+la siguiente unidad es la preparación de la entrega: rama `feature/delivery-prep` con F10.1, medir el
+rendimiento con Lighthouse y dejarlo como presupuesto del build, y F10.2, un README que explique el
+proyecto y cómo arrancarlo.
