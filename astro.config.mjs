@@ -4,6 +4,7 @@ import { unified } from '@astrojs/markdown-remark';
 import { remarkCallouts } from './src/lib/remark-callouts';
 import { rehypeCodeBlocks } from './src/lib/rehype-code-blocks';
 import { rehypeTableWrap } from './src/lib/rehype-table-wrap';
+import { pagefindDevIndex } from './scripts/pagefind-dev.mjs';
 
 // Canonical origin per environment: production sets JAVAGOD_SITE_URL, any Cloudflare
 // deployment falls back to its own URL, and local builds use the placeholder.
@@ -14,6 +15,11 @@ export default defineConfig({
   site,
   build: {
     inlineStylesheets: 'auto',
+  },
+  vite: {
+    // The dev server has no Pagefind index of its own: serve the last build's
+    // one so search works while developing. Production is untouched.
+    plugins: [pagefindDevIndex()],
   },
   markdown: {
     // The remark/rehype pipeline (Astro's official opt-in processor) is what

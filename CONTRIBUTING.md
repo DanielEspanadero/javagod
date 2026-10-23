@@ -178,9 +178,8 @@ página canónica sigue siendo una sola (S16).
   guardado, y al cambiar el selector la URL se actualiza con `history.replaceState` para que
   el enlace compartido lleve el modo. Un valor desconocido o mal formado (`?v=99`, `?v=abc`)
   cae en `all`, y un `localStorage` bloqueado no rompe nada.
-- La regla de filtrado está en un solo sitio: `appliesTo` de
-  `src/components/VersionSwitcher.astro`. Un capítulo aplica cuando su `since` es menor o
-  igual que la versión elegida y no tiene `hasta`, o cuando su `hasta` es mayor o igual.
+- La regla de filtrado es la misma en el selector y la búsqueda: `since` debe ser menor
+  o igual que la versión elegida y, si hay `hasta`, debe ser mayor o igual que ella.
   `all` aplica a todo.
 - Lo que no aplica se oculta con el atributo `hidden`, nunca borrando nodos: sin JavaScript
   la página está completa y todos los enlaces existen. Se ocultan las entradas del árbol, las
@@ -195,6 +194,23 @@ Cualquier superficie nueva que dependa de la versión necesita dos cosas y nada 
 `data-since` (y `data-hasta` cuando el capítulo lo declare) tomados del frontmatter, y
 `data-version-item` en el elemento que se oculta. El script recorre esos atributos. El
 artículo de la página lleva `data-version-page` con su rango, que es lo que lee el aviso.
+
+## Servidor de desarrollo
+
+Astro 7 puede servir el sitio en segundo plano. Lo hace cuando el comando lo lanza un agente
+y también con `--background`, y escribe el estado en `.astro/dev.json`. Cuando eso pasa,
+`pnpm dev` vuelve al prompt sin banner y el sitio sigue en `http://localhost:4321`. Mientras
+esa marca exista, un `pnpm dev` nuevo no arranca nada: contesta `Dev server already running`
+y termina con salida 0.
+
+| Comando | Qué hace |
+| --- | --- |
+| `pnpm dev:status` | Dice si hay servidor y en qué modo |
+| `pnpm dev:logs` | Muestra lo que escribe el servidor en segundo plano |
+| `pnpm dev:stop` | Lo para y limpia la marca |
+
+Si el sitio responde pero un capítulo recién escrito no aparece en la búsqueda, falta
+`pnpm build`: en desarrollo el índice de Pagefind es el de la última compilación.
 
 ## Búsqueda
 
@@ -213,9 +229,24 @@ después la auditoría y el contrato de URLs, en ese orden. Para reindexar sin r
   pager) para que el índice no mezcle navegación con prosa. El `h1` lleva
   `data-pagefind-meta="title"`, así el resultado se llama como el capítulo y no como el
   `<title>` completo.
-- En `pnpm dev` no hay índice, porque Pagefind trabaja sobre `dist/`. El diálogo lo dice
-  ("La búsqueda no está disponible en este build") en vez de fallar en silencio; para
-  probarla de verdad, `pnpm build && pnpm preview`.
+- `DocsLayout.astro` pasa metadatos `since` y `hasta` al slot `head` de `BaseLayout.astro`.
+  Pagefind los devuelve en `entry.data().meta`; la búsqueda filtra antes de limitar a ocho
+  filas. Un resultado sin `since` sigue visible. El estado anuncia los disponibles, los
+  mostrados (`8 de 15 resultados` si hay más de ocho) y los ocultos por el modo, sin
+  nombrar capítulos ocultos.
+- La búsqueda lee primero `?v=`, después `javagod:version` y, si no hay elección, usa
+  la LTS más reciente del registro. Como el selector, admite `all` y trata un valor
+  desconocido como `all`. El selector conserva su valor inicial de todas las versiones.
+- Flecha abajo desde el campo enfoca el primer enlace; las flechas recorren los enlaces
+  y flecha arriba desde el primero vuelve al campo. Intro en el campo abre el primer
+  resultado visible; en un enlace conserva su comportamiento nativo. Tab sigue funcionando
+  y Esc cierra y devuelve el foco al botón de búsqueda.
+- En `pnpm dev` el servidor no genera índice, porque Pagefind trabaja sobre `dist/`:
+  `scripts/pagefind-dev.mjs` monta el último `dist/pagefind` en `/pagefind` mientras dura el
+  desarrollo y avisa por consola de la fecha del índice. Si todavía no hay build, el diálogo
+  lo dice ("La búsqueda no está disponible todavía: ejecuta `pnpm build`") en vez de fallar
+  en silencio. El índice del desarrollo es el de la última compilación, así que un capítulo
+  recién escrito no aparece hasta `pnpm build`.
 - Sin JavaScript el control no se ve, igual que el selector de versión: la página sigue
   navegable por el árbol, el índice y el pager.
 

@@ -125,6 +125,10 @@ this, and the build does not depend on it.
 | F9.3 | S1 | release | Pulido: registro al día y guía de entrega verificable | hecho |
 | F10.1 | S1,S3 | release | Entrega: rendimiento medido y presupuesto en el build | hecho |
 | F10.2 | S1 | release | Entrega: README del repositorio y arranque en un minuto | hecho |
+| F11.1 | S3,S16 | search | Buscador: respetar el modo de lectura en los resultados | hecho |
+| F11.2 | S3 | search | Buscador: teclado en los resultados y recuento honesto | hecho |
+| F12.1 | S3 | search | Buscador en desarrollo: servir el índice del build en `pnpm dev` | hecho |
+| F12.2 | S1 | tooling | Servidor de desarrollo: comandos y aviso del modo segundo plano | hecho |
 
 ## Releases
 
@@ -914,3 +918,59 @@ Inter y JetBrains Mono servidas en local, sin ninguna petición fallida. F10.2 a
 no existía: qué es el sitio, stack, arranque en un minuto, comandos, estructura, cómo escribir
 contenido, entrega y el puntero al registro. F5.3 sigue pendiente y sin cambios: la cuenta de
 Cloudflare no tiene sesión y el proyecto de Pages no existe.
+
+L61: "Perfecto, crees que lo siguiente es arreglar el buscador?". Comprobado antes de tocar nada: el
+buscador funciona (consulta, resultados, enlace y estado vacío), pero tiene tres defectos reales.
+(1) Ignora el modo de lectura: con Java 17 seleccionado, `virtual` devuelve "Hilos virtuales" y hasta
+la página `Java 25`, capítulos que el árbol y el índice ocultan. (2) El teclado no llega a los
+resultados: `Tab` sí entra en ellos, pero `ArrowDown` no mueve el foco y `Enter` no abre el primero.
+(3) El recuento miente: pinta como mucho 8 filas y anuncia "15 resultados" sin decirlo. No es un
+fallo la coincidencia por prefijo con identificadores de una letra en el código (`zzzz` casa con el
+token `z` de tres capítulos): es cómo indexa Pagefind y se queda como está. Rama `feature/search-fixes`
+con F11.1 y F11.2.
+
+L62: buscador arreglado en una unidad, `555eec6` (`fix(search): respect the reading mode and make the
+results usable`). El worker se paró a preguntar porque mi criterio de aceptación pedía que
+`novedades/java-25` apareciera en modo Java 21, y eso contradice S16: se aprobó la regla única, un
+resultado se oculta cuando su `since` supera la versión elegida y `hasta` cuenta al revés. Cambios:
+`BaseLayout` gana un slot `head`; `DocsLayout` publica `since` y `hasta` como metadatos de Pagefind
+(la sintaxis que funciona es `data-pagefind-meta="since[content]"`, sin `[content]` el meta no
+llega al resultado); `SiteSearch` lee el modo igual que el selector, filtra antes de recortar a ocho
+filas y anuncia disponibles y ocultos; las flechas mueven el foco entre los enlaces, `Enter` abre
+el primero y el foco visible de los resultados se ve. El padre corrigió tres cosas del handoff: el
+plural (`1 oculto`, no `1 ocultos`), la nota de ocultos cuando son cero y el modo por defecto, que
+ahora es `all` como en el selector en vez de la LTS más reciente. También encontró un defecto que
+venía de antes: con texto en el campo, el primer `Escape` lo vaciaba y el diálogo seguía abierto;
+ahora cierra a la primera y devuelve el foco. Verificación del padre sobre `dist` en HEAD: build en
+verde con 34 páginas, auditoría y contrato limpios; `search.mjs` (temporal, en `/tmp`) en verde con
+Java 17 (`virtual` oculta los dos capítulos, `8 resultados, 3 ocultos`), Java 21 (`8 de 10
+resultados, 1 oculto`) y Java 25 (`8 de 11 resultados`, sin nota), `java` con `8 de 31 resultados`,
+flechas arriba y abajo en los dos sentidos, `Enter` abriendo el primer resultado y `Escape`
+cerrando; `keyboard.mjs` sigue en verde; `axe` con 0 violaciones en 136 pasadas y Playwright a 1440
+y 390 sin desbordamiento. Queda abierto, como decisión de producto, que la búsqueda no tiene
+paginación: anuncia `8 de 31` pero no hay forma de ver el resto desde el diálogo.
+
+L63: captura del dueño con el diálogo diciendo "La búsqueda no está disponible en este build" y `hilos`
+escrito. Diagnóstico: no era el build, era `pnpm dev`, donde `/pagefind/pagefind.js` responde 404
+porque Pagefind indexa `dist/` y el servidor de desarrollo no lo genera. F12.1: `scripts/pagefind-dev.mjs`
+monta el último `dist/pagefind` en `/pagefind` solo en modo serve, con `no-store`, tipos correctos y
+un aviso por consola con la fecha del índice; si no hay build previo, el middleware deja pasar y el
+diálogo dice ahora qué hacer ("ejecuta `pnpm build` para generar el índice"). Verificación del padre
+sobre el servidor de desarrollo: `/pagefind/pagefind.js` responde 200, `pagefind-entry.json` anuncia
+31 páginas, y Playwright encuentra `8 de 15 resultados` para `hilos` sin errores de consola. El
+build de producción no cambia: el plugin es `apply: 'serve'`, `dist` sigue con su índice normal y
+`search.mjs`, `keyboard.mjs` y `axe` (0 violaciones en 136 pasadas) siguen en verde contra `dist`.
+Queda como límite conocido: en desarrollo el índice es el de la última compilación, así que un
+capítulo recién escrito no aparece hasta `pnpm build`.
+
+L64: "al poner pnpm dev no arranca". Reproducido: el servidor sí arrancaba, pero Astro 7.4 detecta
+que el comando lo lanza un agente y lo pasa a segundo plano, escribiendo la marca `.astro/dev.json`.
+Con una marca viva de una sesión anterior, cualquier `pnpm dev` contesta `Dev server already
+running`, termina con salida 0 y vuelve al prompt sin banner: desde fuera eso es "no arranca".
+El diagnóstico se confirmó con el puerto libre: en primer plano (`ASTRO_DEV_BACKGROUND=0`) arranca
+en 1 s, sirve `/` y `/pagefind/pagefind.js` con 200. F12.2 añade `pnpm dev:status`, `pnpm dev:logs`
+y `pnpm dev:stop`, y documenta el caso en `README.md` y `CONTRIBUTING.md`. Verificado: `pnpm dev`
+levanta el servidor, `dev:status` lo ve en segundo plano, `/` y el índice de búsqueda responden 200,
+`dev:stop` lo para y deja el puerto libre sin marca residual; `pnpm build` en verde con 34 páginas,
+auditoría y contrato de URLs limpios. Regla operativa: no dejar servidores de desarrollo vivos
+tras verificar.

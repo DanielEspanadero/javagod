@@ -48,6 +48,10 @@ const chapterRange =
     : `de ${versionLabel(since)} a ${versionLabel(hasta)}`;
 ---
 <BaseLayout title={`${title} · JavaGod`} description={description} wide>
+  <Fragment slot="head">
+    <meta data-pagefind-meta="since[content]" content={String(since)} />
+    {hasta !== undefined && <meta data-pagefind-meta="hasta[content]" content={String(hasta)} />}
+  </Fragment>
   <div class="docs">
     <aside class="docs__sidebar">
       <VersionSwitcher />

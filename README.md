@@ -34,7 +34,9 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm dev` sirve el sitio en `http://localhost:4321` con recarga en caliente.
+`pnpm dev` sirve el sitio en `http://localhost:4321` con recarga en caliente. Si el comando
+vuelve al prompt sin banner, Astro está sirviendo en segundo plano o ya había un servidor
+arrancado: `pnpm dev:status` lo dice y `pnpm dev:stop` lo para.
 
 ## Compilar y comprobar
 
@@ -58,6 +60,9 @@ Comandos sueltos útiles:
 
 | Comando | Qué hace |
 | --- | --- |
+| `pnpm dev:status` | Dice si hay servidor de desarrollo y en qué modo |
+| `pnpm dev:logs` | Muestra la salida del servidor en segundo plano |
+| `pnpm dev:stop` | Para el servidor de desarrollo |
 | `pnpm new:doc` | Crea un capítulo nuevo con el frontmatter correcto |
 | `pnpm audit` | Solo la auditoría del HTML generado |
 | `pnpm urls:update` | Registra en `src/urls.json` las rutas nuevas de `dist` |
