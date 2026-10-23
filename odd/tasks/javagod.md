@@ -114,7 +114,7 @@ this, and the build does not depend on it.
 | F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | hecho |
 | F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | hecho |
 | F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | hecho |
-| F7.1 | S3,S8 | content | Colecciones 1-2: el marco de colecciones, listas | pendiente |
+| F7.1 | S3,S8 | content | Colecciones 1-2: el marco de colecciones, listas | hecho |
 | F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | pendiente |
 | F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | pendiente |
 
@@ -695,3 +695,27 @@ En el repo quedan solo dos assets recortados y reducidos: `public/logo.png` de 2
 1254 px ni se generan en build. La imagen lleva `alt` vacío porque el nombre ya lo pone la palabra
 `JavaGod` al lado. El logo no recolorea con el tema: azules, naranjas y halo amarillo se leen sobre
 claro y sobre oscuro. Queda documentado en CONTRIBUTING ("Marca y logo").
+
+L50: F7.1 cerrada en dos unidades, `ab21dbb` (`feat(content): add the collections framework
+chapter`) y `5d45ff3` (`feat(content): add the lists chapter`), de 268 y 251 líneas. Dos
+`gentle-ai-worker` en paralelo; el de listas leyó el de marco de colecciones en cuanto apareció y se
+apoyó en él en vez de repetir la jerarquía. Revisión del padre: quité de la unidad 1 la tabla de
+sobrecargas de `remove`, que tiene su propia sección en la unidad 2 y dejaba al capítulo 1 compitiendo
+con el 2; alineé el cierre de las dos unidades (`## Lo que viene` antes de `## Qué te llevas`) y
+sustituí en la unidad 2 el ejemplo de borrado durante la iteración, duplicado del capítulo 1, por un
+recordatorio que remite a él. Correcciones de precisión en la unidad 2: el ejemplo de capacidad
+declara `ArrayList` porque `ensureCapacity` no está en `List` y ahora lo dice; la relación entre
+estabilidad y `thenComparing` estaba al revés (la estabilidad permite ordenar dos veces; componer es la
+alternativa, no la razón de que el método exista); y la ventaja de `null` de `LinkedList` es frente a
+`ArrayDeque`, no frente a `ArrayList`. Verificación: los 11 bloques Java de las dos unidades
+compilados y ejecutados con `javac 21.0.10`; los rechazos del texto (`List<Object> = ArrayList<String>`,
+`List<int>`, `instanceof List<String>`, `Set.get`, `Set.of` con duplicado, `Map.of` con clave
+duplicada, `List.of` con `null`) dan el error o la excepción que anuncian. Playwright sobre `dist` en
+1440 y 390: los dos capítulos renderizan con un `h1`, chip "Desde Java 8", figuras de 6 y 3 nodos,
+TOC de 10 entradas y el pager encadenado; a 390 px el capítulo 2 desbordaba a 547 px por un `code` en
+línea de 526 px, y se arregló en `docs.css` con `.prose :not(pre) > code { overflow-wrap: anywhere }`,
+así que las dos páginas quedan en 390 exactos (el código de bloque no cambia: su `pre` scrollea).
+Build: 24 páginas, 21 indexadas, 23 de 23 URL en el contrato, auditoría limpia con 210 clases en
+markup contra 357 reglas. Corte de entrega de la rama hasta aquí: cuatro commits, de los que dos son
+los capítulos (268 y 251 líneas) y uno la marca (`1deb58e`, 33 líneas más los dos PNG); el commit de
+spec (`744d480`, 18 líneas) abre el lote. Nada supera el corte de 400 líneas autoradas.
