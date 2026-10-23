@@ -117,6 +117,9 @@ this, and the build does not depend on it.
 | F7.1 | S3,S8 | content | Colecciones 1-2: el marco de colecciones, listas | hecho |
 | F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | hecho |
 | F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | hecho |
+| F8.1 | S3,S8 | content | Concurrencia 1-2: hilos y ciclo de vida, memoria compartida | hecho |
+| F8.2 | S3,S8 | content | Concurrencia 3-4: executors y tareas, estructuras concurrentes | hecho |
+| F8.3 | S3,S8 | content | Concurrencia 5-6: locks y deadlocks, hilos virtuales | hecho |
 
 ## Releases
 
@@ -763,3 +766,85 @@ sección y `?v=8` no oculta ninguno de los seis. Build: 28 páginas, 25 indexada
 contrato, auditoría limpia con 210 clases en markup contra 357 reglas. Corte de entrega: dos commits de
 ~284 líneas cada uno. Queda pendiente F5.3 (deploy en Cloudflare Pages), que no se puede cerrar desde el
 repositorio mientras el proyecto de Cloudflare no exista.
+
+L53: "vale, mergea a dev y luego seguimos desde ahí con una nueva rama y continuamos con las
+siguientes tareas". `feature/collections-streams` fusionada en `develop` con `--no-ff` (`d02d8c5`) y
+borrada; rama nueva `feature/concurrency` desde `develop`. Siguiente sección: `concurrencia`, la última
+del registro sin capítulos ("Hilos, estados, locks y memoria compartida, sin humo"). Índice acordado, en
+orden de lectura: 1 Hilos y su ciclo de vida, 2 Memoria compartida y sincronización, 3 Executors y
+tareas, 4 Colecciones y utilidades concurrentes, 5 Locks, deadlocks y diagnóstico, 6 Hilos virtuales.
+`since: 8` en los cinco primeros; el sexto declara `since: 21`, porque los hilos virtuales son estándar
+en 21 y solo vista previa en 19 y 20, y el cuerpo lo explica. Numeración de entrega T7 a T12, continuando
+la de la sección anterior, y tres lotes de dos capítulos con dos workers en paralelo. Regla añadida para
+esta sección, porque el código concurrente es tramposo: ningún ejemplo puede afirmar una salida
+determinista si depende del entrelazado; los workers tienen que compilar y ejecutar con `javac` 21, usar
+`join`, `CountDownLatch` o esperas acotadas donde haga falta, y describir el resultado como "puede"
+cuando el planificador decide. El callout de la portada de estados de hilo sigue siendo la visualización
+de referencia.
+
+L54: F8.1 cerrada en dos unidades, `b269355` (`feat(content): add the threads chapter`) y
+`8323e8d` (`feat(content): add the shared memory chapter`), de 284 y 281 líneas, con dos
+`gentle-ai-worker` en paralelo. Ninguno de los dos necesita correcciones de datos del padre: la única
+edición fue quitar la primera persona de una frase del capítulo 2 ("en 32 ejecuciones en mi máquina"
+pasó a "en 32 ejecuciones de prueba"). Comprobaciones de la tanda: el capítulo 1 se contrastó con
+`ThreadStates.astro` de la portada, que efectivamente pinta `sleep` como `WAITING`; la NOTA del capítulo
+explica que la API lo separa en `TIMED_WAITING` y no contradice la portada. Las salidas que el capítulo 1
+presenta como fijas están sostenidas por `join` (el orden de las cuatro líneas del ejemplo de estados y
+la suma 42); el contador con dos hilos de un millón se describe como "puede ser menos" y en cincuenta
+ejecuciones siempre quedó por debajo. En el capítulo 2, la carrera se midió en 32 ejecuciones
+(104725-147112), el contador con `volatile` también perdió actualizaciones (162025-194881) y el contador
+con `synchronized` dio 200000 trece veces. Datos verificados: `join()` sobre un hilo `NEW` vuelve al
+instante, el segundo `start()` lanza `IllegalThreadStateException` aun terminado, `setDaemon` después de
+`start` lanza la misma excepción, `wait`/`notify` fuera del monitor lanzan
+`IllegalMonitorStateException`, `volatile long`/`double` son atómicos y los no volátiles no lo están por
+especificación, y la cola acotada del ejemplo productor/consumidor termina con las tres parejas y sin
+pérdidas en 38 pasadas (el orden de las líneas varía). Playwright sobre `dist` en 1440 y 390: los dos
+capítulos renderizan con un `h1`, chip "Desde Java 8", figuras de 4 y 3 nodos, TOC de 12 y 10 entradas,
+árbol de 27 enlaces, ninguno desborda (390 exactos) y la portada ya dice "2 capítulos" en Concurrencia.
+Build: 30 páginas, 27 indexadas, 29 de 29 URL en el contrato, auditoría limpia con 206 clases en markup
+contra 357 reglas. Corte de entrega: dos commits de ~283 líneas cada uno.
+
+L55: F8.2 cerrada en dos unidades, `9040afc` (`feat(content): add the executors chapter`) y
+`1b4b4a9` (`feat(content): add the concurrent structures chapter`), de 283 y 280 líneas, con dos
+`gentle-ai-worker` en paralelo. El padre no necesitó corregir datos en ninguno de los dos. Comprobaciones
+de la tanda: las tres fábricas de `Executors` y sus colas se leyeron del `src.zip` del JDK 21 (pool fijo
+con `LinkedBlockingQueue` sin tope, cacheado con `SynchronousQueue` de 0 a `Integer.MAX_VALUE` y 60 s,
+single con un hilo y cola sin tope), `ExecutorService.close()` está anotado `@since 19`, y los cuatro
+ejemplos de executors dan una sola variante de salida en veinte pasadas cada uno (`isDone` antes y
+después, causa real de `ExecutionException`, `shutdownNow` con un pendiente, y los cuatro valores del
+ejemplo de `CompletableFuture`). En estructuras, el mapa roto se midió en 17 pasadas (28663-38088 de
+40000), el `ConcurrentModificationException` de `ArrayList` salió en las ocho, el iterador de
+`CopyOnWriteArrayList` creado antes del escritor ve 1 y el tamaño final es 1001 siempre (lo garantiza el
+contrato de foto, no el planificador), la cola acotada suma 15 y termina en todas las pasadas, los
+contadores dan 400000 tras los `join`, y el `CountDownLatch` deja la última línea fija con las tres
+primeras en orden variable. Se verificaron además los detalles de API que el texto afirma: `size()` como
+estimación y `mappingCount()` de Java 8, `LinkedBlockingQueue` con tope por defecto `Integer.MAX_VALUE`,
+`LongAdder.sum()` sin foto atómica, y la necesidad de `synchronized` externo para iterar un
+`Collections.synchronizedList`. Playwright sobre `dist` en 1440 y 390: los dos capítulos renderizan con
+un `h1`, chip "Desde Java 8", figuras de 3 nodos cada uno, TOC de 13 y 12 entradas, árbol de 29 enlaces,
+ninguno desborda (390 exactos) y la portada ya dice "4 capítulos" en Concurrencia. Build: 32 páginas, 29
+indexadas, 31 de 31 URL en el contrato, auditoría limpia con 206 clases en markup contra 357 reglas.
+Corte de entrega: dos commits de ~281 líneas cada uno.
+
+
+L56: F8.3 cerrada: `922e748` añade locks y diagnóstico y `5dba98f` añade hilos virtuales,
+cada capítulo con su URL en su propio commit (~286 líneas por unidad). Concurrencia queda completa
+con seis capítulos. Los workers compilaron los cuatro ejemplos de locks con `javac --release 8`
+y los cuatro de virtuales con `javac --release 21`; ejecutaron los primeros 30-35 veces y los
+segundos ocho veces, sin discrepancias con las salidas descritas. El padre leyó ambos capítulos
+y corrigió la reentrancia de callbacks, la espera del escritor hasta el último lector, la
+explicación de StampedLock y las operaciones de archivo que pueden retener un carrier. Quitó
+las cifras de un experimento de pinning que no correspondían al ejemplo publicado. Las pruebas
+comparativas de pinning en JDK 21 y 25 son evidencia del worker, no ejecuciones del padre.
+
+Verificación del padre: `pnpm astro build`, `pnpm urls:update` y `pnpm build`, todos con salida 0
+y sin ocultar fallos de tuberías. Resultado: 34 páginas, 33/33 URLs, 1329 enlaces internos,
+206 clases con 357 reglas, un h1 por página y ningún guion prohibido. Playwright sobre capítulos,
+índice y portada a 1440/390: HTTP 200, sin errores JS ni desbordamiento de página; las tablas y
+el código conservan su scroll local. Ambos diagramas tienen cuatro nodos; TOC de 10/11 entradas.
+Modo de lectura comprobado: Java 17 oculta virtuales en el índice y muestra aviso en acceso directo;
+Java 21 y 25 lo muestran sin aviso. ASSESS nativo no disponible por archivos todavía sin registrar
+en el momento de consultarlo: no hubo veredicto de revisión nativa y no se reintentó.
+No se modificó lógica compartida, dependencias ni configuración de entrega. Sin merge ni push;
+la rama `feature/concurrency` queda lista para la revisión del dueño. Cloudflare sigue fuera de
+esta entrega y pendiente de la creación del proyecto (F5.3).
