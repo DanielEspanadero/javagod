@@ -123,8 +123,8 @@ this, and the build does not depend on it.
 | F9.1 | S5,S7 | docs | Pulido: accesibilidad, teclado, foco y contraste en todas las rutas | hecho |
 | F9.2 | S2,S13 | styles | Pulido: reglas duplicadas, tokens muertos y peso del CSS | hecho |
 | F9.3 | S1 | release | Pulido: registro al día y guía de entrega verificable | hecho |
-| F10.1 | S1,S3 | release | Entrega: rendimiento medido y presupuesto en el build | pendiente |
-| F10.2 | S1 | release | Entrega: README del repositorio y arranque en un minuto | pendiente |
+| F10.1 | S1,S3 | release | Entrega: rendimiento medido y presupuesto en el build | hecho |
+| F10.2 | S1 | release | Entrega: README del repositorio y arranque en un minuto | hecho |
 
 ## Releases
 
@@ -890,3 +890,27 @@ L59: "pues dale caña, pushealo y seguimos". `feature/polish` fusionada en `deve
 la siguiente unidad es la preparación de la entrega: rama `feature/delivery-prep` con F10.1, medir el
 rendimiento con Lighthouse y dejarlo como presupuesto del build, y F10.2, un README que explique el
 proyecto y cómo arrancarlo.
+
+L60: preparación de la entrega cerrada en dos unidades, `835b6d0` (`perf: self-host the fonts and shrink
+the header mark`) y este commit de documentación. Lighthouse móvil sobre `dist` antes de tocar nada:
+portada 93 en rendimiento (FCP y LCP de 2,6 s, 1850 ms de recursos que bloquean el pintado) y 100 en
+accesibilidad, buenas prácticas y SEO; índice y capítulo, 100 en las cuatro categorías. Causa: la hoja
+de Google Fonts bloqueaba el primer pintado y la cabecera dibujaba un PNG de 256 px a 32 px, 30 KB
+para una marca de 3 KB. Arreglos: Inter y JetBrains Mono se sirven desde `public/fonts` como un
+archivo variable latino por familia (Google devuelve los mismos bytes para todos los pesos, así que
+seis descargas eran dos archivos: 48 y 31 KB), con `font-display: swap`, precarga de Inter y las
+licencias OFL al lado; el logo pasa a WebP de 64 px, 3 KB, y el PNG de 256 px desaparece del
+repositorio. Después: 100 en rendimiento, accesibilidad, buenas prácticas y SEO en las tres rutas,
+con FCP 1,1 s, LCP 1,4 s, TBT 0 ms y CLS 0. La comprobación no se queda en una foto: `scripts/audit.mjs`
+gana un presupuesto que falla el build si una página pasa de 150 KB de HTML, si el CSS propio de
+`_astro` pasa de 70 KB (las hojas de Pagefind no cuentan: solo se cargan al abrir el buscador), si
+aparece un recurso de terceros en el HTML o en un `@import`, o si un `@font-face` apunta a una
+tipografía que no está en `dist`. El presupuesto se probó en rojo con una copia de `dist` en `/tmp`:
+306 KB de HTML, un `<link>` a Google Fonts y la fuente borrada dieron tres fallos nombrados y salida 1.
+Verificación del padre sobre `dist` en HEAD: build en verde con 34 páginas, 31 indexadas, presupuesto
+86 KB de 150 y 50 KB de 70, auditoría y contrato limpios; Playwright a 1440 y 390 sin desbordamiento;
+`axe` con 0 violaciones en las 136 pasadas; el logo carga a 64x64 y `document.fonts.check` confirma
+Inter y JetBrains Mono servidas en local, sin ninguna petición fallida. F10.2 añade `README.md`, que
+no existía: qué es el sitio, stack, arranque en un minuto, comandos, estructura, cómo escribir
+contenido, entrega y el puntero al registro. F5.3 sigue pendiente y sin cambios: la cuenta de
+Cloudflare no tiene sesión y el proyecto de Pages no existe.
