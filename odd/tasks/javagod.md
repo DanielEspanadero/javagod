@@ -117,7 +117,7 @@ this, and the build does not depend on it.
 | F7.1 | S3,S8 | content | Colecciones 1-2: el marco de colecciones, listas | hecho |
 | F7.2 | S3,S8 | content | Colecciones 3-4: conjuntos y el contrato de equals, mapas | hecho |
 | F7.3 | S3,S8 | content | Colecciones 5-6: Stream, collectors y Optional | hecho |
-| F8.1 | S3,S8 | content | Concurrencia 1-2: hilos y ciclo de vida, memoria compartida | pendiente |
+| F8.1 | S3,S8 | content | Concurrencia 1-2: hilos y ciclo de vida, memoria compartida | hecho |
 | F8.2 | S3,S8 | content | Concurrencia 3-4: executors y tareas, estructuras concurrentes | pendiente |
 | F8.3 | S3,S8 | content | Concurrencia 5-6: locks y deadlocks, hilos virtuales | pendiente |
 
@@ -781,3 +781,25 @@ determinista si depende del entrelazado; los workers tienen que compilar y ejecu
 `join`, `CountDownLatch` o esperas acotadas donde haga falta, y describir el resultado como "puede"
 cuando el planificador decide. El callout de la portada de estados de hilo sigue siendo la visualización
 de referencia.
+
+L54: F8.1 cerrada en dos unidades, `b269355` (`feat(content): add the threads chapter`) y
+`8323e8d` (`feat(content): add the shared memory chapter`), de 284 y 281 líneas, con dos
+`gentle-ai-worker` en paralelo. Ninguno de los dos necesita correcciones de datos del padre: la única
+edición fue quitar la primera persona de una frase del capítulo 2 ("en 32 ejecuciones en mi máquina"
+pasó a "en 32 ejecuciones de prueba"). Comprobaciones de la tanda: el capítulo 1 se contrastó con
+`ThreadStates.astro` de la portada, que efectivamente pinta `sleep` como `WAITING`; la NOTA del capítulo
+explica que la API lo separa en `TIMED_WAITING` y no contradice la portada. Las salidas que el capítulo 1
+presenta como fijas están sostenidas por `join` (el orden de las cuatro líneas del ejemplo de estados y
+la suma 42); el contador con dos hilos de un millón se describe como "puede ser menos" y en cincuenta
+ejecuciones siempre quedó por debajo. En el capítulo 2, la carrera se midió en 32 ejecuciones
+(104725-147112), el contador con `volatile` también perdió actualizaciones (162025-194881) y el contador
+con `synchronized` dio 200000 trece veces. Datos verificados: `join()` sobre un hilo `NEW` vuelve al
+instante, el segundo `start()` lanza `IllegalThreadStateException` aun terminado, `setDaemon` después de
+`start` lanza la misma excepción, `wait`/`notify` fuera del monitor lanzan
+`IllegalMonitorStateException`, `volatile long`/`double` son atómicos y los no volátiles no lo están por
+especificación, y la cola acotada del ejemplo productor/consumidor termina con las tres parejas y sin
+pérdidas en 38 pasadas (el orden de las líneas varía). Playwright sobre `dist` en 1440 y 390: los dos
+capítulos renderizan con un `h1`, chip "Desde Java 8", figuras de 4 y 3 nodos, TOC de 12 y 10 entradas,
+árbol de 27 enlaces, ninguno desborda (390 exactos) y la portada ya dice "2 capítulos" en Concurrencia.
+Build: 30 páginas, 27 indexadas, 29 de 29 URL en el contrato, auditoría limpia con 206 clases en markup
+contra 357 reglas. Corte de entrega: dos commits de ~283 líneas cada uno.
