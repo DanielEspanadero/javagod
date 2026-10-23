@@ -41,24 +41,45 @@ import '../styles/search.css';
         placeholder="ArrayList, final, hilos..."
         autocomplete="off"
         spellcheck="false"
+        aria-controls="search-results"
+        aria-describedby="search-keyboard"
+        aria-keyshortcuts="ArrowDown Enter"
         data-search-input
       />
     </label>
     <p class="search-hint" data-search-hint>Escribe para buscar en los capítulos.</p>
+    <p class="search-hint" id="search-keyboard">Flecha abajo para entrar en los resultados; flechas arriba y abajo para recorrerlos. Intro abre el resultado y Esc cierra.</p>
     <p class="search-status" role="status" data-search-status hidden></p>
-    <ul class="search-results" data-search-results></ul>
+    <ul class="search-results" id="search-results" aria-label="Resultados de búsqueda" data-search-results></ul>
     <button class="search-dialog__close" type="button" data-search-close>Cerrar <kbd>Esc</kbd></button>
   </div>
 </dialog>
 
 <script>
+  import { ltsVersions } from '../lib/versions.mjs';
+
+  /** Query wins over storage; an unset mode uses the newest supported LTS. */
+  function selectedVersion(): number | 'all' {
+    let raw = new URLSearchParams(window.location.search).get('v');
+    if (raw === null) {
+      try {
+        raw = window.localStorage.getItem('javagod:version');
+      } catch {
+        // Storage is optional, as in VersionSwitcher.
+      }
+    }
+    if (raw === null) return 'all';
+    const version = Number(raw);
+    return Number.isInteger(version) && ltsVersions.includes(version) ? version : 'all';
+  }
+
   /**
    * Pagefind result, as much of it as the dialog uses.
    *
    * @typedef {object} PagefindEntry
    * @property {string} url
    * @property {string} excerpt
-   * @property {{ title?: string }} meta
+   * @property {{ title?: string, since?: string, hasta?: string }} meta
    */
 
   /**
@@ -145,6 +166,7 @@ import '../styles/search.css';
     const link = document.createElement('a');
     link.className = 'search-result__link';
     link.href = entry.url;
+    link.setAttribute('aria-keyshortcuts', 'ArrowUp ArrowDown');
 
     const title = document.createElement('span');
     title.className = 'search-result__title';
@@ -164,6 +186,7 @@ import '../styles/search.css';
   async function runSearch(raw: string): Promise<void> {
     const query = raw.trim();
     const token = ++queryToken;
+    clearResults();
 
     if (query.length === 0) {
       clearResults();
@@ -189,24 +212,48 @@ import '../styles/search.css';
 
     if (token !== queryToken) return;
 
-    const entries = await Promise.all(found.results.slice(0, maxResults).map((result) => result.data()));
+    // Read every match before limiting: hidden matches must not consume slots,
+    // and both the available total and the hidden count must be honest.
+    const entries = await Promise.all(found.results.map((result) => result.data()));
 
     if (token !== queryToken) return;
 
     clearResults();
 
+    const version = selectedVersion();
+    const available = entries.filter((entry) => {
+      if (version === 'all' || !entry.meta.since) return true;
+      return Number(entry.meta.since) <= version &&
+        (!entry.meta.hasta || Number(entry.meta.hasta) >= version);
+    });
+    const shown = available.slice(0, maxResults);
+    const hidden = entries.length - available.length;
+    list?.append(...shown.map(renderResult));
+
+    const count = available.length > shown.length
+      ? `${shown.length} de ${available.length} resultados`
+      : `${shown.length} ${shown.length === 1 ? 'resultado' : 'resultados'}`;
+    const hiddenNote =
+      hidden === 0
+        ? ''
+        : `, ${hidden} ${hidden === 1 ? 'oculto' : 'ocultos'} por el modo Java ${version}`;
+
     if (entries.length === 0) {
       setStatus(`Sin resultados para «${query}».`);
-      return;
+    } else if (shown.length === 0) {
+      setStatus(`Ningún resultado para «${query}» en el modo Java ${version}${hiddenNote}.`);
+    } else {
+      setStatus(`${count}${hiddenNote}`);
     }
-
-    list?.append(...entries.map(renderResult));
-    setStatus(`${found.results.length} ${found.results.length === 1 ? 'resultado' : 'resultados'}`);
   }
 
   /** Debounce the keystrokes so a fast typist runs one query, not eight. */
   function onInput(): void {
     window.clearTimeout(debounce);
+    ++queryToken;
+    clearResults();
+    setStatus('Buscando...');
+    if (hint) hint.hidden = true;
 
     const value = input?.value ?? '';
 
@@ -223,12 +270,41 @@ import '../styles/search.css';
     input?.focus();
     input?.select();
 
-    if ((input?.value ?? '') === '') await runSearch('');
+    await runSearch(input?.value ?? '');
   }
 
   openers.forEach((opener) => opener.addEventListener('click', () => void open()));
   close?.addEventListener('click', () => dialog?.close());
   input?.addEventListener('input', onInput);
+
+  // Keep native links and list semantics. Focus, rather than an ARIA-only
+  // active descendant, makes the same navigation work for keyboard and AT.
+  dialog?.addEventListener('keydown', (event) => {
+    /* A `type=search` field eats the first Escape to clear itself, which leaves
+       the dialog open and surprises anyone who expects Esc to close. Close on
+       the first press instead; the native focus restore still runs. */
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      dialog?.close();
+      return;
+    }
+
+    const links = [...(list?.querySelectorAll<HTMLAnchorElement>('a') ?? [])];
+    const current = links.indexOf(document.activeElement as HTMLAnchorElement);
+    if (event.target === input) {
+      if (event.key === 'ArrowDown' && links.length > 0) {
+        event.preventDefault();
+        links[0].focus();
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        links[0]?.click();
+      }
+    } else if (current >= 0 && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+      event.preventDefault();
+      if (event.key === 'ArrowUp' && current === 0) input?.focus();
+      else links[Math.min(links.length - 1, current + (event.key === 'ArrowDown' ? 1 : -1))]?.focus();
+    }
+  });
 
   // A click on the backdrop lands on the dialog itself, never on its content.
   dialog?.addEventListener('click', (event) => {
@@ -236,6 +312,8 @@ import '../styles/search.css';
   });
 
   dialog?.addEventListener('close', () => {
+    window.clearTimeout(debounce);
+    ++queryToken;
     clearResults();
     setStatus(null);
     if (hint) hint.hidden = false;

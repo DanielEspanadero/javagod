@@ -22,6 +22,7 @@ const { title, description, wide = false } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <slot name="head" />
     <link rel="icon" type="image/png" href="/favicon.png" sizes="64x64" />
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
 
