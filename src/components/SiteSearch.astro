@@ -48,9 +48,10 @@ import '../styles/search.css';
       />
     </label>
     <p class="search-hint" data-search-hint>Escribe para buscar en los capítulos.</p>
-    <p class="search-hint" id="search-keyboard">Flecha abajo para entrar en los resultados; flechas arriba y abajo para recorrerlos. Intro abre el resultado y Esc cierra.</p>
+    <p class="search-hint" id="search-keyboard">Flecha abajo para entrar en los resultados; flechas arriba y abajo para recorrerlos. Intro abre el resultado, Tab permite llegar a Mostrar más y Esc cierra.</p>
     <p class="search-status" role="status" data-search-status hidden></p>
     <ul class="search-results" id="search-results" aria-label="Resultados de búsqueda" data-search-results></ul>
+    <button class="search-dialog__more" type="button" aria-controls="search-results" data-search-more hidden>Mostrar más</button>
     <button class="search-dialog__close" type="button" data-search-close>Cerrar <kbd>Esc</kbd></button>
   </div>
 </dialog>
@@ -92,7 +93,7 @@ import '../styles/search.css';
    * @property {(query: string) => Promise<{ results: { data(): Promise<PagefindEntry> }[] }>} search
    */
 
-  /** How many results the dialog lists before stopping. */
+  /** How many filtered results to append at a time. */
   const maxResults = 8;
 
   const dialog = document.querySelector<HTMLDialogElement>('[data-search-dialog]');
@@ -102,6 +103,7 @@ import '../styles/search.css';
   const status = dialog?.querySelector<HTMLElement>('[data-search-status]') ?? null;
   const list = dialog?.querySelector<HTMLUListElement>('[data-search-results]') ?? null;
   const close = dialog?.querySelector<HTMLElement>('[data-search-close]') ?? null;
+  const more = dialog?.querySelector<HTMLButtonElement>('[data-search-more]') ?? null;
 
   /** @type {PagefindRuntime | null} */
   let runtime = null;
@@ -110,6 +112,10 @@ import '../styles/search.css';
   /** Bumped on every query so a slow answer never overwrites a newer one. */
   let queryToken = 0;
   let debounce = 0;
+  /** Filtered results from the current query, reused without another search. */
+  let available: PagefindEntry[] = [];
+  let shown = 0;
+  let hiddenNote = '';
 
   /**
    * Load the runtime once. A failed load is remembered as `null` and reported
@@ -152,6 +158,32 @@ import '../styles/search.css';
   /** Empty the result list. */
   function clearResults(): void {
     list?.replaceChildren();
+    available = [];
+    shown = 0;
+    hiddenNote = '';
+    if (more) more.hidden = true;
+  }
+
+  /** Append a page in the original order and keep the announced count honest. */
+  function showMore(focusFirst = false): void {
+    const rows = available.slice(shown, shown + maxResults).map(renderResult);
+    list?.append(...rows);
+    shown += rows.length;
+
+    // Hiding the button that holds focus would drop the reader back to the
+    // document, outside the dialog. Remember it before the button disappears.
+    const keepsFocus = document.activeElement === more;
+    if (more) more.hidden = shown >= available.length;
+
+    const count = available.length > shown
+      ? `${shown} de ${available.length} resultados`
+      : `${shown} ${shown === 1 ? 'resultado' : 'resultados'}`;
+    setStatus(`${count}${hiddenNote}`);
+
+    // Native keyboard/AT activation must not leave focus on a hidden button.
+    if (focusFirst || (keepsFocus && shown >= available.length)) {
+      rows[0]?.querySelector('a')?.focus();
+    }
   }
 
   /**
@@ -221,29 +253,23 @@ import '../styles/search.css';
     clearResults();
 
     const version = selectedVersion();
-    const available = entries.filter((entry) => {
+    available = entries.filter((entry) => {
       if (version === 'all' || !entry.meta.since) return true;
       return Number(entry.meta.since) <= version &&
         (!entry.meta.hasta || Number(entry.meta.hasta) >= version);
     });
-    const shown = available.slice(0, maxResults);
     const hidden = entries.length - available.length;
-    list?.append(...shown.map(renderResult));
-
-    const count = available.length > shown.length
-      ? `${shown.length} de ${available.length} resultados`
-      : `${shown.length} ${shown.length === 1 ? 'resultado' : 'resultados'}`;
-    const hiddenNote =
+    hiddenNote =
       hidden === 0
         ? ''
         : `, ${hidden} ${hidden === 1 ? 'oculto' : 'ocultos'} por el modo Java ${version}`;
 
     if (entries.length === 0) {
       setStatus(`Sin resultados para «${query}».`);
-    } else if (shown.length === 0) {
+    } else if (available.length === 0) {
       setStatus(`Ningún resultado para «${query}» en el modo Java ${version}${hiddenNote}.`);
     } else {
-      setStatus(`${count}${hiddenNote}`);
+      showMore();
     }
   }
 
@@ -276,6 +302,7 @@ import '../styles/search.css';
   openers.forEach((opener) => opener.addEventListener('click', () => void open()));
   close?.addEventListener('click', () => dialog?.close());
   input?.addEventListener('input', onInput);
+  more?.addEventListener('click', (event) => showMore(event.detail === 0));
 
   // Keep native links and list semantics. Focus, rather than an ARIA-only
   // active descendant, makes the same navigation work for keyboard and AT.
