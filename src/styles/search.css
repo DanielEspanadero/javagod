@@ -188,6 +188,7 @@
   color: var(--text);
 }
 
+.search-dialog__more,
 .search-dialog__close {
   justify-self: end;
   padding-block: var(--space-3xs);
@@ -201,9 +202,20 @@
   cursor: pointer;
 }
 
+.search-dialog__more:hover,
 .search-dialog__close:hover {
   border-color: var(--line-strong);
   color: var(--text);
+}
+
+.search-dialog__more {
+  justify-self: center;
+  font-size: var(--text-sm);
+}
+
+.search-dialog__more:focus-visible {
+  outline: var(--hairline) solid var(--focus);
+  outline-offset: 2px;
 }
 
 .search-dialog__close kbd {

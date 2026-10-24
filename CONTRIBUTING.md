@@ -230,8 +230,10 @@ después la auditoría y el contrato de URLs, en ese orden. Para reindexar sin r
   `data-pagefind-meta="title"`, así el resultado se llama como el capítulo y no como el
   `<title>` completo.
 - `DocsLayout.astro` pasa metadatos `since` y `hasta` al slot `head` de `BaseLayout.astro`.
-  Pagefind los devuelve en `entry.data().meta`; la búsqueda filtra antes de limitar a ocho
-  filas. Un resultado sin `since` sigue visible. El estado anuncia los disponibles, los
+  Pagefind los devuelve en `entry.data().meta`; la búsqueda filtra antes de mostrar las
+  primeras ocho filas. «Mostrar más» añade las ocho siguientes, en el mismo orden y sin
+  volver a consultar el índice. Desaparece al llegar al final y cada consulta nueva reinicia
+  la lista. Un resultado sin `since` sigue visible. El estado anuncia los disponibles, los
   mostrados (`8 de 15 resultados` si hay más de ocho) y los ocultos por el modo, sin
   nombrar capítulos ocultos.
 - La búsqueda lee primero `?v=`, después `javagod:version` y, si no hay elección, usa
@@ -240,7 +242,10 @@ después la auditoría y el contrato de URLs, en ese orden. Para reindexar sin r
 - Flecha abajo desde el campo enfoca el primer enlace; las flechas recorren los enlaces
   y flecha arriba desde el primero vuelve al campo. Intro en el campo abre el primer
   resultado visible; en un enlace conserva su comportamiento nativo. Tab sigue funcionando
-  y Esc cierra y devuelve el foco al botón de búsqueda.
+  y permite llegar a «Mostrar más». Intro o Espacio en ese botón añade la tanda y enfoca
+  el primer enlace nuevo, incluso en la última tanda. Al agotar las tandas, el foco se queda
+  en los resultados y no vuelve al documento, también cuando se pulsó con el ratón. Esc
+  cierra y devuelve el foco al botón de búsqueda.
 - En `pnpm dev` el servidor no genera índice, porque Pagefind trabaja sobre `dist/`:
   `scripts/pagefind-dev.mjs` monta el último `dist/pagefind` en `/pagefind` mientras dura el
   desarrollo y avisa por consola de la fecha del índice. Si todavía no hay build, el diálogo
@@ -249,6 +254,22 @@ después la auditoría y el contrato de URLs, en ese orden. Para reindexar sin r
   recién escrito no aparece hasta `pnpm build`.
 - Sin JavaScript el control no se ve, igual que el selector de versión: la página sigue
   navegable por el árbol, el índice y el pager.
+
+### Comprobar el buscador en el navegador
+
+Con el servidor local en marcha, ejecuta la prueba con una instalación externa de Playwright
+(y su navegador Chromium instalado), sin añadir dependencias al proyecto:
+
+```bash
+PLAYWRIGHT_MODULE=/ruta/absoluta/a/playwright/index.mjs \
+  SEARCH_BASE_URL=http://localhost:4321 node scripts/check-search.mjs
+```
+
+La prueba abre el diálogo real y sustituye solo el módulo de Pagefind por resultados
+controlados. Comprueba las tandas, los filtros por versión, los contadores, el teclado,
+el reinicio, las respuestas obsoletas y el fallo de carga. No necesita un índice generado.
+El servidor se gestiona por separado con los comandos de la sección anterior; si lo has
+arrancado para la prueba, páralo después con `pnpm dev:stop`.
 
 ## Página 404
 
