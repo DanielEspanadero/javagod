@@ -129,6 +129,7 @@ this, and the build does not depend on it.
 | F11.2 | S3 | search | Buscador: teclado en los resultados y recuento honesto | hecho |
 | F12.1 | S3 | search | Buscador en desarrollo: servir el índice del build en `pnpm dev` | hecho |
 | F12.2 | S1 | tooling | Servidor de desarrollo: comandos y aviso del modo segundo plano | hecho |
+| F13.1 | S3 | search | Buscador: ver todos los resultados por tandas de ocho | hecho |
 
 ## Releases
 
@@ -974,3 +975,29 @@ levanta el servidor, `dev:status` lo ve en segundo plano, `/` y el índice de b�
 `dev:stop` lo para y deja el puerto libre sin marca residual; `pnpm build` en verde con 34 páginas,
 auditoría y contrato de URLs limpios. Regla operativa: no dejar servidores de desarrollo vivos
 tras verificar.
+
+L65: "continúa con JavaGod", y ante las opciones el dueño elige "Completar el buscador
+(recomendado)": ver los resultados restantes conservando los filtros por versión y el teclado.
+Era el límite conocido desde L62: el diálogo anunciaba `8 de 31` y no había forma de ver el resto.
+F13.1, rama `feature/search-more-results`. `SiteSearch.astro` guarda los resultados ya filtrados de
+la consulta y los pinta por tandas de ocho con un botón nativo `Mostrar más`; el orden no cambia, no
+se repite ninguna consulta al índice y el estado sigue siendo honesto (`8 de 19`, `16 de 19`,
+`19 resultados`, más la nota de ocultos por el modo). La paginación se reinicia dentro de
+`clearResults`, así que una consulta nueva, el cierre y el error de carga la dejan limpia; el guard
+`queryToken` y el filtro `since`/`hasta` antes del corte quedan intactos. Nueva prueba pública
+`scripts/check-search.mjs`, con Playwright externo y el módulo de Pagefind sustituido por resultados
+controlados: tandas 8/16/19 sin duplicados, orden estable, filtros por versión (incluido `hasta`),
+contadores, flechas, Intro, Tab, Espacio, reinicio, respuestas obsoletas y fallo de carga. En rojo
+antes de implementar (`FAIL: Debe ofrecer Mostrar más cuando quedan resultados`, salida 1) y en
+verde después; se documenta en `CONTRIBUTING.md` sin añadir dependencias al proyecto.
+
+El padre encontró un defecto que la prueba del worker no cubría: al agotar las tandas con el ratón,
+el botón que tenía el foco se ocultaba y el foco caía al `document`, fuera del diálogo. La primera
+comprobación del padre sobre el `dist` anterior reprodujo el fallo con salida 1; el arreglo recuerda
+si el botón tenía el foco antes de ocultarlo y pasa el foco al primer enlace de la última tanda, y la
+aserción queda fijada en `scripts/check-search.mjs`. Verificación del padre sobre `dist` construido
+en HEAD: `pnpm build` con salida 0, 34 páginas, 31 indexadas, auditoría limpia (207 clases con 358
+reglas) y 33/33 URL en el contrato; `check-search.mjs` en verde contra ese `dist`; con el índice real
+de Pagefind (`java`), 8 filas y `8 de 31` antes, 16 filas y `16 de 31` después, botón todavía visible,
+sin errores JS y sin desbordamiento de página ni del diálogo a 1440 y 390 px. Sin merge ni push.
+Queda abierto F5.3: sigue pendiente de la cuenta de Cloudflare y del proyecto de Pages.
