@@ -217,6 +217,58 @@ async function main() {
     note('Puntuación: sin guiones largos ni medios en el HTML publicado');
   }
 
+  /* ---- Check 5: delivery budget ---- */
+  const PAGE_BUDGET = 150 * 1024;
+  const CSS_BUDGET = 70 * 1024;
+  const THIRD_PARTY = /<(?:script|img|iframe|source|link)\b[^>]*\b(?:src|href)="https?:\/\//i;
+
+  let budgetOk = true;
+
+  for (const page of pages) {
+    const bytes = Buffer.byteLength(page.markup, 'utf8');
+    if (bytes > PAGE_BUDGET) {
+      budgetOk = false;
+      fail(`${page.name}: ${Math.round(bytes / 1024)} KB de HTML, por encima del presupuesto de ${PAGE_BUDGET / 1024} KB.`);
+    }
+
+    const remote = THIRD_PARTY.exec(page.markup);
+    if (remote) {
+      budgetOk = false;
+      fail(`${page.name}: recurso de terceros en el HTML (${remote[0].slice(0, 60)}…).`);
+    }
+  }
+
+  let cssBytes = 0;
+
+  for (const [name, file] of cssFiles) {
+    const css = await readFile(file, 'utf8');
+    /* Pagefind ships its own stylesheets and only loads them with the dialog;
+       the budget covers the CSS this repository authors. */
+    if (name.startsWith('_astro/')) cssBytes += Buffer.byteLength(css, 'utf8');
+
+    if (/@import\s+(?:url\()?\s*['"]?https?:/i.test(css)) {
+      budgetOk = false;
+      fail(`${name}: importa una hoja de estilos de terceros.`);
+    }
+
+    for (const match of css.matchAll(/url\((['"]?)(\/fonts\/[^)'"]+)\1\)/g)) {
+      const asset = match[2].replace(/^\/+/, '');
+      if (!relativeFiles.has(asset)) {
+        budgetOk = false;
+        fail(`${name}: la tipografía ${match[2]} no está en dist/.`);
+      }
+    }
+  }
+
+  if (cssBytes > CSS_BUDGET) {
+    budgetOk = false;
+    fail(`CSS: ${Math.round(cssBytes / 1024)} KB, por encima del presupuesto de ${CSS_BUDGET / 1024} KB.`);
+  }
+
+  if (budgetOk) {
+    note(`Presupuesto: HTML máximo ${Math.round(Math.max(...pages.map((page) => Buffer.byteLength(page.markup, 'utf8'))) / 1024)} KB de ${PAGE_BUDGET / 1024} · CSS ${Math.round(cssBytes / 1024)} KB de ${CSS_BUDGET / 1024} · sin recursos de terceros`);
+  }
+
   note(`Páginas generadas: ${pages.length}`);
   note(`Hojas de estilo: ${cssFiles.length} archivo(s) + bloques <style> inline`);
   note(`Links internos verificados: ${checkedLinks}`);

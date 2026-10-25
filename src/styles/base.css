@@ -199,10 +199,30 @@ a:hover {
   white-space: nowrap;
 }
 
+/* The two states of a section: what you can read now is the one that carries
+   the accent, and what is still missing stays quiet instead of shouting. */
 .chip--soon {
-  border-color: color-mix(in srgb, var(--brand) 35%, transparent);
+  border-style: dashed;
+  border-color: var(--line-strong);
+  background-color: transparent;
+  color: var(--text-faint);
+}
+
+/* A chip that is also a link: the published sections reach their chapters, and
+   the chip keeps the pill shape instead of turning into a text link. */
+.chip--ready {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
   background-color: var(--brand-soft);
   color: var(--brand);
+  text-decoration: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.chip--ready:hover {
+  border-color: var(--brand);
+  background-color: color-mix(in srgb, var(--brand-soft) 70%, var(--surface));
 }
 
 /* Reduced motion: animations become an enhancement that simply is not there. */

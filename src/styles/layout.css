@@ -12,6 +12,12 @@ body {
   padding-inline: var(--gutter);
 }
 
+/* Documentation pages use the full viewport so the rail sits at the left edge
+   and the brand stays aligned with it instead of with a centred column. */
+.container--wide {
+  max-inline-size: none;
+}
+
 /* Header */
 .site-header {
   position: sticky;
@@ -56,27 +62,35 @@ body {
 }
 
 .brand__mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--badge-size);
-  block-size: var(--badge-size);
-  border-radius: var(--radius-sm);
-  background-color: var(--brand);
-  color: var(--on-brand);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  line-height: 1;
-  transition: background-color var(--duration-base) var(--ease-out);
-}
-
-.brand:hover .brand__mark {
-  background-color: var(--brand-accent);
+  display: block;
+  inline-size: 2rem;
+  block-size: 2rem;
+  object-fit: contain;
 }
 
 .brand__name {
   color: inherit;
+}
+
+.site-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.site-header__link {
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-2xs);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.site-header__link:hover {
+  color: var(--brand);
 }
 
 /* Theme toggle: icon visibility is pure CSS, keyed off [data-theme]. */
@@ -164,4 +178,68 @@ body {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.02em;
+}
+
+/* Not-found page (S7). Cloudflare Pages serves this for any route it cannot
+   resolve, so it is a normal page of the site: same chrome, same tokens, and
+   the same rule as everything else, only links that exist. */
+.not-found {
+  padding-block: var(--space-4xl);
+}
+
+.not-found__eyebrow {
+  color: var(--brand);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.not-found__title {
+  margin-block-start: var(--space-sm);
+  font-size: var(--text-2xl);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.not-found__text {
+  max-inline-size: var(--width-measure);
+  margin-block-start: var(--space-md);
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  line-height: 1.7;
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-xl);
+}
+
+.not-found__link {
+  padding-block: var(--space-xs);
+  padding-inline: var(--space-md);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.not-found__link:hover {
+  border-color: var(--line-strong);
+}
+
+.not-found__link--primary {
+  border-color: transparent;
+  background-color: var(--brand);
+  color: var(--on-brand);
+  font-weight: 600;
+}
+
+.not-found__link--primary:hover {
+  border-color: transparent;
+  background-color: color-mix(in srgb, var(--brand) 88%, var(--text));
 }

@@ -1,0 +1,127 @@
+/*
+ * Diagram primitives (S4).
+ *
+ * Authored as plain HTML inside a Markdown chapter, so a diagram needs no
+ * component, no import and no JavaScript: the classes below are the whole
+ * contract. Every diagram must read as static HTML, motion is never the only
+ * carrier of meaning, and nothing here animates.
+ *
+ * Markup:
+ *
+ *   <figure class="diagram diagram--framed">
+ *     <p class="diagram__label">El viaje de un programa</p>
+ *     <ol class="diagram__flow">
+ *       <li class="diagram__node">…</li>
+ *     </ol>
+ *     <figcaption class="diagram__caption">Una frase que explica la figura.</figcaption>
+ *   </figure>
+ */
+
+.diagram {
+  margin: 0;
+  padding: 0;
+}
+
+.diagram--framed {
+  padding: var(--space-md);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-raised);
+}
+
+.diagram__label {
+  margin-block-end: var(--space-sm);
+  color: var(--brand);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.diagram__flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-md);
+  list-style: none;
+}
+
+.diagram__node {
+  position: relative;
+  display: grid;
+  gap: var(--space-3xs);
+  align-content: start;
+  padding: var(--space-sm);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-sunken);
+}
+
+.diagram__index {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
+}
+
+.diagram__title {
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.diagram__value {
+  justify-self: start;
+  /* Long identifiers must not widen the node: the chip keeps its frame and
+     breaks the token instead of spilling past the box. */
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  margin-block-start: var(--space-3xs);
+  padding-block: 0.1em;
+  padding-inline: 0.35em;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-xs);
+  background-color: var(--surface);
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
+}
+
+.diagram__hint {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+}
+
+.diagram__caption {
+  margin-block-start: var(--space-sm);
+  color: var(--text-faint);
+  font-size: var(--text-xs);
+}
+
+/* Connector between nodes: down while the flow is stacked, right when it is a
+   row. Pure decoration, so it is hidden from assistive tech in the markup. */
+.diagram__node:not(:last-child)::after {
+  content: '\2193';
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-end: calc(var(--space-md) * -1);
+  transform: translateX(-50%);
+  color: var(--brand);
+  font-size: var(--text-sm);
+  line-height: 1;
+}
+
+@media (min-width: 40rem) {
+  .diagram__flow {
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  }
+
+  .diagram__node:not(:last-child)::after {
+    content: '\2192';
+    inset-block-start: 50%;
+    inset-block-end: auto;
+    inset-inline-start: auto;
+    inset-inline-end: calc(var(--space-md) * -1);
+    transform: translateY(-50%);
+  }
+}

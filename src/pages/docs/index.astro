@@ -1,0 +1,72 @@
+---
+// Documentation index. Derived from the collection: published chapters are
+// links, sections without chapters are labeled as such and never linked (S7).
+// The cards carry their version range so the reading mode filters them (S16).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VersionSwitcher from '../../components/VersionSwitcher.astro';
+import { docHref, getDocs, groupDocs } from '../../lib/docs';
+import { sections } from '../../lib/sections.mjs';
+import '../../styles/docs.css';
+
+const docs = await getDocs();
+const groups = groupDocs(docs);
+const pending = sections.filter((section) => !groups.some((group) => group.section.id === section.id));
+---
+<BaseLayout
+  title="Documentación · JavaGod"
+  description="Los capítulos de JavaGod: Java explicado con diagramas, bytecode paso a paso y la máquina virtual a la vista."
+  wide
+>
+  <div class="docs-index">
+    <header class="docs-index__header">
+      <p class="docs__eyebrow">Documentación</p>
+      <h1 class="docs-index__title">Java, de la fuente a la máquina</h1>
+      <p class="docs__lead">
+        Cada capítulo se apoya en el anterior, pero puedes entrar por donde te haga falta. Lo que
+        todavía no está escrito aparece marcado, nunca como un enlace roto.
+      </p>
+    </header>
+
+    <VersionSwitcher />
+
+    <div class="docs-index__sections">
+      {
+        groups.map((group) => (
+          <section class="docs-index__section" id={group.section.id}>
+            <h2 class="docs-index__section-title">{group.section.title}</h2>
+            <p class="docs-index__section-summary">{group.section.summary}</p>
+            <ul class="docs-index__pages">
+              {group.docs.map((doc) => (
+                <li data-version-item data-since={doc.data.since} data-hasta={doc.data.hasta}>
+                  <a class="docs-index__link" href={docHref(doc)}>
+                    <span class="docs-index__page-title">{doc.data.title}</span>
+                    <span class="docs-index__page-description">{doc.data.description}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+
+      {
+        pending.length > 0 && (
+          <section class="docs-index__section docs-index__section--pending">
+            <h2 class="docs-index__section-title">En preparación</h2>
+            <p class="docs-index__section-summary">
+              Estas secciones todavía no tienen capítulos publicados.
+            </p>
+            <ul class="docs-index__pages">
+              {pending.map((section) => (
+                <li class="docs-index__pending">
+                  <span class="docs-index__pending-title">{section.title}</span>
+                  <span class="chip chip--soon">En preparación</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

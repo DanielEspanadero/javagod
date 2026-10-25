@@ -21,7 +21,15 @@
   /* Text: three levels */
   --text: light-dark(#1b1512, #f6f0ea);
   --text-muted: light-dark(#584a42, #c2b5aa);
-  --text-faint: light-dark(#7b6b61, #948779);
+  --text-faint: light-dark(#746359, #948779);
+
+  /* Semantic accents: warnings, danger and confirmations for callouts */
+  --warn: light-dark(#8a5300, #f0b429);
+  --warn-soft: light-dark(#fdf4e4, #241a09);
+  --danger: light-dark(#b3261e, #ff8a80);
+  --danger-soft: light-dark(#fdecea, #2a1211);
+  --success: light-dark(#1c6b45, #6ee7a8);
+  --success-soft: light-dark(#eaf6ef, #0d2118);
 
   /* Lines and focus */
   --line: light-dark(#e8dfd7, #262120);
@@ -80,6 +88,10 @@
 
   /* Layout */
   --width-container: 74rem;
+  /* Documentation shell: rail, article column and in-page TOC (S5) */
+  --width-docs: 54rem;
+  --width-docs-nav: 17rem;
+  --width-docs-toc: 15rem;
   --width-prose: 46rem;
   --width-measure: 62ch;
   --width-terminal: 30rem;
@@ -94,11 +106,9 @@
 
   /* Motion: interface feedback */
   --ease-out: cubic-bezier(0.16, 0.84, 0.44, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --duration-fast: 120ms;
   --duration-base: 220ms;
   --duration-slow: 420ms;
-  --duration-loop: 9s;
 
   /* Motion: narrative entrance and scroll reveals (S14) */
   --ease-enter: cubic-bezier(0.22, 0.75, 0.24, 1);

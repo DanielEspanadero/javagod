@@ -1,0 +1,194 @@
+---
+// Version reading mode (S16). The selector sits above the nav tree and above
+// the docs index cards; both include this component, so one file owns the
+// control and the script that filters every version-aware surface.
+//
+// The options come from the LTS registry, never from a second list: the markup
+// is server-rendered from `versions.mjs` and the script imports the same
+// registry to validate what it reads from the URL and from storage.
+import { versions } from '../lib/versions.mjs';
+---
+<div class="version-switcher">
+  <label class="version-switcher__label" for="version-mode">Versión de Java</label>
+  <select class="version-switcher__select" id="version-mode">
+    <option value="all">Todas las versiones</option>
+    {
+      versions.map((release) => (
+        <option value={String(release.version)}>{release.label}</option>
+      ))
+    }
+  </select>
+</div>
+
+{
+  /*
+   * The reading mode, in one script. The server marks every surface with
+   * `data-since` (and `data-hasta` when the chapter has one), so this only
+   * toggles the `hidden` attribute: no node is removed, no link is invented and
+   * the page is complete without JavaScript (S16).
+   *
+   * Without JavaScript the control stays hidden, because the site adds the `js`
+   * class to `<html>` before paint and the CSS reveals it only then. A control
+   * that cannot filter is worse than no control.
+   */
+}
+<script>
+  import { ltsVersions, versionLabel } from '../lib/versions.mjs';
+
+  /** Storage key and query parameter of the reading mode (S16). */
+  const storageKey = 'javagod:version';
+  const queryKey = 'v';
+
+  /** Every version, or one LTS release. */
+  type Selection = number | 'all';
+
+  /** Numeric attribute value, or `undefined` when the attribute is absent. */
+  function readVersion(value: string | undefined): number | undefined {
+    return value === undefined || value === '' ? undefined : Number(value);
+  }
+
+  /**
+   * Whether a chapter applies to a selection (S16). This is the only copy of
+   * the rule: the tree, the index cards, the pager and the notice all ask this
+   * function, so they can never disagree with each other.
+   */
+  function appliesTo(since: number, hasta: number | undefined, selection: Selection): boolean {
+    if (selection === 'all') return true;
+    if (since > selection) return false;
+
+    return hasta === undefined || hasta >= selection;
+  }
+
+  /**
+   * Parse a stored or queried value. Anything unknown, empty or malformed
+   * becomes `all`, so a hand-typed link never leaves the page empty.
+   */
+  function parseSelection(raw: string | null): Selection {
+    if (raw === null || raw === 'all') return 'all';
+
+    const version = Number(raw);
+
+    return Number.isInteger(version) && ltsVersions.includes(version) ? version : 'all';
+  }
+
+  /** The mode to start with: the query wins over storage, both default to `all`. */
+  function loadSelection(): Selection {
+    const query = new URLSearchParams(window.location.search).get(queryKey);
+
+    if (query !== null) return parseSelection(query);
+
+    let stored: string | null = null;
+
+    try {
+      stored = window.localStorage.getItem(storageKey);
+    } catch {
+      // A blocked storage only means the choice is not remembered; it is never
+      // an error the reader has to see.
+      stored = null;
+    }
+
+    return parseSelection(stored);
+  }
+
+  /** Remember the reader's choice, tolerating a storage that refuses to write. */
+  function storeSelection(selection: Selection): void {
+    try {
+      window.localStorage.setItem(storageKey, String(selection));
+    } catch {
+      // Same as above: the mode still applies to this page.
+    }
+  }
+
+  /** Keep the URL in sync so a shared link carries the mode. */
+  function syncUrl(selection: Selection): void {
+    const url = new URL(window.location.href);
+
+    if (selection === 'all') {
+      url.searchParams.delete(queryKey);
+    } else {
+      url.searchParams.set(queryKey, String(selection));
+    }
+
+    window.history.replaceState(
+      window.history.state,
+      '',
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }
+
+  const select = document.querySelector<HTMLSelectElement>('#version-mode');
+  const page = document.querySelector<HTMLElement>('[data-version-page]');
+  const notice = document.querySelector<HTMLElement>('[data-version-notice]');
+  const action = notice?.querySelector<HTMLButtonElement>('[data-version-action]') ?? null;
+  const selectedLabel = notice?.querySelector<HTMLElement>('[data-version-selected]') ?? null;
+
+  let selection: Selection = loadSelection();
+
+  /**
+   * Version of the current chapter to switch to, or `undefined` when the
+   * chapter already applies. The reader is outside the range, so the way back
+   * is the nearest boundary: `since` when reading older, `hasta` when newer.
+   */
+  function targetVersion(selection: Selection): number | undefined {
+    if (!page || selection === 'all') return undefined;
+
+    const since = Number(page.dataset.since);
+    const hasta = readVersion(page.dataset.hasta);
+
+    if (appliesTo(since, hasta, selection)) return undefined;
+
+    return selection < since ? since : hasta;
+  }
+
+  /** Paint every surface for the current selection. */
+  function render(): void {
+    if (select) select.value = String(selection);
+
+    for (const item of document.querySelectorAll<HTMLElement>('[data-version-item]')) {
+      const since = Number(item.dataset.since);
+      const hasta = readVersion(item.dataset.hasta);
+      item.hidden = !appliesTo(since, hasta, selection);
+    }
+
+    for (const pager of document.querySelectorAll<HTMLElement>('[data-version-pager]')) {
+      const links = [...pager.querySelectorAll<HTMLElement>('[data-version-item]')];
+      pager.hidden = links.length > 0 && links.every((link) => link.hidden);
+    }
+
+    if (!notice) return;
+
+    const target = targetVersion(selection);
+
+    if (target === undefined) {
+      notice.hidden = true;
+      return;
+    }
+
+    // Fill the copy before revealing the notice: the selected version is only
+    // known here, so the sentence is never shown with a hole in it.
+    if (selectedLabel && selection !== 'all') {
+      selectedLabel.textContent = versionLabel(selection);
+    }
+
+    if (action) action.textContent = `Cambiar a ${versionLabel(target)}`;
+
+    notice.hidden = false;
+  }
+
+  /** Apply a reader choice and keep the stored and shared state with it. */
+  function choose(next: Selection): void {
+    selection = next;
+    render();
+    storeSelection(next);
+    syncUrl(next);
+  }
+
+  select?.addEventListener('change', () => choose(parseSelection(select.value)));
+
+  action?.addEventListener('click', () => {
+    const target = targetVersion(selection);
+    if (target !== undefined) choose(target);
+  });
+
+  render();
+</script>

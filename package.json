@@ -1,6 +1,6 @@
 {
   "name": "javagod",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "packageManager": "pnpm@11.1.2",
   "type": "module",
@@ -9,12 +9,23 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/audit.mjs",
+    "dev:status": "astro dev status",
+    "dev:logs": "astro dev logs",
+    "dev:stop": "astro dev stop",
+    "build": "astro build && pagefind --site dist --force-language es && node scripts/audit.mjs && node scripts/check-urls.mjs",
+    "search:index": "pagefind --site dist --force-language es",
     "audit": "node scripts/audit.mjs",
+    "new:doc": "node scripts/new-doc.mjs",
+    "urls:update": "node scripts/check-urls.mjs --update",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "astro": "^7.3.8"
+  },
+  "devDependencies": {
+    "@astrojs/markdown-remark": "^7.3.3",
+    "pagefind": "^1.5.2"
   }
 }

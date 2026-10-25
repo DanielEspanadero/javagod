@@ -1,0 +1,28 @@
+/*
+ * Self-hosted fonts.
+ *
+ * Both families ship as one Latin variable file each: Google serves the same
+ * bytes for every weight, so declaring a weight axis costs one request per
+ * family instead of one per weight. Self-hosting removes the third-party
+ * stylesheet that blocked the first paint, and the files are served from our
+ * own origin with the immutable cache rule in `public/_headers`.
+ *
+ * `font-display: swap` keeps the text readable while the file arrives. Inter is
+ * preloaded from `BaseLayout.astro` because it paints the first screen; the mono
+ * file waits, since only code and small labels use it.
+ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin.woff2') format('woff2');
+}
