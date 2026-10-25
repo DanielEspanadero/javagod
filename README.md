@@ -22,7 +22,7 @@ El sitio se genera como HTML estático, no tiene backend y se despliega en Cloud
 - [Astro](https://astro.build) 7 con salida estática y colecciones de contenido.
 - CSS nativo con tokens, sin framework de estilos.
 - [Pagefind](https://pagefind.app) para el índice de búsqueda.
-- pnpm 11 y Node 22.12 o superior (`.node-version` fija la versión exacta).
+- pnpm 11 y Node 22.22 o superior (`.node-version` fija la versión exacta).
 
 Las tipografías van autoalojadas: Inter y JetBrains Mono, ambas con licencia SIL Open Font
 License, que está en `public/fonts`.

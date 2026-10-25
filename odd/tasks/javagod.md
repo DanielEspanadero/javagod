@@ -1013,3 +1013,24 @@ sobre `develop`: salida 0, 34 páginas generadas, 31 indexadas por Pagefind, aud
 clases con 358 reglas, presupuesto de HTML 86 KB de 150 y CSS 50 KB de 70, sin recursos de terceros)
 y 33/33 URL del contrato. F5.3 sigue pendiente: con `main` al día, el proyecto de Cloudflare Pages
 puede conectarse al repositorio y publicar; nada de la entrega del hosting se hizo desde el repo.
+
+L67: El primer despliegue en Cloudflare Pages (F5.3) se detuvo antes de compilar, con este log:
+`Preparing pnpm@11.1.2 for immediate activation...` y `ERROR: This version of pnpm requires at
+least Node.js v22.13`. No era un problema del sitio ni del panel: era un defecto del repositorio.
+`.node-version` fijaba `22.12.0` y `engines.node` pedía `>=22.12.0`, pero `packageManager` declara
+`pnpm@11.1.2`, que no arranca por debajo de Node 22.13; el propio Corepack del entorno de build
+pedía además `^22.22.2 || ^24.15.0 || >=26.0.0`. El pin era, por tanto, imposible de cumplir: nadie
+que respetara `.node-version` podía instalar el proyecto.
+
+Arreglo en `hotfix/node-22-22`, no una excepción silenciosa en el panel: `.node-version` pasa a
+`22.22.2`, `engines.node` a `>=22.22.2`, y se corrigen las dos menciones a 22.12 que quedaban
+(`README.md` y el comentario de `src/lib/sections.mjs`). Verificación en la máquina del dueño con el
+binario oficial `node-v22.22.2-darwin-arm64` descargado aparte, sin tocar el Node del sistema:
+`node -v` y `pnpm -v` responden `v22.22.2` y `11.1.2`, y `pnpm build` sale con código 0, 34 páginas,
+31 indexadas, auditoría limpia y 33/33 URL del contrato. En Cloudflare queda fijar
+`NODE_VERSION=22.22.2` en Production y Preview para que el build no dependa de las variables por
+defecto del entorno.
+
+La lección se queda en el repositorio: un pin de Node tiene que ser compatible con el `pnpm` que
+declara `packageManager`, y eso se comprueba con un build real antes de escribir la versión, no
+después de que falle el primer despliegue.
