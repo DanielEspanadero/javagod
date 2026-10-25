@@ -1,11 +1,20 @@
-# Assets con hash: se pueden cachear para siempre.
-/_astro/*
-  Cache-Control: public, max-age=31536000, immutable
+# Cloudflare Pages merges every block whose pattern matches a request, and joins
+# repeated header values with a comma. So the broad rule below also reaches
+# /_astro/*, and two Cache-Control values would contradict each other
+# ("immutable, must-revalidate"). The asset block detaches the inherited value
+# with the documented `!` syntax before declaring its own.
 
-# HTML: siempre revalidar, para que un deploy nuevo se vea al instante.
+# Everything, HTML included: revalidate on every request so a deploy is visible
+# immediately, plus the security headers that apply to the whole site.
 /*
   Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Build assets carry a content hash in the file name: a new build produces a new
+# URL, so these can be cached for a year and never revalidated.
+/_astro/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable

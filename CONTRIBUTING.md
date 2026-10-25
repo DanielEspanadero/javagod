@@ -381,7 +381,7 @@ estaba generando.
 ### Comprobación tras desplegar
 
 - `/` carga la portada con el logo y el pipeline.
-- `/docs/` lista las tres secciones y los dieciocho capítulos.
+- `/docs/` lista las cinco secciones y las 31 páginas de contenido.
 - Un capítulo profundo, por ejemplo `/docs/concurrencia/hilos-virtuales/`, abre con su
   TOC y muestra el aviso de versión al cambiar el modo de lectura a Java 17.
 - `/404.html` responde con la página propia, no con la de Cloudflare.
