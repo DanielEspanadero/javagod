@@ -8,8 +8,9 @@ El sitio se genera como HTML estático, no tiene backend y se despliega en Cloud
 
 ## Qué hay dentro
 
-- Tres secciones y dieciocho capítulos: Fundamentos, Orientación a Objetos, Colecciones y
-  Concurrencia.
+- Cuatro secciones de contenido y una de novedades: Fundamentos, Orientación a Objetos,
+  Collections y Streams, Concurrencia, más una página por cada versión LTS. En total, 26 capítulos
+  y 5 páginas de novedades.
 - Diagramas en HTML y CSS, legibles en estático, con animación solo como capa extra.
 - Modo de lectura por versión: un `since` por capítulo y un selector que filtra lo que aún no
   existía en la versión elegida, sin duplicar contenido ni URLs.
