@@ -1034,3 +1034,35 @@ defecto del entorno.
 La lección se queda en el repositorio: un pin de Node tiene que ser compatible con el `pnpm` que
 declara `packageManager`, y eso se comprueba con un build real antes de escribir la versión, no
 después de que falle el primer despliegue.
+
+L68: F5.3 cerrada. El sitio está publicado en `https://javagod.com`, con la zona servida por
+Cloudflare, Hostinger como registrador y `www.javagod.com` redirigiendo con 301 al apex. Proyecto
+de Pages `javagod` conectado por Git con acceso restringido al repositorio, rama de producción
+`main`, `pnpm build`, salida `dist`, `NODE_VERSION=22.22.2`, `PNPM_VERSION=11.1.2` y
+`JAVAGOD_SITE_URL=https://javagod.com` en Production y Preview.
+
+Verificación del padre sobre producción, no sobre el informe del agente: `/`, `/docs/` y
+`/docs/concurrencia/hilos-virtuales/` responden 200; `/pagefind/pagefind.js` responde 200;
+`/ruta-inventada/` devuelve 404 con la página propia (`Esta página no existe · JavaGod`); `www`
+responde 301 a `https://javagod.com/`; las cinco cabeceras de seguridad de `public/_headers` llegan
+en la respuesta. El build que produjo todo esto es la misma cadena `pnpm build` del repositorio.
+
+El agente detectó y no tocó un defecto real del repositorio: `public/_headers` tenía dos bloques que
+casaban con `/_astro/*`, y Cloudflare Pages une los valores repetidos con coma, así que el CSS salía
+con `public, max-age=14400, immutable` **y** `must-revalidate`, dos órdenes contradictorias. Cerrado
+en `hotfix/cache-headers`: el bloque ancho queda primero con la política de HTML y el de assets
+detacha el valor heredado con la sintaxis `! Cache-Control` antes de declarar el suyo. Probado en el
+preview `hotfix-cache-headers.javagod.pages.dev` antes de mergear (CSS con un único
+`public, max-age=31536000, immutable`, HTML con `public, max-age=0, must-revalidate`) y confirmado
+en producción tras el merge. Merge a `main` (`c5cfadf`), etiqueta `v0.3.2`, vuelta a `develop`
+(`169124f`) y push de ambas ramas y del tag.
+
+En el mismo corte se corrigió la documentación de la entrega, que describía el sitio como "tres
+secciones y dieciocho capítulos": son cinco secciones en el registro (cuatro de contenido más
+`novedades`), 26 capítulos y 5 páginas de versiones, 31 páginas de contenido en total, que es
+justo lo que lista `/docs/`.
+
+Queda como observación, no como tarea: mientras el bloque de assets estuvo mal, el `max-age`
+llegaba a producción convertido en 14400 por la configuración de caché de la zona. Con el valor
+único y coherente ya no ocurre. Si algún día vuelve a aparecer, el ajuste a revisar en la zona es
+Caching > Configuration > Browser Cache TTL, que debe respetar las cabeceras del origen.
