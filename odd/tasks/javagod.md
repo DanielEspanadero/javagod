@@ -110,7 +110,7 @@ this, and the build does not depend on it.
 | F4.4 | S16 | content | `since` por capítulo: la versión del tema, no la del ejemplo | hecho |
 | F5.1 | S3 | search | Búsqueda estática (Pagefind) con interfaz propia | hecho |
 | F5.2 | S7 | docs | Página 404 propia | hecho |
-| F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | pendiente |
+| F5.3 | S1 | release | Deploy en Cloudflare Pages y documentación de la entrega | hecho |
 | F6.1 | S3,S8 | content | Objetos 1-2: clases y objetos, encapsulamiento | hecho |
 | F6.2 | S3,S8 | content | Objetos 3-4: herencia y polimorfismo, interfaces | hecho |
 | F6.3 | S3,S8 | content | Objetos 5-6: Object y sus contratos, records | hecho |
