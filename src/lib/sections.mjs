@@ -10,7 +10,7 @@
  *
  * Plain JavaScript on purpose: `scripts/new-doc.mjs` reads this registry to
  * validate the section of a new chapter, and Node cannot import a TypeScript
- * file without a loader flag (`.node-version` pins Node 22.12). Types live in
+ * file without a loader flag (`.node-version` pins Node 22.22). Types live in
  * JSDoc so the site still type-checks while the scaffolder stays dependency free.
  */
 
