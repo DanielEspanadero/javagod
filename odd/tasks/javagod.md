@@ -137,6 +137,7 @@ this, and the build does not depend on it.
 | --- | --- |
 | `v0.1.0` | Base desplegable: portada con terminal, pipeline explorable, rail progresivo, simulador de hilos y auditoría de build |
 | `v0.2.0` | Puente terminal-pipeline, tira de postura, cierre a ancho completo, atajo `/`, git flow, entornos y cabeceras de Cloudflare |
+| `v0.3.0` | Documentación completa de Fundamentos, Objetos, Colecciones y Concurrencia, buscador con tandas de ocho, página 404 propia y presupuesto de rendimiento en el build |
 
 ## Log
 
@@ -1001,3 +1002,14 @@ reglas) y 33/33 URL en el contrato; `check-search.mjs` en verde contra ese `dist
 de Pagefind (`java`), 8 filas y `8 de 31` antes, 16 filas y `16 de 31` después, botón todavía visible,
 sin errores JS y sin desbordamiento de página ni del diálogo a 1440 y 390 px. Sin merge ni push.
 Queda abierto F5.3: sigue pendiente de la cuenta de Cloudflare y del proyecto de Pages.
+
+L66: "actualiza main". Producción llevaba en `7002d7d` (`v0.2.0`, portada sin documentación)
+mientras `develop` acumulaba 106 commits, así que el sitio publicado no representaba el trabajo
+hecho. Se sigue el flujo de versión documentado en `CONTRIBUTING.md`: rama `release/0.3.0` desde
+`develop`, `package.json` a `0.3.0`, merge `--no-ff` a `main` y etiqueta anotada `v0.3.0`, devuelta
+a `develop`. No se reescribe historial: `main` avanza por merge, igual que la release anterior. La
+verificación es el mismo `pnpm build` que es el contrato del repositorio, ejecutado antes del merge
+sobre `develop`: salida 0, 34 páginas generadas, 31 indexadas por Pagefind, auditoría limpia (207
+clases con 358 reglas, presupuesto de HTML 86 KB de 150 y CSS 50 KB de 70, sin recursos de terceros)
+y 33/33 URL del contrato. F5.3 sigue pendiente: con `main` al día, el proyecto de Cloudflare Pages
+puede conectarse al repositorio y publicar; nada de la entrega del hosting se hizo desde el repo.
