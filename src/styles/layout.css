@@ -155,8 +155,7 @@ body {
 
 .site-footer {
   border-block-start: var(--hairline) solid var(--line);
-  background-color: var(--surface-sunken);
-  padding-block: var(--space-xl);
+  padding-block: var(--space-md);
 }
 
 .site-footer__inner {
@@ -167,25 +166,16 @@ body {
   gap: var(--space-sm) var(--space-xl);
 }
 
-.site-footer__note {
-  max-inline-size: var(--width-prose);
+.site-footer__note,
+.site-footer__meta {
   color: var(--text-muted);
   font-size: var(--text-sm);
 }
 
-.site-footer__meta {
-  color: var(--text-faint);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.02em;
-}
-
-/* The owner's name is the link to the channel (S21). It stays part of the
-   footer sentence, so it inherits the mono line and only the accent of the
-   underline changes on hover. */
+/* Keep the channel link understated without hiding its affordance. */
 .site-footer__author {
-  color: var(--text);
-  text-decoration-color: var(--brand);
+  color: inherit;
+  text-decoration-color: currentColor;
   text-underline-offset: 0.22em;
 }
 
