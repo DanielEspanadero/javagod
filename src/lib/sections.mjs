@@ -47,6 +47,12 @@ export const sections = [
     summary: 'Hilos, estados, locks y memoria compartida, sin humo.',
   },
   {
+    id: 'biblioteca',
+    title: 'Biblioteca estándar',
+    summary:
+      'Fechas, dinero exacto y archivos: el JDK que se usa todos los días, explicado sin sorpresas.',
+  },
+  {
     id: 'novedades',
     title: 'Novedades por versión',
     summary: 'Qué trajo cada LTS, qué se quedó por el camino y qué cambió sin avisar.',

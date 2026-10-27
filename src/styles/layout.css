@@ -180,6 +180,19 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* The owner's name is the link to the channel (S21). It stays part of the
+   footer sentence, so it inherits the mono line and only the accent of the
+   underline changes on hover. */
+.site-footer__author {
+  color: var(--text);
+  text-decoration-color: var(--brand);
+  text-underline-offset: 0.22em;
+}
+
+.site-footer__author:hover {
+  color: var(--brand);
+}
+
 /* Not-found page (S7). Cloudflare Pages serves this for any route it cannot
    resolve, so it is a normal page of the site: same chrome, same tokens, and
    the same rule as everything else, only links that exist. */
