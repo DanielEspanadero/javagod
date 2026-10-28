@@ -183,6 +183,47 @@ body {
   color: var(--brand);
 }
 
+/* Restrained social links: fixed targets reserve space without icon loading. */
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3xs);
+}
+
+.social-links__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: calc(var(--control-size) + var(--space-3xs));
+  min-block-size: calc(var(--control-size) + var(--space-3xs));
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color calc(var(--duration-fast) * 1.25) var(--ease-out);
+}
+
+.social-links__link:hover {
+  color: var(--text);
+}
+
+.social-links__link:focus-visible {
+  outline: calc(var(--hairline) * 3) solid var(--focus);
+  outline-offset: var(--space-3xs);
+}
+
+.social-links__icon {
+  inline-size: calc(var(--space-lg) - var(--space-3xs));
+  block-size: calc(var(--space-lg) - var(--space-3xs));
+  fill: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-links__link {
+    transition: none;
+  }
+}
+
 /* Not-found page (S7). Cloudflare Pages serves this for any route it cannot
    resolve, so it is a normal page of the site: same chrome, same tokens, and
    the same rule as everything else, only links that exist. */
