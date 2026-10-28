@@ -1,0 +1,22 @@
+---
+import { socialLinks } from '../lib/social.mjs';
+
+const confirmedLinks = socialLinks.filter(({ url }) => url.trim() !== '');
+---
+{confirmedLinks.length > 0 && (
+  <nav class="social-links" aria-label="Redes sociales de Daniel Españadero">
+    {confirmedLinks.map(({ name, url, viewBox, path }) => (
+      <a
+        class="social-links__link"
+        href={url}
+        aria-label={`Daniel Españadero en ${name} (se abre en una pestaña nueva)`}
+        target="_blank"
+        rel="noopener noreferrer me"
+      >
+        <svg class="social-links__icon" viewBox={viewBox} aria-hidden="true" focusable="false">
+          <path d={path} />
+        </svg>
+      </a>
+    ))}
+  </nav>
+)}
