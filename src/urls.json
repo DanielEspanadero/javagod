@@ -9,6 +9,8 @@
     "/docs/biblioteca/formato-de-fechas/",
     "/docs/biblioteca/java-io/",
     "/docs/biblioteca/zonas-horarias/",
+    "/docs/calidad/diseno-de-pruebas/",
+    "/docs/calidad/junit-5/",
     "/docs/colecciones/collectors-y-optional/",
     "/docs/colecciones/conjuntos/",
     "/docs/colecciones/el-marco-de-colecciones/",
@@ -35,12 +37,14 @@
     "/docs/novedades/java-21/",
     "/docs/novedades/java-25/",
     "/docs/novedades/java-8/",
+    "/docs/objetos/anotaciones-y-reflexion/",
     "/docs/objetos/clases-y-objetos/",
     "/docs/objetos/encapsulamiento/",
     "/docs/objetos/enums/",
     "/docs/objetos/genericos/",
     "/docs/objetos/herencia-y-polimorfismo/",
     "/docs/objetos/interfaces-y-abstraccion/",
+    "/docs/objetos/lambdas-y-api-funcional/",
     "/docs/objetos/object-y-contratos/",
     "/docs/objetos/records/"
   ]

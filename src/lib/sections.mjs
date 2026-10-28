@@ -53,6 +53,12 @@ export const sections = [
       'Fechas, dinero exacto y archivos: el JDK que se usa todos los días, explicado sin sorpresas.',
   },
   {
+    id: 'calidad',
+    title: 'Calidad',
+    summary:
+      'Pruebas que dicen la verdad: qué asertar, cómo aislar el mundo exterior y JUnit 5 en la práctica.',
+  },
+  {
     id: 'novedades',
     title: 'Novedades por versión',
     summary: 'Qué trajo cada LTS, qué se quedó por el camino y qué cambió sin avisar.',
