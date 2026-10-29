@@ -4,7 +4,7 @@ import TerminalCard from '../components/TerminalCard.astro';
 import JvmPipeline from '../components/JvmPipeline.astro';
 import ThreadStates from '../components/ThreadStates.astro';
 import { findSection } from '../lib/sections.mjs';
-import { getDocs, groupDocs } from '../lib/docs';
+import { docHref, getDocs, groupDocs } from '../lib/docs';
 
 type PathStep = {
   /** Section id from the registry: the title is never repeated here (S9). */
@@ -20,8 +20,26 @@ const words = ['Aprende', 'Java', 'viendo', 'qué', 'pasa', 'por', 'dentro.'];
  * chapters links to them and the rest stay honestly marked as in preparation
  * (S7). It also keeps the landing from drifting from what docs actually has.
  */
-const groups = groupDocs(await getDocs());
+const docs = await getDocs();
+const groups = groupDocs(docs);
 const chaptersPerSection = new Map(groups.map((group) => [group.section.id, group.docs.length]));
+const contentGroups = groups.filter((group) => group.section.id !== 'novedades');
+const chapterCount = contentGroups.reduce((count, group) => count + group.docs.length, 0);
+const confirmedVersions = docs.map((doc) => doc.data.since);
+const versionRange = confirmedVersions.length > 0
+  ? `De Java ${Math.min(...confirmedVersions)} a Java ${Math.max(...confirmedVersions)}`
+  : undefined;
+
+// Literal excerpt from DecimalScale.java and the first three lines of its output.
+const sampleChapter = docs.find((doc) => doc.id === 'biblioteca/bigdecimal');
+const sampleCode = `BigDecimal price = new BigDecimal("19.90");
+System.out.println(price.unscaledValue());
+System.out.println(price.scale());
+System.out.println(price.precision());`;
+const sampleOutput = `1990
+2
+4`;
+const readingFragment = 'public record Punto(int x, int y) {}';
 
 const path: PathStep[] = [
   {
@@ -78,7 +96,11 @@ const path: PathStep[] = [
           <a class="btn btn--primary" href="/docs/">Empezar por los fundamentos</a>
           <a class="btn btn--ghost" href="#visualizaciones">Ver visualizaciones</a>
         </div>
-        <p class="hero__meta" style="--i: 8">De Java 8 a Java 25 · En español</p>
+        <ul class="proof" aria-label="Contenido publicado">
+          {chapterCount > 0 && <li class="chip">{chapterCount} capítulos</li>}
+          {contentGroups.length > 0 && <li class="chip">{contentGroups.length} secciones de contenido</li>}
+          {versionRange && <li class="chip">{versionRange}</li>}
+        </ul>
       </div>
 
       <div class="hero__visual" style="--i: 8">
@@ -93,7 +115,7 @@ const path: PathStep[] = [
         <li class="stance__item">Sin anuncios</li>
         <li class="stance__item">Sin registro</li>
         <li class="stance__item">Sin cuentas</li>
-        <li class="stance__item">De Java 8 a Java 25</li>
+        <li class="stance__item">En español</li>
       </ul>
     </div>
   </aside>
@@ -118,7 +140,10 @@ const path: PathStep[] = [
     <div class="container">
       <div class="section__head" data-reveal>
         <p class="section__eyebrow">El camino</p>
-        <h2 class="section__title">Un recorrido progresivo, del Hola, mundo a la biblioteca estándar</h2>
+        <h2 class="section__title">
+          Un recorrido progresivo en {path.length} etapas: del Hola, mundo al código que se
+          sostiene
+        </h2>
         <p class="section__lead">
           Cada etapa se apoya en la anterior. Puedes leerlo de corrido o ir directo a lo que
           necesitas hoy.
@@ -155,6 +180,74 @@ const path: PathStep[] = [
     </div>
   </section>
 
+  <section class="section section--soft" id="modo-de-lectura" aria-labelledby="lectura-title">
+    <div class="container">
+      <div class="section__head" data-reveal>
+        <p class="section__eyebrow">Modo de lectura</p>
+        <h2 class="section__title" id="lectura-title">Tu versión, sin perder el contexto</h2>
+        <p class="section__lead">
+          El selector oculta del índice y la navegación lo que aún no existía en tu LTS.
+          Si abres un capítulo más reciente por su enlace directo, te avisa en vez de borrarlo.
+          Una página por tema, sin duplicar URLs; el parámetro <code>?v=</code> comparte tu modo.
+        </p>
+      </div>
+      <div class="reading-example" data-reveal>
+        <section class="showcase reading-example__panel" aria-labelledby="lectura-8">
+          <h3 class="path__title" id="lectura-8">Java 8</h3>
+          <p class="chip">Fuera de esta versión</p>
+          <pre class="chapter-fragment"><code>{readingFragment}</code></pre>
+          <p class="path__text">
+            Records no aparece en el índice. Si llegas al capítulo por un enlace, verás un aviso:
+            necesita Java 17, la primera LTS con records.
+          </p>
+        </section>
+        <section class="showcase reading-example__panel" aria-labelledby="lectura-17">
+          <h3 class="path__title" id="lectura-17">Java 17</h3>
+          <p class="chip">Disponible en esta versión</p>
+          <pre class="chapter-fragment"><code>{readingFragment}</code></pre>
+          <p class="path__text">
+            El mismo capítulo aparece en el índice y puedes leerlo sin aviso de incompatibilidad.
+            El código y la ruta son los mismos.
+          </p>
+        </section>
+      </div>
+      <p class="section__note">Comparación ilustrada, no otro selector. Las novedades dentro de un capítulo llevan su versión indicada.</p>
+      <a class="btn btn--ghost section__action" href="/docs/">Elige tu LTS en la documentación</a>
+    </div>
+  </section>
+
+  {sampleChapter && (
+    <section class="section" id="muestra" aria-labelledby="muestra-title">
+      <div class="container">
+        <div class="section__head" data-reveal>
+          <p class="section__eyebrow">Una muestra real</p>
+          <h2 class="section__title" id="muestra-title">Así se ve un capítulo</h2>
+          <p class="section__lead">
+            ¿Qué guarda un BigDecimal? Este fragmento del ejemplo DecimalScale te enseña
+            el entero sin escala, la escala y la precisión, en ese orden.
+          </p>
+        </div>
+        <div class="showcase chapter-sample" data-reveal>
+          <div>
+            <h3 class="path__title">Código Java</h3>
+            <p class="path__text">Fragmento del método main, con java.math.BigDecimal importado.</p>
+            <pre class="chapter-fragment"><code>{sampleCode}</code></pre>
+          </div>
+          <div>
+            <h3 class="path__title">Salida</h3>
+            <p class="path__text">Las tres primeras líneas de la salida publicada.</p>
+            <pre class="chapter-fragment"><samp>{sampleOutput}</samp></pre>
+          </div>
+        </div>
+        <p class="section__note">
+          19.90 se representa como 1990 multiplicado por diez elevado a menos 2.
+          Tiene cuatro dígitos de precisión, no dos.
+        </p>
+        <a class="btn btn--primary section__action" href={docHref(sampleChapter)}>Lee el capítulo de BigDecimal</a>
+      </div>
+    </section>
+  )}
+
   <section class="section section--soft" id="visualizaciones">
     <div class="container">
       <div class="section__head" data-reveal>
@@ -174,17 +267,16 @@ const path: PathStep[] = [
 
   <section class="closing">
     <div class="container closing__inner" data-reveal>
-      <h2 class="closing__title">Todo Java, explicado como se ve.</h2>
+      <h2 class="closing__title">Tu siguiente paso: un capítulo.</h2>
       <p class="closing__lead">
-        Sin anuncios, sin registro y sin cookies. Un sitio estático generado en el build, sin
-        backend ni base de datos.
+        Abre el índice, elige tu versión y empieza por Hola, mundo. Si ya tienes una duda concreta,
+        busca el tema y ve directo a su explicación.
       </p>
-      <ul class="closing__principles">
-        <li class="closing__principle">Estático</li>
-        <li class="closing__principle">Sin cookies</li>
-        <li class="closing__principle">Sin cuentas</li>
-      </ul>
-      <a class="btn btn--primary closing__cta" href="/docs/">Empezar por los fundamentos</a>
+      <p class="closing__lead">
+        Con JavaScript, abre la búsqueda con <kbd>Ctrl + K</kbd> o <kbd>⌘ + K</kbd>.
+        En esta portada, <kbd>/</kbd> enfoca el terminal cuando está listo y no estás escribiendo en otro campo.
+      </p>
+      <a class="btn btn--primary closing__cta" href="/docs/">Elige qué leer hoy</a>
     </div>
   </section>
 </BaseLayout>

@@ -220,6 +220,10 @@ async function main() {
   /* ---- Check 5: delivery budget ---- */
   const PAGE_BUDGET = 150 * 1024;
   const CSS_BUDGET = 70 * 1024;
+  /* `<link rel="canonical">` and friends are metadata the crawler reads, not a
+     resource the browser fetches, so the third-party rule must not see them.
+     Absolute canonical URLs are required by search engines and by Open Graph. */
+  const METADATA_LINK = /<link\b[^>]*\brel="(?:canonical|alternate)"[^>]*>/gi;
   const THIRD_PARTY = /<(?:script|img|iframe|source|link)\b[^>]*\b(?:src|href)="https?:\/\//i;
 
   let budgetOk = true;
@@ -231,7 +235,7 @@ async function main() {
       fail(`${page.name}: ${Math.round(bytes / 1024)} KB de HTML, por encima del presupuesto de ${PAGE_BUDGET / 1024} KB.`);
     }
 
-    const remote = THIRD_PARTY.exec(page.markup);
+    const remote = THIRD_PARTY.exec(page.markup.replace(METADATA_LINK, ''));
     if (remote) {
       budgetOk = false;
       fail(`${page.name}: recurso de terceros en el HTML (${remote[0].slice(0, 60)}…).`);
