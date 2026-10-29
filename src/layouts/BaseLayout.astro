@@ -5,6 +5,7 @@ import '../styles/base.css';
 import '../styles/layout.css';
 import '../styles/landing.css';
 import SiteHeader from '../components/SiteHeader.astro';
+import SocialLinks from '../components/SocialLinks.astro';
 
 interface Props {
   title: string;
@@ -14,6 +15,16 @@ interface Props {
 }
 
 const { title, description, wide = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const image = new URL('/og-image.png', Astro.site).href;
+const imageAlt = 'JavaGod: documentación visual de Java, por Daniel Españadero';
+const website = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'JavaGod',
+  url: Astro.site!.href,
+  inLanguage: 'es',
+};
 ---
 <!doctype html>
 <html lang="es">
@@ -22,6 +33,19 @@ const { title, description, wide = false } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="JavaGod" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(website).replace(/</g, '\\u003c')} />
     <slot name="head" />
     <link rel="icon" type="image/png" href="/favicon.png" sizes="64x64" />
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
@@ -61,11 +85,20 @@ const { title, description, wide = false } = Astro.props;
     </main>
     <footer class="site-footer">
       <div class="container site-footer__inner">
-        <p class="site-footer__note">
-          JavaGod · documentación visual de Java en español. Estático, sin cuentas y sin
-          cookies.
-        </p>
-        <p class="site-footer__meta">Java 8 a 25 · Hecho con ☕</p>
+        <p class="site-footer__note">JavaGod</p>
+        <div class="site-footer__aside">
+          <p class="site-footer__meta">
+            Por{' '}
+            <a
+              class="site-footer__author"
+              href="https://www.youtube.com/@danielespanadero"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Daniel Españadero<span class="sr-only"> en YouTube</span></a
+            >
+          </p>
+          <SocialLinks />
+        </div>
       </div>
     </footer>
 
