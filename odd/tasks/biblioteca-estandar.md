@@ -26,8 +26,9 @@ S20: Three chapters close gaps in the existing sections:
 and every earlier chapter keeps its URL (S12).
 
 S21: The shared footer shows the owner's name as the link text and sends it to
-the YouTube channel: exact name `Daniel Españadero`, exact target
-`https://www.youtube.com/@danielespanadero`. Because the footer lives in
+his portfolio: exact name `Daniel Españadero`, exact target
+`https://daniel-espanadero.com/`. The YouTube channel keeps its own link in the
+social row, so the name identifies the person and the row lists the platforms. Because the footer lives in
 `BaseLayout.astro`, the landing and every chapter show it. The link opens in a
 new tab with `rel="noopener noreferrer"`, the visible sentence still reads as
 Spanish copy, and no CSS class is used without a rule (S2). The owner's correction is:
@@ -54,7 +55,7 @@ readers/writers, explicit encodings, buffering, resource management and how
 | ID | Specs | Route | Task | Estado |
 | -- | ----- | ----- | ---- | ------ |
 | T1 | S18,S22 | content | Registry: `biblioteca` section and the fifth landing step | hecho |
-| T2 | S21 | layout | Shared footer: minimal name and channel link | hecho |
+| T2 | S21 | layout | Shared footer: minimal name and portfolio link | en curso |
 | T3 | S20 | worker | Fundamentos: excepciones (order 9) | hecho |
 | T4 | S20 | worker | Objetos: genéricos (order 7) | hecho |
 | T5 | S20 | worker | Objetos: enums (order 8) | hecho |
@@ -167,3 +168,14 @@ slice, never the accumulated branch. Not done here, by owner decision: push, pul
 request, merge and deploy. Known limitation of the whole wave: Java 8
 compatibility was proven with `javac --release 8` on JDK 21, never on a real JVM 8;
 no browser screenshot check ran because the project has no Playwright install.
+
+L14: En lugar de que mi nombre apunte a youtube (ya están los logos de las redes
+sociales al lado) podemos hacer que apunte a mi portfolio, que opinas?:
+https://daniel-espanadero.com/
+
+L15: T2 reopened and closed again for S21: the author credit now targets
+`https://daniel-espanadero.com/` (verified 200) with `rel="noopener noreferrer me"`,
+and the screen-reader text inside the link changed from "en YouTube" to
+"(se abre en una pestaña nueva)" so it no longer announces the wrong destination.
+No visual change. The YouTube channel keeps its own icon in the social row.
+Reopened by the owner's L14.
