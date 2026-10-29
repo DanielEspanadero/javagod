@@ -26,6 +26,12 @@
 /** @type {readonly Section[]} */
 export const sections = [
   {
+    id: 'entorno',
+    title: 'Entorno y herramientas',
+    summary:
+      'Qué instalar, cómo comprobarlo y con qué editor trabajar: el primer paso antes de escribir código.',
+  },
+  {
     id: 'fundamentos',
     title: 'Fundamentos',
     summary: 'La JVM, los tipos y el control de flujo, desde un Hola, mundo.',
