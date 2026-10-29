@@ -8,9 +8,9 @@ El sitio se genera como HTML estático, no tiene backend y se despliega en Cloud
 
 ## Qué hay dentro
 
-- Seis secciones de contenido y una de novedades: Fundamentos, Orientación a Objetos,
-  Collections y Streams, Concurrencia, Biblioteca estándar y Calidad, más una página por cada
-  versión LTS. En total, 40 capítulos y 5 páginas de novedades.
+- Siete secciones de contenido y una de novedades: Entorno y herramientas, Fundamentos,
+  Programación Orientada a Objetos, Collections y Streams, Concurrencia, Biblioteca estándar y
+  Calidad, más una página por cada versión LTS. En total, 42 capítulos y 5 páginas de novedades.
 - Diagramas en HTML y CSS, legibles en estático, con animación solo como capa extra.
 - Modo de lectura por versión: un `since` por capítulo y un selector que filtra lo que aún no
   existía en la versión elegida, sin duplicar contenido ni URLs.
