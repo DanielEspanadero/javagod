@@ -138,6 +138,7 @@ this, and the build does not depend on it.
 | `v0.1.0` | Base desplegable: portada con terminal, pipeline explorable, rail progresivo, simulador de hilos y auditoría de build |
 | `v0.2.0` | Puente terminal-pipeline, tira de postura, cierre a ancho completo, atajo `/`, git flow, entornos y cabeceras de Cloudflare |
 | `v0.3.0` | Documentación completa de Fundamentos, Objetos, Colecciones y Concurrencia, buscador con tandas de ocho, página 404 propia y presupuesto de rendimiento en el build |
+| `v0.4.0` | Sección Biblioteca estándar con siete capítulos (fechas, zonas, aritmética, formato, BigDecimal, NIO.2 y java.io), capítulos de excepciones, genéricos, enums, lambdas, anotaciones y reflexión, sección Calidad con diseño de pruebas y JUnit 5, portada con datos reales, modo de lectura y muestra de capítulo, metadatos sociales con imagen de compartir, sitemap y robots generados, y footer con las ocho redes |
 
 ## Log
 
