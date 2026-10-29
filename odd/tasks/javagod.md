@@ -140,6 +140,7 @@ this, and the build does not depend on it.
 | `v0.3.0` | Documentación completa de Fundamentos, Objetos, Colecciones y Concurrencia, buscador con tandas de ocho, página 404 propia y presupuesto de rendimiento en el build |
 | `v0.4.0` | Sección Biblioteca estándar con siete capítulos (fechas, zonas, aritmética, formato, BigDecimal, NIO.2 y java.io), capítulos de excepciones, genéricos, enums, lambdas, anotaciones y reflexión, sección Calidad con diseño de pruebas y JUnit 5, portada con datos reales, modo de lectura y muestra de capítulo, metadatos sociales con imagen de compartir, sitemap y robots generados, y footer con las ocho redes |
 | `v0.4.1` | El crédito del footer apunta al portfolio del autor y el canal mantiene su icono en la fila de redes |
+| `v0.5.0` | Sección Entorno y herramientas como primer paso: JDK, JRE y JVM, instalación y verificación, herramientas del JDK, JAR ejecutable y elección de IDE con criterios y comparativa fechada |
 
 ## Log
 
